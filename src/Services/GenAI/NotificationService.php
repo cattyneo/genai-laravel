@@ -24,7 +24,7 @@ class NotificationService
     /**
      * モデル廃止警告を送信
      */
-    public function sendDeprecationWarning(array $deprecatedModels, array $replacementSuggestions = []): void
+    public function sendDeprecationWarning(array $deprecatedModels, array $replacementSuggestions = []): bool
     {
         $channels = $this->config['deprecation_channels'] ?? ['log'];
 
@@ -39,12 +39,14 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
+        
+        return true;
     }
 
     /**
      * モデル更新通知を送信
      */
-    public function sendModelUpdateNotification(array $newModels, array $updatedModels): void
+    public function sendModelUpdateNotification(array $newModels, array $updatedModels): bool
     {
         $channels = $this->config['update_channels'] ?? ['log'];
 
@@ -59,12 +61,14 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
+        
+        return true;
     }
 
     /**
      * コスト警告通知を送信
      */
-    public function sendCostAlert(array $costData): void
+    public function sendCostAlert(array $costData): bool
     {
         $channels = $this->config['cost_alert_channels'] ?? ['log', 'mail'];
 
@@ -78,12 +82,14 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
+        
+        return true;
     }
 
     /**
      * パフォーマンス劣化アラートを送信
      */
-    public function sendPerformanceAlert(array $performanceData): void
+    public function sendPerformanceAlert(array $performanceData): bool
     {
         $channels = $this->config['performance_alert_channels'] ?? ['log'];
 
@@ -97,6 +103,8 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
+        
+        return true;
     }
 
     /**

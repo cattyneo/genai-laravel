@@ -32,13 +32,17 @@ class AssistantImportServiceTest extends TestCase
         $this->testPromptsPath = storage_path('genai/prompts/openai');
         $this->testPresetsPath = storage_path('genai/presets/openai');
 
-        // テスト用ディレクトリをクリーンアップ
+        // テスト用ディレクトリをクリーンアップ後、再作成
         if (File::exists($this->testPromptsPath)) {
             File::deleteDirectory($this->testPromptsPath);
         }
         if (File::exists($this->testPresetsPath)) {
             File::deleteDirectory($this->testPresetsPath);
         }
+        
+        // テスト用ディレクトリを作成
+        File::ensureDirectoryExists($this->testPromptsPath);
+        File::ensureDirectoryExists($this->testPresetsPath);
     }
 
     protected function tearDown(): void

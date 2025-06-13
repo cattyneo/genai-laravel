@@ -125,8 +125,15 @@ final class PromptManager
         $promptsPath = storage_path($this->promptsPath);
 
         if (! File::exists($promptsPath)) {
-            File::makeDirectory($promptsPath, 0755, true);
-            $this->createDefaultPrompts($promptsPath);
+            try {
+                File::makeDirectory($promptsPath, 0755, true);
+                $this->createDefaultPrompts($promptsPath);
+            } catch (\Exception $e) {
+                // ディレクトリが既に存在する場合は無視
+                if (! File::exists($promptsPath)) {
+                    throw $e;
+                }
+            }
         }
 
         $files = File::allFiles($promptsPath);

@@ -52,8 +52,10 @@ class NotificationServiceTest extends TestCase
             'claude-1' => 'claude-3-sonnet',
         ];
 
-        $this->notificationService->sendDeprecationWarning($deprecatedModels, $replacementSuggestions);
+        $result = $this->notificationService->sendDeprecationWarning($deprecatedModels, $replacementSuggestions);
 
+        $this->assertTrue($result);
+        
         Log::shouldHaveReceived('error')
             ->withArgs(function ($message, $context) {
                 return str_contains($message, '[GenAI] model_deprecation_warning')
@@ -75,7 +77,9 @@ class NotificationServiceTest extends TestCase
             ['provider' => 'claude', 'model' => 'claude-3-opus', 'changes' => ['pricing updated']],
         ];
 
-        $this->notificationService->sendModelUpdateNotification($newModels, $updatedModels);
+        $result = $this->notificationService->sendModelUpdateNotification($newModels, $updatedModels);
+
+        $this->assertTrue($result);
 
         Log::shouldHaveReceived('info')
             ->withArgs(function ($message, $context) {
@@ -125,7 +129,9 @@ class NotificationServiceTest extends TestCase
             'performance_degradation_percent' => 40, // high severity になるように
         ];
 
-        $this->notificationService->sendPerformanceAlert($performanceData);
+        $result = $this->notificationService->sendPerformanceAlert($performanceData);
+
+        $this->assertTrue($result);
 
         Log::shouldHaveReceived('error')
             ->withArgs(function ($message, $context) {
@@ -260,8 +266,10 @@ class NotificationServiceTest extends TestCase
             'threshold_exceeded' => true,
         ];
 
-        $serviceWithoutSlack->sendCostAlert($costData);
+        $result = $serviceWithoutSlack->sendCostAlert($costData);
 
+        $this->assertTrue($result);
+        
         // 警告ログが出力されることを確認
         Log::shouldHaveReceived('warning')
             ->withArgs(function ($message) {

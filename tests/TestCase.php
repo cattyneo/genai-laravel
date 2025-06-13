@@ -39,6 +39,12 @@ abstract class TestCase extends Orchestra
         // DatabaseLoggerを無効化してログエラーを回避
         config()->set('genai.logging.enabled', false);
 
+        // テスト環境でのモデルファイルパス設定
+        $testStoragePath = __DIR__.'/../storage/genai';
+        config()->set('genai.paths.models', $testStoragePath.'/models.yaml');
+        config()->set('genai.paths.presets', $testStoragePath.'/presets');
+        config()->set('genai.paths.prompts', $testStoragePath.'/prompts');
+
         // テスト用API設定
         config()->set('genai.providers.openai.api_key', 'test-api-key');
         config()->set('genai.providers.gemini.api_key', 'test-api-key');
