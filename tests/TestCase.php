@@ -13,7 +13,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
     protected function getPackageProviders($app): array
@@ -42,9 +42,9 @@ abstract class TestCase extends Orchestra
         // テスト環境でのモデルファイルパス設定
         $testStoragePath = storage_path('genai');
         $this->ensureTestDirectoriesExist($testStoragePath);
-        config()->set('genai.paths.models', $testStoragePath.'/models.yaml');
-        config()->set('genai.paths.presets', $testStoragePath.'/presets');
-        config()->set('genai.paths.prompts', $testStoragePath.'/prompts');
+        config()->set('genai.paths.models', $testStoragePath . '/models.yaml');
+        config()->set('genai.paths.presets', $testStoragePath . '/presets');
+        config()->set('genai.paths.prompts', $testStoragePath . '/prompts');
 
         // テスト用API設定
         config()->set('genai.providers.openai.api_key', 'test-api-key');
@@ -83,35 +83,46 @@ abstract class TestCase extends Orchestra
             $filesystem->makeDirectory($basePath, 0755, true);
         }
 
-        if (! $filesystem->exists($basePath.'/presets')) {
-            $filesystem->makeDirectory($basePath.'/presets', 0755, true);
+        if (! $filesystem->exists($basePath . '/presets')) {
+            $filesystem->makeDirectory($basePath . '/presets', 0755, true);
         }
 
-        if (! $filesystem->exists($basePath.'/prompts')) {
-            $filesystem->makeDirectory($basePath.'/prompts', 0755, true);
+        if (! $filesystem->exists($basePath . '/prompts')) {
+            $filesystem->makeDirectory($basePath . '/prompts', 0755, true);
         }
 
         // models.yamlファイルを作成
-        $modelsYamlPath = $basePath.'/models.yaml';
+        $modelsYamlPath = $basePath . '/models.yaml';
         if (! $filesystem->exists($modelsYamlPath)) {
             $modelsYaml = <<<'YAML'
-providers:
-  openai:
-    models:
-      gpt-4o-mini:
-        name: "GPT-4o Mini"
-        context_window: 128000
-        output_tokens: 16384
-        input_cost: 0.00015
-        output_cost: 0.0006
-        features: ["chat", "vision"]
-      gpt-4o:
-        name: "GPT-4o"
-        context_window: 128000
-        output_tokens: 4096
-        input_cost: 0.005
-        output_cost: 0.015
-        features: ["chat", "vision", "function_calling"]
+openai:
+  gpt-4o-mini:
+    provider: openai
+    model: gpt-4o-mini
+    type: text
+    features:
+      - chat
+      - vision
+    limits:
+      max_tokens: 16384
+      context_window: 128000
+    pricing:
+      input: 0.00015
+      output: 0.0006
+  gpt-4o:
+    provider: openai
+    model: gpt-4o
+    type: text
+    features:
+      - chat
+      - vision
+      - function_calling
+    limits:
+      max_tokens: 4096
+      context_window: 128000
+    pricing:
+      input: 0.005
+      output: 0.015
 YAML;
             $filesystem->put($modelsYamlPath, $modelsYaml);
         }

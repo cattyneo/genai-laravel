@@ -125,7 +125,7 @@ class GenAIServiceProvider extends ServiceProvider
         $this->app->bind(ModelRepository::class, function ($app) {
             return new ModelRepository(
                 config('genai.paths.models', storage_path('genai/models.yaml')),
-                config('genai.cache.ttl', 3600)
+                (int) config('genai.cache.ttl', 3600)
             );
         });
 

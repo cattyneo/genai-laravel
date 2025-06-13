@@ -19,11 +19,83 @@ use Orchestra\Testbench\TestCase;
 class ModelManagementTest extends TestCase
 {
     private ModelRepository $repository;
+    private string $testYamlPath;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->repository = app(ModelRepository::class);
+        $this->testYamlPath = storage_path('genai/manual_test_models.yaml');
+
+        // Manual テスト用のYAMLファイルを作成
+        $this->createManualTestYamlFile();
+    }
+
+    protected function tearDown(): void
+    {
+        if (File::exists($this->testYamlPath)) {
+            File::delete($this->testYamlPath);
+        }
+        parent::tearDown();
+    }
+
+    /**
+     * Manual テスト用のYAMLファイルを作成
+     */
+    private function createManualTestYamlFile(): void
+    {
+        $yamlContent = <<<'YAML'
+openai:
+  gpt-4.1:
+    provider: openai
+    model: gpt-4.1
+    type: text
+    features:
+      - vision
+      - function_calling
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+
+claude:
+  claude-sonnet-4:
+    provider: claude
+    model: claude-sonnet-4
+    type: text
+    features:
+      - vision
+      - reasoning
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+
+gemini:
+  gemini-2.5-pro:
+    provider: gemini
+    model: gemini-2.5-pro
+    type: text
+    features:
+      - vision
+      - multimodal
+    limits:
+      max_tokens: 8192
+      context_window: 2000000
+
+grok:
+  grok-3:
+    provider: grok
+    model: grok-3
+    type: text
+    features:
+      - reasoning
+      - fast_response
+    limits:
+      max_tokens: 4096
+      context_window: 131072
+YAML;
+
+        File::ensureDirectoryExists(dirname($this->testYamlPath));
+        File::put($this->testYamlPath, $yamlContent);
     }
 
     /**
@@ -264,6 +336,9 @@ class ModelManagementTest extends TestCase
         // テスト用の設定
         $app['config']->set('genai.cache.enabled', true);
         $app['config']->set('genai.cache.driver', 'array');
+
+        // Manual テスト用の独立したYAMLパスを設定
+        $app['config']->set('genai.paths.models', storage_path('genai/manual_test_models.yaml'));
     }
 
     protected function getPackageProviders($app)
