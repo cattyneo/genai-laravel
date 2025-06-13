@@ -9,7 +9,8 @@ final class CostCalculator
     public function __construct(
         private array $models,
         private array $pricing
-    ) {}
+    ) {
+    }
 
     /**
      * リクエストのコストを計算

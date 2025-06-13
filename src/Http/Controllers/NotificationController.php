@@ -16,7 +16,8 @@ class NotificationController extends Controller
 {
     public function __construct(
         private NotificationService $notificationService
-    ) {}
+    ) {
+    }
 
     /**
      * 通知履歴取得

@@ -17,5 +17,6 @@ class GenAIRequestData extends Data
         public array $options = [],
         public array $vars = [],
         public bool $stream = false,
-    ) {}
+    ) {
+    }
 }

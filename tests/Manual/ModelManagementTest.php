@@ -19,6 +19,7 @@ use Orchestra\Testbench\TestCase;
 class ModelManagementTest extends TestCase
 {
     private ModelRepository $repository;
+
     private string $testYamlPath;
 
     protected function setUp(): void
@@ -239,7 +240,7 @@ YAML;
         $validation = $this->repository->validateYaml();
 
         echo "\n=== YAML Validation ===\n";
-        echo 'Valid: ' . ($validation['valid'] ? 'YES' : 'NO') . "\n";
+        echo 'Valid: '.($validation['valid'] ? 'YES' : 'NO')."\n";
 
         if (! $validation['valid']) {
             echo "Errors:\n";
@@ -309,12 +310,12 @@ YAML;
                 echo "✅ {$modelId}:\n";
                 echo "   Provider: {$model->provider}\n";
                 echo "   Type: {$model->type}\n";
-                echo '   Features: ' . implode(', ', $model->features) . "\n";
+                echo '   Features: '.implode(', ', $model->features)."\n";
                 if ($model->maxTokens) {
-                    echo '   Max Tokens: ' . number_format($model->maxTokens) . "\n";
+                    echo '   Max Tokens: '.number_format($model->maxTokens)."\n";
                 }
                 if ($model->contextWindow) {
-                    echo '   Context Window: ' . number_format($model->contextWindow) . "\n";
+                    echo '   Context Window: '.number_format($model->contextWindow)."\n";
                 }
                 echo "\n";
             } else {
@@ -353,7 +354,7 @@ YAML;
 
         echo "First load: {$time1}ms ({$models1->count()} models)\n";
         echo "Cached load: {$time2}ms ({$models2->count()} models)\n";
-        echo 'Speed improvement: ' . round($time1 / $time2, 1) . "x\n\n";
+        echo 'Speed improvement: '.round($time1 / $time2, 1)."x\n\n";
 
         $this->assertEquals($models1->count(), $models2->count());
         $this->assertLessThan($time1, $time2);

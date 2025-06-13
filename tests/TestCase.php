@@ -13,7 +13,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     protected function getPackageProviders($app): array
@@ -42,9 +42,9 @@ abstract class TestCase extends Orchestra
         // テスト環境でのモデルファイルパス設定
         $testStoragePath = storage_path('genai');
         $this->ensureTestDirectoriesExist($testStoragePath);
-        config()->set('genai.paths.models', $testStoragePath . '/models.yaml');
-        config()->set('genai.paths.presets', $testStoragePath . '/presets');
-        config()->set('genai.paths.prompts', $testStoragePath . '/prompts');
+        config()->set('genai.paths.models', $testStoragePath.'/models.yaml');
+        config()->set('genai.paths.presets', $testStoragePath.'/presets');
+        config()->set('genai.paths.prompts', $testStoragePath.'/prompts');
 
         // テスト用API設定
         config()->set('genai.providers.openai.api_key', 'test-api-key');
@@ -83,16 +83,16 @@ abstract class TestCase extends Orchestra
             $filesystem->makeDirectory($basePath, 0755, true);
         }
 
-        if (! $filesystem->exists($basePath . '/presets')) {
-            $filesystem->makeDirectory($basePath . '/presets', 0755, true);
+        if (! $filesystem->exists($basePath.'/presets')) {
+            $filesystem->makeDirectory($basePath.'/presets', 0755, true);
         }
 
-        if (! $filesystem->exists($basePath . '/prompts')) {
-            $filesystem->makeDirectory($basePath . '/prompts', 0755, true);
+        if (! $filesystem->exists($basePath.'/prompts')) {
+            $filesystem->makeDirectory($basePath.'/prompts', 0755, true);
         }
 
         // models.yamlファイルを作成
-        $modelsYamlPath = $basePath . '/models.yaml';
+        $modelsYamlPath = $basePath.'/models.yaml';
         if (! $filesystem->exists($modelsYamlPath)) {
             $modelsYaml = <<<'YAML'
 openai:

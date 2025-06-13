@@ -17,7 +17,8 @@ class PresetRepository
 
     public function __construct(
         private string $presetsPath
-    ) {}
+    ) {
+    }
 
     /**
      * プリセットを取得
@@ -210,5 +211,6 @@ final class PresetData
         public readonly string $model,
         public readonly ?string $systemPrompt = null,
         public readonly array $options = []
-    ) {}
+    ) {
+    }
 }

@@ -16,7 +16,8 @@ class GenAIResponseData extends Data
         public ?string $error = null,
         public bool $cached = false,
         public int $responseTimeMs = 0,
-    ) {}
+    ) {
+    }
 
     /**
      * 生のAPIレスポンスからGenAIResponseDataを作成

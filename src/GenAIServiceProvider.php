@@ -53,26 +53,26 @@ class GenAIServiceProvider extends ServiceProvider
     {
         // 設定ファイルのpublish
         $this->publishes([
-            __DIR__ . '/../config/genai.php' => config_path('genai.php'),
+            __DIR__.'/../config/genai.php' => config_path('genai.php'),
         ], 'config');
 
         // マイグレーションファイルのpublish
         $this->publishes([
-            __DIR__ . '/../database/migrations/' => database_path('migrations'),
+            __DIR__.'/../database/migrations/' => database_path('migrations'),
         ], 'migrations');
 
         // プリセット設定ファイルのpublish
         $this->publishes([
-            __DIR__ . '/../storage/genai/presets/' => storage_path('genai/presets'),
+            __DIR__.'/../storage/genai/presets/' => storage_path('genai/presets'),
         ], 'presets');
 
         // プロンプトファイルのpublish
         $this->publishes([
-            __DIR__ . '/../storage/genai/prompts/' => storage_path('genai/prompts'),
+            __DIR__.'/../storage/genai/prompts/' => storage_path('genai/prompts'),
         ], 'prompts');
 
         // ルートファイルの読み込み
-        $this->loadRoutesFrom(__DIR__ . '/../routes/genai-api.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/genai-api.php');
 
         // Artisan コマンドの登録
         if ($this->app->runningInConsole()) {
@@ -98,7 +98,7 @@ class GenAIServiceProvider extends ServiceProvider
     public function register(): void
     {
         // 設定ファイルのマージ
-        $this->mergeConfigFrom(__DIR__ . '/../config/genai.php', 'genai');
+        $this->mergeConfigFrom(__DIR__.'/../config/genai.php', 'genai');
 
         // Core services registration
         $this->registerCoreServices();
@@ -227,7 +227,7 @@ class GenAIServiceProvider extends ServiceProvider
                 }
             } catch (\Exception $e) {
                 // YAML読み込みに失敗した場合はログ出力して空配列で続行
-                logger()->warning('Failed to load models from YAML: ' . $e->getMessage());
+                logger()->warning('Failed to load models from YAML: '.$e->getMessage());
             }
 
             return new CostCalculator(

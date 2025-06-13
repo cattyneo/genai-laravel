@@ -11,11 +11,12 @@ final class GrokProvider implements ProviderInterface
     public function __construct(
         private string $apiKey,
         private string $baseUrl = 'https://api.x.ai/v1'
-    ) {}
+    ) {
+    }
 
     public function request(
         string $userPrompt,
-        ?string $systemPrompt = null,
+        string $systemPrompt = null,
         array $options = [],
         string $model = 'grok-beta'
     ): array {

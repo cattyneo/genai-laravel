@@ -14,7 +14,8 @@ final class RequestLogger
 {
     public function __construct(
         private bool $enabled = true
-    ) {}
+    ) {
+    }
 
     public function logRequest(
         GenAIRequestData $request,
@@ -22,7 +23,7 @@ final class RequestLogger
         string $provider,
         string $model,
         float $durationMs,
-        ?string $error = null
+        string $error = null
     ): ?GenAIRequest {
         if (! $this->enabled) {
             return null;

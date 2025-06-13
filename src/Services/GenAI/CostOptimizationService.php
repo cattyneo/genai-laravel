@@ -22,12 +22,13 @@ class CostOptimizationService
     public function __construct(
         private ModelReplacementService $replacementService,
         private NotificationService $notificationService
-    ) {}
+    ) {
+    }
 
     /**
      * 月次コスト最適化レポート生成
      */
-    public function generateMonthlyReport(?string $month = null): array
+    public function generateMonthlyReport(string $month = null): array
     {
         $targetMonth = $month ? Carbon::parse($month) : now();
         $startDate = $targetMonth->copy()->startOfMonth();
@@ -60,7 +61,7 @@ class CostOptimizationService
     /**
      * 週次コスト最適化レポート生成
      */
-    public function generateWeeklyReport(?string $week = null): array
+    public function generateWeeklyReport(string $week = null): array
     {
         $targetWeek = $week ? Carbon::parse($week) : now();
         $startDate = $targetWeek->copy()->startOfWeek();
@@ -288,7 +289,7 @@ class CostOptimizationService
         Carbon $startDate,
         Carbon $endDate,
         float $minCost = 500,
-        ?int $limit = null
+        int $limit = null
     ): \Illuminate\Support\Collection {
         $cacheKey = 'high_cost_models_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'_'.$minCost;
 
@@ -772,7 +773,7 @@ class CostOptimizationService
     public function calculatePotentialSavings(
         array $currentModel,
         array $alternativeModel,
-        ?int $monthlyTokens = null
+        int $monthlyTokens = null
     ): array {
         if ($monthlyTokens === null) {
             // 過去30日の実際のトークン使用量を計算

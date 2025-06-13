@@ -69,7 +69,7 @@ class GenAIPresetGenerateCommand extends Command
             $this->info('📋 生成されたプリセット内容:');
             $this->line($content);
         } catch (\Exception $e) {
-            $this->error('❌ プリセット生成中にエラーが発生しました: ' . $e->getMessage());
+            $this->error('❌ プリセット生成中にエラーが発生しました: '.$e->getMessage());
 
             return 1;
         }
@@ -118,7 +118,7 @@ class GenAIPresetGenerateCommand extends Command
         // YAML内容を構築
         $yaml = "# GenAI Preset: {$name}\n";
         $yaml .= "# Template: {$template}\n";
-        $yaml .= '# Generated: ' . date('Y-m-d H:i:s') . "\n\n";
+        $yaml .= '# Generated: '.date('Y-m-d H:i:s')."\n\n";
 
         $yaml .= "name: \"{$name}\"\n";
         $yaml .= "description: \"{$config['description']}\"\n\n";

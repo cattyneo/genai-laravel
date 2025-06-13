@@ -16,7 +16,8 @@ final class AsyncRequestProcessor
     public function __construct(
         private ProviderFactory $providerFactory,
         private CostCalculator $costCalculator,
-    ) {}
+    ) {
+    }
 
     /**
      * 非同期でプロバイダーにリクエストを送信

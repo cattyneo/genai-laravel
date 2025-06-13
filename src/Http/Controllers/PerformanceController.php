@@ -16,7 +16,8 @@ class PerformanceController extends Controller
 {
     public function __construct(
         private PerformanceMonitoringService $performanceService
-    ) {}
+    ) {
+    }
 
     /**
      * リアルタイムメトリクス取得
@@ -91,7 +92,7 @@ class PerformanceController extends Controller
     /**
      * パフォーマンス履歴取得
      */
-    public function getPerformanceHistory(Request $request, ?int $days = null): JsonResponse
+    public function getPerformanceHistory(Request $request, int $days = null): JsonResponse
     {
         try {
             $days = $days ?? $request->get('days', 7);

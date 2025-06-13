@@ -11,7 +11,7 @@ interface ProviderInterface
      */
     public function request(
         string $userPrompt,
-        ?string $systemPrompt = null,
+        string $systemPrompt = null,
         array $options = [],
         string $model = 'gpt-4o'
     ): array;

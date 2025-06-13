@@ -26,7 +26,8 @@ final readonly class AssistantInfo
         public array $toolResources = [],
         public ?Carbon $createdAt = null,
         public ?Carbon $updatedAt = null,
-    ) {}
+    ) {
+    }
 
     /**
      * プロンプト用のMarkdownファイルコンテンツを生成

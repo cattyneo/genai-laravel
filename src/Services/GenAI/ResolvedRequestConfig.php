@@ -17,5 +17,6 @@ readonly class ResolvedRequestConfig
         public array $options,
         public array $vars,
         public bool $stream,
-    ) {}
+    ) {
+    }
 }

@@ -8,9 +8,10 @@ final class ProviderFactory
 {
     public function __construct(
         private array $providers
-    ) {}
+    ) {
+    }
 
-    public function create(string $provider, ?array $config = null): ProviderInterface
+    public function create(string $provider, array $config = null): ProviderInterface
     {
         $config = $config ?? $this->providers[$provider] ?? [];
 

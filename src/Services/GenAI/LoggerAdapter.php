@@ -15,7 +15,8 @@ final class LoggerAdapter
 {
     public function __construct(
         private DatabaseLogger|RequestLogger $logger
-    ) {}
+    ) {
+    }
 
     /**
      * リクエストをログに記録
@@ -26,7 +27,7 @@ final class LoggerAdapter
         string $provider,
         string $model,
         float $durationMs,
-        ?string $error = null
+        string $error = null
     ): ?GenAIRequest {
         return $this->logger->logRequest(
             $request,

@@ -21,7 +21,8 @@ class WebhookController extends Controller
         private NotificationService $notificationService,
         private ModelRepository $modelRepository,
         private CostOptimizationService $costService
-    ) {}
+    ) {
+    }
 
     /**
      * モデル更新Webhook処理

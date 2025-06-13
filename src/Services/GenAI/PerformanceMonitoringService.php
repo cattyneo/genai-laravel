@@ -23,7 +23,8 @@ final class PerformanceMonitoringService
 
     public function __construct(
         private ?NotificationService $notificationService = null
-    ) {}
+    ) {
+    }
 
     /**
      * メトリクス記録（最適化版・テスト互換）
@@ -128,7 +129,7 @@ final class PerformanceMonitoringService
 
         // レスポンスタイム配列管理（効率的な制限）
         $maxResponseTimes = 50; // より少ない配列サイズでメモリ効率化
-        if (count($currentMetrics['response_times']) >= $maxResponseTimes) {
+        if ($maxResponseTimes <= count($currentMetrics['response_times'])) {
             // 古いエントリを複数削除して効率化
             $currentMetrics['response_times'] = array_slice($currentMetrics['response_times'], -($maxResponseTimes - 10));
         }
@@ -401,7 +402,7 @@ final class PerformanceMonitoringService
     /**
      * リアルタイムメトリクス取得
      */
-    public function getRealTimeMetrics(?int $minutesBack = null): array
+    public function getRealTimeMetrics(int $minutesBack = null): array
     {
         // 引数なしの場合は簡易形式を返す（テスト用）
         if ($minutesBack === null) {

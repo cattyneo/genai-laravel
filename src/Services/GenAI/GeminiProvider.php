@@ -11,11 +11,12 @@ final class GeminiProvider implements ProviderInterface
     public function __construct(
         private string $apiKey,
         private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta'
-    ) {}
+    ) {
+    }
 
     public function request(
         string $userPrompt,
-        ?string $systemPrompt = null,
+        string $systemPrompt = null,
         array $options = [],
         string $model = 'gemini-2.0-flash-exp'
     ): array {

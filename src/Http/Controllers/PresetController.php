@@ -19,7 +19,8 @@ class PresetController extends Controller
     public function __construct(
         private PresetRepository $presetRepository,
         private PresetAutoUpdateService $autoUpdateService
-    ) {}
+    ) {
+    }
 
     /**
      * プリセット一覧取得

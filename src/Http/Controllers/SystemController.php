@@ -23,7 +23,8 @@ class SystemController extends Controller
         private PerformanceMonitoringService $performanceService,
         private CostOptimizationService $costService,
         private ModelRepository $modelRepository
-    ) {}
+    ) {
+    }
 
     /**
      * システム状態取得

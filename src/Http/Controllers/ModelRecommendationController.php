@@ -19,7 +19,8 @@ class ModelRecommendationController extends Controller
     public function __construct(
         private ModelReplacementService $replacementService,
         private ModelRepository $modelRepository
-    ) {}
+    ) {
+    }
 
     /**
      * 代替モデル推奨API

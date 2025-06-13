@@ -18,7 +18,8 @@ final class RateLimiter
     public function __construct(
         private array $rateLimits,
         private string $cacheDriver = 'redis'
-    ) {}
+    ) {
+    }
 
     /**
      * レート制限をチェック
@@ -27,7 +28,7 @@ final class RateLimiter
         string $provider,
         string $model,
         int $estimatedTokens = 0,
-        ?string $userId = null
+        string $userId = null
     ): array {
         $userId = $userId ?? $this->getDefaultUserId();
 
@@ -103,7 +104,7 @@ final class RateLimiter
         string $provider,
         string $model,
         int $actualTokens,
-        ?string $userId = null
+        string $userId = null
     ): void {
         $userId = $userId ?? $this->getDefaultUserId();
         $now = time();
@@ -330,7 +331,7 @@ final class RateLimiter
     /**
      * レート制限統計を取得
      */
-    public function getStats(string $provider, string $model, ?string $userId = null): array
+    public function getStats(string $provider, string $model, string $userId = null): array
     {
         $userId = $userId ?? $this->getDefaultUserId();
         $now = time();
@@ -362,7 +363,7 @@ final class RateLimiter
     /**
      * レート制限をリセット
      */
-    public function reset(string $provider, string $model, ?string $userId = null): void
+    public function reset(string $provider, string $model, string $userId = null): void
     {
         $userId = $userId ?? $this->getDefaultUserId();
         $now = time();

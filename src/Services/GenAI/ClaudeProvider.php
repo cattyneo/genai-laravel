@@ -11,11 +11,12 @@ final class ClaudeProvider implements ProviderInterface
     public function __construct(
         private string $apiKey,
         private string $baseUrl = 'https://api.anthropic.com/v1'
-    ) {}
+    ) {
+    }
 
     public function request(
         string $userPrompt,
-        ?string $systemPrompt = null,
+        string $systemPrompt = null,
         array $options = [],
         string $model = 'claude-3-5-sonnet-20241022'
     ): array {

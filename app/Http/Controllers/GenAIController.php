@@ -13,7 +13,8 @@ class GenAIController extends Controller
 {
     public function __construct(
         private RequestAction $requestAction
-    ) {}
+    ) {
+    }
 
     /**
      * GenAI API動作確認エンドポイント

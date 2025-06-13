@@ -24,7 +24,8 @@ class ModelInfo
         public array $supportedMethods = [],
         public ?string $baseModelId = null,
         public ?string $version = null,
-    ) {}
+    ) {
+    }
 
     /**
      * 配列からModelInfoインスタンスを作成

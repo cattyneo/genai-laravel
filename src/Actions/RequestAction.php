@@ -21,7 +21,8 @@ final class RequestAction
         private AsyncRequestProcessor $asyncProcessor,
         private CacheManager $cache,
         private LoggerAdapter $logger,
-    ) {}
+    ) {
+    }
 
     /**
      * GenAI APIリクエストを実行する

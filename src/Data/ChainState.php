@@ -20,7 +20,8 @@ class ChainState extends Data
         public array $options = [],
         public array $vars = [],
         public bool $stream = false,
-    ) {}
+    ) {
+    }
 
     /**
      * 新しいプロンプトでチェーン状態を更新

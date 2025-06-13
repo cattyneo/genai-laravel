@@ -2,7 +2,6 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Feature;
 
-use CattyNeo\LaravelGenAI\GenAIServiceProvider;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
@@ -205,8 +204,8 @@ class ModelManagementCommandsTest extends TestCase
             // クリーンアップ
             File::delete($presetPath);
         } catch (\Exception $e) {
-            echo "\nException occurred: " . $e->getMessage() . "\n";
-            echo "Stack trace: " . $e->getTraceAsString() . "\n";
+            echo "\nException occurred: ".$e->getMessage()."\n";
+            echo 'Stack trace: '.$e->getTraceAsString()."\n";
             throw $e;
         }
     }

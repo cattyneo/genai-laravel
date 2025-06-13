@@ -12,7 +12,8 @@ final class CacheManager
 {
     public function __construct(
         private array $cacheConfig
-    ) {}
+    ) {
+    }
 
     /**
      * キャッシュからレスポンスを取得
@@ -90,7 +91,7 @@ final class CacheManager
     /**
      * キャッシュをクリア
      */
-    public function flush(?string $tag = null): void
+    public function flush(string $tag = null): void
     {
         $cache = $this->getCacheStore();
 

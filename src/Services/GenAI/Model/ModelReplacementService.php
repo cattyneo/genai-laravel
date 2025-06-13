@@ -17,7 +17,8 @@ class ModelReplacementService
 {
     public function __construct(
         private ModelRepository $modelRepository
-    ) {}
+    ) {
+    }
 
     /**
      * 代替モデルを検索

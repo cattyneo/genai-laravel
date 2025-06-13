@@ -44,10 +44,10 @@ class GenAIModelListCommand extends Command
         $showDetails = $this->option('details');
 
         $this->info('🤖 GenAI Models List');
-        $this->line('Source: ' . strtoupper($source));
+        $this->line('Source: '.strtoupper($source));
 
         if ($provider) {
-            $this->line('Provider: ' . strtoupper($provider));
+            $this->line('Provider: '.strtoupper($provider));
         }
 
         $this->newLine();
@@ -74,6 +74,7 @@ class GenAIModelListCommand extends Command
 
             if ($models->isEmpty()) {
                 $this->line('モデルが見つかりませんでした');
+
                 return;
             }
 
@@ -87,7 +88,7 @@ class GenAIModelListCommand extends Command
             $this->newLine();
             $this->info("総計: {$models->count()} モデル");
         } catch (\Exception $e) {
-            $this->error('エラーが発生しました: ' . $e->getMessage());
+            $this->error('エラーが発生しました: '.$e->getMessage());
 
             return 1;
         }
@@ -129,7 +130,7 @@ class GenAIModelListCommand extends Command
                 $fetchedModels = $fetcher->fetchModels();
                 $models = $models->merge($fetchedModels);
             } catch (\Exception $e) {
-                $this->warn("APIからの取得に失敗: {$providerName} - " . $e->getMessage());
+                $this->warn("APIからの取得に失敗: {$providerName} - ".$e->getMessage());
             }
         }
 
@@ -165,7 +166,7 @@ class GenAIModelListCommand extends Command
                     $model->name,
                     $model->provider,
                     $model->type,
-                    implode(', ', array_slice($model->features, 0, 3)) . (count($model->features) > 3 ? '...' : ''),
+                    implode(', ', array_slice($model->features, 0, 3)).(count($model->features) > 3 ? '...' : ''),
                     $model->maxTokens ? number_format($model->maxTokens) : 'N/A',
                     $model->contextWindow ? number_format($model->contextWindow) : 'N/A',
                 ];

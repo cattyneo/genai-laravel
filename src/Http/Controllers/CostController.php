@@ -17,12 +17,13 @@ class CostController extends Controller
 {
     public function __construct(
         private CostOptimizationService $costService
-    ) {}
+    ) {
+    }
 
     /**
      * 月次コストレポート取得
      */
-    public function getMonthlyReport(Request $request, ?string $month = null): JsonResponse
+    public function getMonthlyReport(Request $request, string $month = null): JsonResponse
     {
         try {
             $report = $this->costService->generateMonthlyReport($month);
@@ -47,7 +48,7 @@ class CostController extends Controller
     /**
      * 週次コストレポート取得
      */
-    public function getWeeklyReport(Request $request, ?string $week = null): JsonResponse
+    public function getWeeklyReport(Request $request, string $week = null): JsonResponse
     {
         try {
             $targetWeek = $week ? Carbon::parse($week) : now();

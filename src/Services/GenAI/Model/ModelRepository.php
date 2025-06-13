@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * YAMLファイルからモデル情報を管理するRepository
@@ -22,7 +21,7 @@ class ModelRepository
 
     private string $cacheKey;
 
-    public function __construct(?string $yamlPath = null, ?int $cacheTtl = null)
+    public function __construct(string $yamlPath = null, int $cacheTtl = null)
     {
         $this->yamlPath = $yamlPath ?? storage_path('genai/models.yaml');
         $this->cacheTtl = $cacheTtl ?? config('genai.cache.ttl', 3600);
@@ -202,7 +201,7 @@ class ModelRepository
 
             foreach ($data as $provider => $models) {
                 if (! is_string($provider)) {
-                    $errors[] = 'Provider name must be string, got: ' . gettype($provider);
+                    $errors[] = 'Provider name must be string, got: '.gettype($provider);
 
                     continue;
                 }
@@ -218,7 +217,7 @@ class ModelRepository
                 }
             }
         } catch (\Exception $e) {
-            $errors[] = 'YAML parsing error: ' . $e->getMessage();
+            $errors[] = 'YAML parsing error: '.$e->getMessage();
         }
 
         return ['valid' => empty($errors), 'errors' => $errors];
@@ -248,7 +247,7 @@ class ModelRepository
 
             return is_array($data) ? $data : [];
         } catch (\Exception $e) {
-            throw new InvalidConfigException('Invalid YAML format: ' . $e->getMessage());
+            throw new InvalidConfigException('Invalid YAML format: '.$e->getMessage());
         }
     }
 
@@ -338,7 +337,7 @@ class ModelRepository
         $errors = [];
 
         if (! is_string($modelId)) {
-            $errors[] = "Model ID must be string in provider '{$provider}', got: " . gettype($modelId);
+            $errors[] = "Model ID must be string in provider '{$provider}', got: ".gettype($modelId);
 
             return $errors;
         }

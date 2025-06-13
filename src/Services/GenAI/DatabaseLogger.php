@@ -42,7 +42,7 @@ final class DatabaseLogger
         string $provider,
         string $model,
         float $durationMs,
-        ?string $error = null
+        string $error = null
     ): ?GenAIRequest {
         if (! $this->enabled) {
             return null;
@@ -136,7 +136,7 @@ final class DatabaseLogger
         $this->pendingStats[$key]['requests'][] = $request;
 
         // バッチサイズに達したら処理
-        if (count($this->pendingStats[$key]['requests']) >= $this->batchSize) {
+        if ($this->batchSize <= count($this->pendingStats[$key]['requests'])) {
             $this->processStatsBatch($key);
         }
     }

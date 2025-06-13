@@ -39,7 +39,7 @@ final class GenAIManager
     /**
      * 詳細なリクエスト
      */
-    public function request(?GenAIRequestData $request = null): GenAIResponseData
+    public function request(GenAIRequestData $request = null): GenAIResponseData
     {
         if ($request === null) {
             // チェーンメソッドから実行

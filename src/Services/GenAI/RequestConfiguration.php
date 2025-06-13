@@ -14,7 +14,8 @@ final class RequestConfiguration
     public function __construct(
         private PresetRepository $presets,
         private array $defaults = []
-    ) {}
+    ) {
+    }
 
     /**
      * リクエストの設定を解決する

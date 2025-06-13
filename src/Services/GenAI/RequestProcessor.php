@@ -16,7 +16,8 @@ final class RequestProcessor
         private ProviderFactory $providerFactory,
         private CostCalculator $costCalculator,
         private RateLimiter $rateLimiter,
-    ) {}
+    ) {
+    }
 
     /**
      * プロバイダーにリクエストを送信し、レスポンスを処理する
