@@ -303,9 +303,18 @@ YAML;
         ];
     }
 
-    protected function defineEnvironment($app)
+    /**
+     * Orchestra Testbench v9 以降では `getEnvironmentSetUp()` が推奨メソッドとなったため、
+     * 旧 `defineEnvironment()` から移行。
+     * アプリケーション生成後、サービスプロバイダ解決前に呼び出されるため
+     * 各種設定値が確実に反映される。
+     */
+    protected function getEnvironmentSetUp($app): void
     {
-        $app['config']->set('genai.cache.enabled', false); // テスト時はキャッシュ無効
-        $app['config']->set('genai.paths.models', storage_path('genai/test_models.yaml')); // テスト用YAMLパス
+        // キャッシュを無効化してテストの一貫性を保つ
+        $app['config']->set('genai.cache.enabled', false);
+
+        // モデル YAML へのパスをテスト用ファイルに変更
+        $app['config']->set('genai.paths.models', storage_path('genai/test_models.yaml'));
     }
 }
