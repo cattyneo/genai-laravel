@@ -40,7 +40,8 @@ abstract class TestCase extends Orchestra
         config()->set('genai.logging.enabled', false);
 
         // テスト環境でのモデルファイルパス設定
-        $testStoragePath = __DIR__.'/../storage/genai';
+        $testStoragePath = storage_path('genai');
+        $this->ensureTestDirectoriesExist($testStoragePath);
         config()->set('genai.paths.models', $testStoragePath.'/models.yaml');
         config()->set('genai.paths.presets', $testStoragePath.'/presets');
         config()->set('genai.paths.prompts', $testStoragePath.'/prompts');
@@ -68,5 +69,51 @@ abstract class TestCase extends Orchestra
         $app['router']->get('/', function () {
             return view('welcome');
         });
+    }
+
+    /**
+     * テスト用ディレクトリとファイルを作成
+     */
+    protected function ensureTestDirectoriesExist(string $basePath): void
+    {
+        $filesystem = new \Illuminate\Filesystem\Filesystem;
+
+        // ディレクトリを作成
+        if (! $filesystem->exists($basePath)) {
+            $filesystem->makeDirectory($basePath, 0755, true);
+        }
+
+        if (! $filesystem->exists($basePath.'/presets')) {
+            $filesystem->makeDirectory($basePath.'/presets', 0755, true);
+        }
+
+        if (! $filesystem->exists($basePath.'/prompts')) {
+            $filesystem->makeDirectory($basePath.'/prompts', 0755, true);
+        }
+
+        // models.yamlファイルを作成
+        $modelsYamlPath = $basePath.'/models.yaml';
+        if (! $filesystem->exists($modelsYamlPath)) {
+            $modelsYaml = <<<'YAML'
+providers:
+  openai:
+    models:
+      gpt-4o-mini:
+        name: "GPT-4o Mini"
+        context_window: 128000
+        output_tokens: 16384
+        input_cost: 0.00015
+        output_cost: 0.0006
+        features: ["chat", "vision"]
+      gpt-4o:
+        name: "GPT-4o"
+        context_window: 128000
+        output_tokens: 4096
+        input_cost: 0.005
+        output_cost: 0.015
+        features: ["chat", "vision", "function_calling"]
+YAML;
+            $filesystem->put($modelsYamlPath, $modelsYaml);
+        }
     }
 }
