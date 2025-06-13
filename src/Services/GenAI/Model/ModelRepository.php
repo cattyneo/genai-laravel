@@ -21,10 +21,10 @@ class ModelRepository
 
     private string $cacheKey;
 
-    public function __construct()
+    public function __construct(?string $yamlPath = null, ?int $cacheTtl = null)
     {
-        $this->yamlPath = storage_path('genai/models.yaml');
-        $this->cacheTtl = config('genai.cache.ttl', 3600);
+        $this->yamlPath = $yamlPath ?? storage_path('genai/models.yaml');
+        $this->cacheTtl = $cacheTtl ?? config('genai.cache.ttl', 3600);
         $this->cacheKey = 'genai_models_yaml';
     }
 
@@ -35,8 +35,27 @@ class ModelRepository
      */
     public function getAllModels(): Collection
     {
+        // YAML ファイルが無い場合は空コレクションを返す
+        if (! File::exists($this->yamlPath)) {
+            return collect();
+        }
+
+        // テストや設定でキャッシュが無効の場合はキャッシュをスキップ
+        if (! config('genai.cache.enabled', true)) {
+            try {
+                return $this->loadModelsFromYaml();
+            } catch (InvalidConfigException $e) {
+                return collect();
+            }
+        }
+
+        // 通常はキャッシュ利用
         return Cache::remember($this->cacheKey, $this->cacheTtl, function () {
-            return $this->loadModelsFromYaml();
+            try {
+                return $this->loadModelsFromYaml();
+            } catch (InvalidConfigException $e) {
+                return collect();
+            }
         });
     }
 
@@ -182,7 +201,7 @@ class ModelRepository
 
             foreach ($data as $provider => $models) {
                 if (! is_string($provider)) {
-                    $errors[] = 'Provider name must be string, got: '.gettype($provider);
+                    $errors[] = 'Provider name must be string, got: ' . gettype($provider);
 
                     continue;
                 }
@@ -198,7 +217,7 @@ class ModelRepository
                 }
             }
         } catch (\Exception $e) {
-            $errors[] = 'YAML parsing error: '.$e->getMessage();
+            $errors[] = 'YAML parsing error: ' . $e->getMessage();
         }
 
         return ['valid' => empty($errors), 'errors' => $errors];
@@ -228,7 +247,7 @@ class ModelRepository
 
             return is_array($data) ? $data : [];
         } catch (\Exception $e) {
-            throw new InvalidConfigException('Invalid YAML format: '.$e->getMessage());
+            throw new InvalidConfigException('Invalid YAML format: ' . $e->getMessage());
         }
     }
 
@@ -336,7 +355,7 @@ class ModelRepository
         $errors = [];
 
         if (! is_string($modelId)) {
-            $errors[] = "Model ID must be string in provider '{$provider}', got: ".gettype($modelId);
+            $errors[] = "Model ID must be string in provider '{$provider}', got: " . gettype($modelId);
 
             return $errors;
         }

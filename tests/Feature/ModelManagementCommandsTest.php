@@ -292,13 +292,6 @@ claude:
       context_window: 200000
 YAML;
 
-        // ModelRepositoryに同じパスを使わせる
-        $repository = app(ModelRepository::class);
-        $reflection = new \ReflectionClass($repository);
-        $property = $reflection->getProperty('yamlPath');
-        $property->setAccessible(true);
-        $property->setValue($repository, $this->testYamlPath);
-
         File::ensureDirectoryExists(dirname($this->testYamlPath));
         File::put($this->testYamlPath, $yamlContent);
     }
@@ -313,5 +306,6 @@ YAML;
     protected function defineEnvironment($app)
     {
         $app['config']->set('genai.cache.enabled', false); // テスト時はキャッシュ無効
+        $app['config']->set('genai.paths.models', storage_path('genai/test_models.yaml')); // テスト用YAMLパス
     }
 }
