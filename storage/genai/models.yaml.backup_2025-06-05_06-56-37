@@ -1,0 +1,1772 @@
+# GenAI Models Configuration
+# This file contains all model definitions for different providers
+# Last updated: 2025-06-05 06:53:02
+# Updated by: genai:model-update command
+openai:
+  gpt-4.1:
+    provider: openai
+    model: gpt-4.1
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    pricing:
+      input: 1.1
+      output: 4.4
+      cached_input: 0.275
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4.1-mini:
+    provider: openai
+    model: gpt-4.1-mini
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    pricing:
+      input: 0.4
+      output: 1.6
+      cached_input: 0.1
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4.1-nano:
+    provider: openai
+    model: gpt-4.1-nano
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    pricing:
+      input: 0.1
+      output: 0.4
+      cached_input: 0.025
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  o3:
+    provider: openai
+    model: o3
+    type: text
+    features:
+      - streaming
+      - reasoning
+    pricing:
+      input: 10.0
+      output: 40.0
+      reasoning: 40.0
+    limits:
+      max_tokens: 100000
+      context_window: 200000
+  o4-mini:
+    provider: openai
+    model: o4-mini
+    type: text
+    features:
+      - streaming
+      - reasoning
+    pricing:
+      input: 1.1
+      output: 4.4
+      reasoning: 4.4
+    limits:
+      max_tokens: 65536
+      context_window: 128000
+  gpt-4.5-preview:
+    provider: openai
+    model: gpt-4.5-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    pricing:
+      input: 0.1
+      output: 0.4
+      cached_input: 0.025
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-image-1:
+    provider: openai
+    model: gpt-image-1
+    type: image
+    features:
+      - streaming
+    pricing:
+      standard: { 1024x1024: 0.04, 1024x1792: 0.08, 1792x1024: 0.08 }
+      hd: { 1024x1024: 0.08, 1024x1792: 0.12, 1792x1024: 0.12 }
+    limits:
+      images_per_minute: 5
+  gpt-4-0613:
+    provider: openai
+    model: gpt-4-0613
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-4:
+    provider: openai
+    model: gpt-4
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-3.5-turbo:
+    provider: openai
+    model: gpt-3.5-turbo
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 4096
+      context_window: 4096
+  gpt-4o-audio-preview-2025-06-03:
+    provider: openai
+    model: gpt-4o-audio-preview-2025-06-03
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  codex-mini-latest:
+    provider: openai
+    model: codex-mini-latest
+    type: text
+    features:
+      - streaming
+  gpt-4o-realtime-preview-2025-06-03:
+    provider: openai
+    model: gpt-4o-realtime-preview-2025-06-03
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  davinci-002:
+    provider: openai
+    model: davinci-002
+    type: text
+    features:
+      - streaming
+  babbage-002:
+    provider: openai
+    model: babbage-002
+    type: text
+    features:
+      - streaming
+  gpt-3.5-turbo-instruct:
+    provider: openai
+    model: gpt-3.5-turbo-instruct
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 4096
+      context_window: 4096
+  gpt-3.5-turbo-instruct-0914:
+    provider: openai
+    model: gpt-3.5-turbo-instruct-0914
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 4096
+      context_window: 4096
+  dall-e-3:
+    provider: openai
+    model: dall-e-3
+    type: image
+    features:
+      - image_generation
+  dall-e-2:
+    provider: openai
+    model: dall-e-2
+    type: image
+    features:
+      - image_generation
+  gpt-4-1106-preview:
+    provider: openai
+    model: gpt-4-1106-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-3.5-turbo-1106:
+    provider: openai
+    model: gpt-3.5-turbo-1106
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 4096
+      context_window: 4096
+  tts-1-hd:
+    provider: openai
+    model: tts-1-hd
+    type: audio
+    features:
+      - text_to_speech
+  tts-1-1106:
+    provider: openai
+    model: tts-1-1106
+    type: audio
+    features:
+      - text_to_speech
+  tts-1-hd-1106:
+    provider: openai
+    model: tts-1-hd-1106
+    type: audio
+    features:
+      - text_to_speech
+  text-embedding-3-small:
+    provider: openai
+    model: text-embedding-3-small
+    type: embedding
+    features:
+      - streaming
+  text-embedding-3-large:
+    provider: openai
+    model: text-embedding-3-large
+    type: embedding
+    features:
+      - streaming
+  gpt-4-0125-preview:
+    provider: openai
+    model: gpt-4-0125-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-4-turbo-preview:
+    provider: openai
+    model: gpt-4-turbo-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-3.5-turbo-0125:
+    provider: openai
+    model: gpt-3.5-turbo-0125
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 4096
+      context_window: 4096
+  gpt-4-turbo:
+    provider: openai
+    model: gpt-4-turbo
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-4-turbo-2024-04-09:
+    provider: openai
+    model: gpt-4-turbo-2024-04-09
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  gpt-4o:
+    provider: openai
+    model: gpt-4o
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-2024-05-13:
+    provider: openai
+    model: gpt-4o-2024-05-13
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-2024-07-18:
+    provider: openai
+    model: gpt-4o-mini-2024-07-18
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini:
+    provider: openai
+    model: gpt-4o-mini
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-2024-08-06:
+    provider: openai
+    model: gpt-4o-2024-08-06
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  chatgpt-4o-latest:
+    provider: openai
+    model: chatgpt-4o-latest
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  o1-preview-2024-09-12:
+    provider: openai
+    model: o1-preview-2024-09-12
+    type: text
+    features:
+      - streaming
+      - reasoning
+  o1-preview:
+    provider: openai
+    model: o1-preview
+    type: text
+    features:
+      - streaming
+      - reasoning
+  o1-mini-2024-09-12:
+    provider: openai
+    model: o1-mini-2024-09-12
+    type: text
+    features:
+      - streaming
+      - reasoning
+  o1-mini:
+    provider: openai
+    model: o1-mini
+    type: text
+    features:
+      - streaming
+      - reasoning
+  gpt-4o-realtime-preview-2024-10-01:
+    provider: openai
+    model: gpt-4o-realtime-preview-2024-10-01
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-audio-preview-2024-10-01:
+    provider: openai
+    model: gpt-4o-audio-preview-2024-10-01
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-audio-preview:
+    provider: openai
+    model: gpt-4o-audio-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-realtime-preview:
+    provider: openai
+    model: gpt-4o-realtime-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  omni-moderation-latest:
+    provider: openai
+    model: omni-moderation-latest
+    type: text
+    features:
+      - streaming
+  omni-moderation-2024-09-26:
+    provider: openai
+    model: omni-moderation-2024-09-26
+    type: text
+    features:
+      - streaming
+  gpt-4o-realtime-preview-2024-12-17:
+    provider: openai
+    model: gpt-4o-realtime-preview-2024-12-17
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-audio-preview-2024-12-17:
+    provider: openai
+    model: gpt-4o-audio-preview-2024-12-17
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-realtime-preview-2024-12-17:
+    provider: openai
+    model: gpt-4o-mini-realtime-preview-2024-12-17
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-audio-preview-2024-12-17:
+    provider: openai
+    model: gpt-4o-mini-audio-preview-2024-12-17
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  o1-2024-12-17:
+    provider: openai
+    model: o1-2024-12-17
+    type: text
+    features:
+      - streaming
+      - reasoning
+  o1:
+    provider: openai
+    model: o1
+    type: text
+    features:
+      - streaming
+      - reasoning
+  gpt-4o-mini-realtime-preview:
+    provider: openai
+    model: gpt-4o-mini-realtime-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-audio-preview:
+    provider: openai
+    model: gpt-4o-mini-audio-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  computer-use-preview:
+    provider: openai
+    model: computer-use-preview
+    type: text
+    features:
+      - streaming
+  o3-mini:
+    provider: openai
+    model: o3-mini
+    type: text
+    features:
+      - streaming
+      - reasoning
+    limits:
+      max_tokens: 100000
+      context_window: 200000
+  o3-mini-2025-01-31:
+    provider: openai
+    model: o3-mini-2025-01-31
+    type: text
+    features:
+      - streaming
+      - reasoning
+    limits:
+      max_tokens: 100000
+      context_window: 200000
+  gpt-4o-2024-11-20:
+    provider: openai
+    model: gpt-4o-2024-11-20
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4.5-preview-2025-02-27:
+    provider: openai
+    model: gpt-4.5-preview-2025-02-27
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 8192
+      context_window: 128000
+  computer-use-preview-2025-03-11:
+    provider: openai
+    model: computer-use-preview-2025-03-11
+    type: text
+    features:
+      - streaming
+  gpt-4o-search-preview-2025-03-11:
+    provider: openai
+    model: gpt-4o-search-preview-2025-03-11
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-search-preview:
+    provider: openai
+    model: gpt-4o-search-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-search-preview-2025-03-11:
+    provider: openai
+    model: gpt-4o-mini-search-preview-2025-03-11
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-search-preview:
+    provider: openai
+    model: gpt-4o-mini-search-preview
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-transcribe:
+    provider: openai
+    model: gpt-4o-transcribe
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4o-mini-transcribe:
+    provider: openai
+    model: gpt-4o-mini-transcribe
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  o1-pro-2025-03-19:
+    provider: openai
+    model: o1-pro-2025-03-19
+    type: text
+    features:
+      - streaming
+      - reasoning
+  o1-pro:
+    provider: openai
+    model: o1-pro
+    type: text
+    features:
+      - streaming
+      - reasoning
+  gpt-4o-mini-tts:
+    provider: openai
+    model: gpt-4o-mini-tts
+    type: audio
+    features:
+      - text_to_speech
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  o3-2025-04-16:
+    provider: openai
+    model: o3-2025-04-16
+    type: text
+    features:
+      - streaming
+      - reasoning
+    limits:
+      max_tokens: 100000
+      context_window: 200000
+  o4-mini-2025-04-16:
+    provider: openai
+    model: o4-mini-2025-04-16
+    type: text
+    features:
+      - streaming
+      - reasoning
+    limits:
+      max_tokens: 65536
+      context_window: 128000
+  gpt-4.1-2025-04-14:
+    provider: openai
+    model: gpt-4.1-2025-04-14
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4.1-mini-2025-04-14:
+    provider: openai
+    model: gpt-4.1-mini-2025-04-14
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-4.1-nano-2025-04-14:
+    provider: openai
+    model: gpt-4.1-nano-2025-04-14
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+      - vision
+      - structured_output
+    limits:
+      max_tokens: 16384
+      context_window: 1000000
+  gpt-3.5-turbo-16k:
+    provider: openai
+    model: gpt-3.5-turbo-16k
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - system_message
+    limits:
+      max_tokens: 4096
+      context_window: 16384
+  tts-1:
+    provider: openai
+    model: tts-1
+    type: audio
+    features:
+      - text_to_speech
+  whisper-1:
+    provider: openai
+    model: whisper-1
+    type: audio
+    features:
+      - transcription
+  text-embedding-ada-002:
+    provider: openai
+    model: text-embedding-ada-002
+    type: embedding
+    features:
+      - streaming
+gemini:
+  gemini-2.5-flash:
+    provider: gemini
+    model: gemini-2.5-flash-preview-05-20
+    type: text
+    features:
+      - vision
+      - function_calling
+      - structured_output
+      - grounding
+      - reasoning
+    pricing:
+      input: 0.1
+      output: 0.4
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+      requests_per_minute: 1000
+  gemini-2.5-pro:
+    provider: gemini
+    model: gemini-2.5-pro-preview-05-06
+    type: text
+    features:
+      - vision
+      - function_calling
+      - structured_output
+      - grounding
+      - reasoning
+    pricing:
+      input: 1.25
+      output: 10.0
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+      requests_per_minute: 360
+  embedding-gecko-001:
+    provider: gemini
+    model: 'Embedding Gecko'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+    limits:
+      max_tokens: 1
+      context_window: 1024
+  gemini-1.0-pro-vision-latest:
+    provider: gemini
+    model: 'Gemini 1.0 Pro Vision'
+    type: vision
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 4096
+      context_window: 12288
+  gemini-pro-vision:
+    provider: gemini
+    model: 'Gemini 1.0 Pro Vision'
+    type: vision
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 4096
+      context_window: 12288
+  gemini-1.5-pro-latest:
+    provider: gemini
+    model: 'Gemini 1.5 Pro Latest'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 2000000
+  gemini-1.5-pro-001:
+    provider: gemini
+    model: 'Gemini 1.5 Pro 001'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 2000000
+  gemini-1.5-pro-002:
+    provider: gemini
+    model: 'Gemini 1.5 Pro 002'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 2000000
+  gemini-1.5-pro:
+    provider: gemini
+    model: 'Gemini 1.5 Pro'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 2000000
+  gemini-1.5-flash-latest:
+    provider: gemini
+    model: 'Gemini 1.5 Flash Latest'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-001:
+    provider: gemini
+    model: 'Gemini 1.5 Flash 001'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-001-tuning:
+    provider: gemini
+    model: 'Gemini 1.5 Flash 001 Tuning'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 16384
+  gemini-1.5-flash:
+    provider: gemini
+    model: 'Gemini 1.5 Flash'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-002:
+    provider: gemini
+    model: 'Gemini 1.5 Flash 002'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-8b:
+    provider: gemini
+    model: 'Gemini 1.5 Flash-8B'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-8b-001:
+    provider: gemini
+    model: 'Gemini 1.5 Flash-8B 001'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-8b-latest:
+    provider: gemini
+    model: 'Gemini 1.5 Flash-8B Latest'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-8b-exp-0827:
+    provider: gemini
+    model: 'Gemini 1.5 Flash 8B Experimental 0827'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-1.5-flash-8b-exp-0924:
+    provider: gemini
+    model: 'Gemini 1.5 Flash 8B Experimental 0924'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1000000
+  gemini-2.5-pro-exp-03-25:
+    provider: gemini
+    model: 'Gemini 2.5 Pro Experimental 03-25'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.5-pro-preview-03-25:
+    provider: gemini
+    model: 'Gemini 2.5 Pro Preview 03-25'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.5-flash-preview-04-17:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview 04-17'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.5-flash-preview-05-20:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview 05-20'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.5-flash-preview-04-17-thinking:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview 04-17 for cursor testing'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.5-pro-preview-05-06:
+    provider: gemini
+    model: 'Gemini 2.5 Pro Preview 05-06'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.0-flash-exp:
+    provider: gemini
+    model: 'Gemini 2.0 Flash Experimental'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash:
+    provider: gemini
+    model: 'Gemini 2.0 Flash'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash-001:
+    provider: gemini
+    model: 'Gemini 2.0 Flash 001'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash-exp-image-generation:
+    provider: gemini
+    model: 'Gemini 2.0 Flash (Image Generation) Experimental'
+    type: vision
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash-lite-001:
+    provider: gemini
+    model: 'Gemini 2.0 Flash-Lite 001'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash-lite:
+    provider: gemini
+    model: 'Gemini 2.0 Flash-Lite'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash-preview-image-generation:
+    provider: gemini
+    model: 'Gemini 2.0 Flash Preview Image Generation'
+    type: vision
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 32768
+  gemini-2.0-flash-lite-preview-02-05:
+    provider: gemini
+    model: 'Gemini 2.0 Flash-Lite Preview 02-05'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-flash-lite-preview:
+    provider: gemini
+    model: 'Gemini 2.0 Flash-Lite Preview'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 1048576
+  gemini-2.0-pro-exp:
+    provider: gemini
+    model: 'Gemini 2.0 Pro Experimental'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.0-pro-exp-02-05:
+    provider: gemini
+    model: 'Gemini 2.0 Pro Experimental 02-05'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-exp-1206:
+    provider: gemini
+    model: 'Gemini Experimental 1206'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.0-flash-thinking-exp-01-21:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview 04-17'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.0-flash-thinking-exp:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview 04-17'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.0-flash-thinking-exp-1219:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview 04-17'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 1048576
+  gemini-2.5-flash-preview-tts:
+    provider: gemini
+    model: 'Gemini 2.5 Flash Preview TTS'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 32768
+  gemini-2.5-pro-preview-tts:
+    provider: gemini
+    model: 'Gemini 2.5 Pro Preview TTS'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - reasoning
+      - content_generation
+    limits:
+      max_tokens: 65536
+      context_window: 65536
+  learnlm-2.0-flash-experimental:
+    provider: gemini
+    model: 'LearnLM 2.0 Flash Experimental'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - vision
+      - grounding
+      - content_generation
+    limits:
+      max_tokens: 32768
+      context_window: 1048576
+  gemma-3-1b-it:
+    provider: gemini
+    model: 'Gemma 3 1B'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 32768
+  gemma-3-4b-it:
+    provider: gemini
+    model: 'Gemma 3 4B'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 32768
+  gemma-3-12b-it:
+    provider: gemini
+    model: 'Gemma 3 12B'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 32768
+  gemma-3-27b-it:
+    provider: gemini
+    model: 'Gemma 3 27B'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 8192
+      context_window: 131072
+  gemma-3n-e4b-it:
+    provider: gemini
+    model: 'Gemma 3n E4B'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+      - content_generation
+    limits:
+      max_tokens: 2048
+      context_window: 8192
+  embedding-001:
+    provider: gemini
+    model: 'Embedding 001'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+    limits:
+      max_tokens: 1
+      context_window: 2048
+  text-embedding-004:
+    provider: gemini
+    model: 'Text Embedding 004'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+    limits:
+      max_tokens: 1
+      context_window: 2048
+  gemini-embedding-exp-03-07:
+    provider: gemini
+    model: 'Gemini Embedding Experimental 03-07'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+    limits:
+      max_tokens: 1
+      context_window: 8192
+  gemini-embedding-exp:
+    provider: gemini
+    model: 'Gemini Embedding Experimental'
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - structured_output
+    limits:
+      max_tokens: 1
+      context_window: 8192
+claude:
+  claude-sonnet-4:
+    provider: claude
+    model: claude-sonnet-4-20250514
+    type: text
+    features:
+      - vision
+      - function_calling
+      - structured_output
+      - reasoning
+    pricing:
+      input: 3.0
+      output: 15.0
+      cached_input: 0.3
+    limits:
+      max_tokens: 64000
+      context_window: 200000
+  claude-opus-4:
+    provider: claude
+    model: claude-opus-4-20250514
+    type: text
+    features:
+      - vision
+      - function_calling
+      - structured_output
+      - reasoning
+    pricing:
+      input: 15.0
+      output: 75.0
+      cached_input: 1.5
+    limits:
+      max_tokens: 32000
+      context_window: 200000
+  claude-opus-4-20250514:
+    provider: claude
+    model: 'Claude Opus 4'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - structured_output
+      - reasoning
+      - advanced_reasoning
+    limits:
+      max_tokens: 32000
+      context_window: 200000
+  claude-sonnet-4-20250514:
+    provider: claude
+    model: 'Claude Sonnet 4'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - structured_output
+      - reasoning
+      - advanced_reasoning
+    limits:
+      max_tokens: 64000
+      context_window: 200000
+  claude-3-7-sonnet-20250219:
+    provider: claude
+    model: 'Claude Sonnet 3.7'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - advanced_reasoning
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+  claude-3-5-sonnet-20241022:
+    provider: claude
+    model: 'Claude Sonnet 3.5 (New)'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - structured_output
+      - advanced_reasoning
+    limits:
+      max_tokens: 8192
+      context_window: 200000
+  claude-3-5-haiku-20241022:
+    provider: claude
+    model: 'Claude Haiku 3.5'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - structured_output
+      - fast_response
+    limits:
+      max_tokens: 8192
+      context_window: 200000
+  claude-3-5-sonnet-20240620:
+    provider: claude
+    model: 'Claude Sonnet 3.5 (Old)'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - structured_output
+      - advanced_reasoning
+    limits:
+      max_tokens: 8192
+      context_window: 200000
+  claude-3-haiku-20240307:
+    provider: claude
+    model: 'Claude Haiku 3'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - fast_response
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+  claude-3-opus-20240229:
+    provider: claude
+    model: 'Claude Opus 3'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - advanced_reasoning
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+  claude-3-sonnet-20240229:
+    provider: claude
+    model: 'Claude Sonnet 3'
+    type: text
+    features:
+      - streaming
+      - vision
+      - function_calling
+      - advanced_reasoning
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+  claude-2.1:
+    provider: claude
+    model: 'Claude 2.1'
+    type: text
+    features:
+      - streaming
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+  claude-2.0:
+    provider: claude
+    model: 'Claude 2.0'
+    type: text
+    features:
+      - streaming
+    limits:
+      max_tokens: 4096
+      context_window: 200000
+grok:
+  grok-3:
+    provider: grok
+    model: grok-3
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - reasoning
+    pricing:
+      input: 5.0
+      output: 15.0
+    limits:
+      max_tokens: 131072
+      context_window: 1000000
+  grok-3-fast:
+    provider: grok
+    model: grok-3-fast
+    type: text
+    features:
+      - streaming
+      - function_calling
+    pricing:
+      input: 1.0
+      output: 3.0
+    limits:
+      max_tokens: 131072
+      context_window: 131072
+  grok-3-mini:
+    provider: grok
+    model: grok-3-mini
+    type: text
+    features:
+      - streaming
+      - function_calling
+      - reasoning
+    pricing:
+      input: 0.5
+      output: 1.5
+    limits:
+      max_tokens: 131072
+      context_window: 131072
+  grok-3-mini-fast:
+    provider: grok
+    model: grok-3-mini-fast
+    type: text
+    features:
+      - streaming
+      - function_calling
+    pricing:
+      input: 0.1
+      output: 0.3
+    limits:
+      max_tokens: 131072
+      context_window: 131072
+  grok-2-1212:
+    provider: grok
+    model: grok-2-1212
+    type: text
+    features:
+      - streaming
+    limits:
+      max_tokens: 131072
+      context_window: 131072
+  grok-2-vision-1212:
+    provider: grok
+    model: grok-2-vision-1212
+    type: vision
+    features:
+      - streaming
+      - vision
+    limits:
+      max_tokens: 131072
+      context_window: 131072
+  grok-2-image-1212:
+    provider: grok
+    model: grok-2-image-1212
+    type: text
+    features:
+      - streaming
+    limits:
+      max_tokens: 131072
+      context_window: 131072

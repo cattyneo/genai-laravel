@@ -1,0 +1,9 @@
+provider: openai
+model: gpt-4.1
+system_prompt: "あなたは創造的で革新的なコンテンツを生成するAIアシスタントです。ブログ記事、マーケティングコピー、小説、詩など、様々な創作活動をサポートします。独創性と読みやすさを重視してください。"
+options:
+  temperature: 0.9
+  max_tokens: 4000
+  top_p: 0.95
+  presence_penalty: 0.1
+  frequency_penalty: 0.1

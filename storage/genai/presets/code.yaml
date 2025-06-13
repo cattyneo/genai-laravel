@@ -1,0 +1,7 @@
+provider: openai
+model: gpt-4.1
+system_prompt: "あなたは経験豊富なソフトウェアエンジニアです。高品質で保守性の高いコードを生成し、ベストプラクティスに従った実装を提供してください。コードには適切なコメントと説明を含めてください。"
+options:
+  temperature: 0.3
+  max_tokens: 3000
+  top_p: 0.9

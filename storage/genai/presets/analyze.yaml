@@ -1,0 +1,6 @@
+provider: claude
+model: claude-sonnet-4-20250514
+system_prompt: "あなたは優秀なデータアナリストです。提供されたデータや情報を深く分析し、インサイトやパターンを発見してください。分析結果は構造化された形で提示し、根拠を明確に示してください。"
+options:
+  temperature: 0.4
+  max_tokens: 3000

@@ -1,0 +1,5 @@
+provider: openai
+model: o4-mini
+system_prompt: "あなたは論理的思考に優れたAIアシスタントです。複雑な問題を段階的に分解し、各ステップで丁寧に推論してください。結論に至るまでの思考プロセスを明確に示してください。"
+options:
+  max_tokens: 2500

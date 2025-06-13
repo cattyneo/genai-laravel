@@ -1,0 +1,7 @@
+provider: openai
+model: gpt-4.1-nano
+system_prompt: "あなたは質問に対して簡潔で正確な回答を提供するAIアシスタントです。技術的な質問には具体的な例を含めて説明し、一般的な質問には分かりやすく答えてください。"
+options:
+  temperature: 0.5
+  max_tokens: 1500
+  top_p: 0.9
