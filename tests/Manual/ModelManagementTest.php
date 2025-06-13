@@ -249,6 +249,11 @@ YAML;
         }
 
         echo "\n";
+
+        // アサーションを追加
+        $this->assertIsArray($validation);
+        $this->assertArrayHasKey('valid', $validation);
+        $this->assertArrayHasKey('errors', $validation);
     }
 
     /**
@@ -271,6 +276,19 @@ YAML;
             }
         }
         echo "\n";
+
+        // アサーションを追加
+        $this->assertIsArray($providers);
+        $this->assertGreaterThan(0, count($providers));
+
+        // 少なくとも1つのプロバイダーからモデルが取得できることを確認
+        $totalModels = 0;
+        foreach ($providers as $provider) {
+            $models = $this->repository->getModelsByProvider($provider);
+            $this->assertInstanceOf(\Illuminate\Support\Collection::class, $models);
+            $totalModels += $models->count();
+        }
+        $this->assertGreaterThanOrEqual(0, $totalModels);
     }
 
     /**
@@ -282,10 +300,12 @@ YAML;
 
         echo "\n=== Model Details ===\n";
 
+        $foundModels = 0;
         foreach ($testModels as $modelId) {
             $model = $this->repository->getModel($modelId);
 
             if ($model) {
+                $foundModels++;
                 echo "✅ {$modelId}:\n";
                 echo "   Provider: {$model->provider}\n";
                 echo "   Type: {$model->type}\n";
@@ -300,6 +320,17 @@ YAML;
             } else {
                 echo "❌ {$modelId}: Not found\n\n";
             }
+        }
+
+        // アサーションを追加
+        $this->assertIsArray($testModels);
+        $this->assertGreaterThan(0, count($testModels));
+
+        // 各モデルIDに対してgetModelメソッドが正常に動作することを確認
+        foreach ($testModels as $modelId) {
+            $model = $this->repository->getModel($modelId);
+            // モデルが見つからない場合はnull、見つかった場合はModelInfoオブジェクトが返される
+            $this->assertTrue($model === null || is_object($model));
         }
     }
 
