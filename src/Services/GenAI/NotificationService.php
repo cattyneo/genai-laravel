@@ -39,7 +39,7 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
-        
+
         return true;
     }
 
@@ -61,7 +61,7 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
-        
+
         return true;
     }
 
@@ -82,7 +82,7 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
-        
+
         return true;
     }
 
@@ -103,7 +103,7 @@ class NotificationService
         ];
 
         $this->sendToChannels($channels, $notificationData);
-        
+
         return true;
     }
 

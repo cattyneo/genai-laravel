@@ -144,7 +144,7 @@ final class PromptManager
 
         foreach ($files as $file) {
             if ($file->getExtension() === 'md') {
-                $relativePath = str_replace($promptsPath . '/', '', $file->getRealPath());
+                $relativePath = str_replace($promptsPath.'/', '', $file->getRealPath());
                 $name = str_replace(['/', '.md'], ['_', ''], $relativePath);
 
                 $content = File::get($file->getRealPath());
@@ -239,7 +239,7 @@ final class PromptManager
         ];
 
         foreach ($defaultPrompts as $filename => $prompt) {
-            $filePath = $path . '/' . $filename;
+            $filePath = $path.'/'.$filename;
             $directory = dirname($filePath);
 
             if (! File::exists($directory)) {
@@ -249,7 +249,7 @@ final class PromptManager
             $yamlMeta = '';
             foreach ($prompt['meta'] as $key => $value) {
                 if (is_array($value)) {
-                    $yamlMeta .= "{$key}: [" . implode(', ', $value) . "]\n";
+                    $yamlMeta .= "{$key}: [".implode(', ', $value)."]\n";
                 } else {
                     $yamlMeta .= "{$key}: {$value}\n";
                 }

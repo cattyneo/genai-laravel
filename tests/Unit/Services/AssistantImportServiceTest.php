@@ -39,7 +39,7 @@ class AssistantImportServiceTest extends TestCase
         if (File::exists($this->testPresetsPath)) {
             File::deleteDirectory($this->testPresetsPath);
         }
-        
+
         // テスト用ディレクトリを作成
         File::ensureDirectoryExists($this->testPromptsPath);
         File::ensureDirectoryExists($this->testPresetsPath);

@@ -55,7 +55,7 @@ class NotificationServiceTest extends TestCase
         $result = $this->notificationService->sendDeprecationWarning($deprecatedModels, $replacementSuggestions);
 
         $this->assertTrue($result);
-        
+
         Log::shouldHaveReceived('error')
             ->withArgs(function ($message, $context) {
                 return str_contains($message, '[GenAI] model_deprecation_warning')
@@ -269,7 +269,7 @@ class NotificationServiceTest extends TestCase
         $result = $serviceWithoutSlack->sendCostAlert($costData);
 
         $this->assertTrue($result);
-        
+
         // 警告ログが出力されることを確認
         Log::shouldHaveReceived('warning')
             ->withArgs(function ($message) {
