@@ -37,7 +37,8 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
-          coverage: xdebug
+          coverage: none
+          ini-values: memory_limit=-1
 
       - name: Setup problem matchers
         run: |
@@ -47,18 +48,17 @@ jobs:
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-suggest
 
       - name: List Installed Dependencies
         run: composer show -D
 
       - name: Execute tests
-        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.clover
+        run: vendor/bin/phpunit
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
 
   code-style:
     runs-on: ubuntu-latest
