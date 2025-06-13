@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * YAMLファイルからモデル情報を管理するRepository
@@ -252,25 +253,7 @@ class ModelRepository
     }
 
     /**
-     * YAMLファイルにデータを保存
-     */
-    private function saveYamlData(array $data): void
-    {
-        $yamlContent = Yaml::dump($data, 4, 2);
-
-        // ディレクトリが存在しない場合は作成
-        $directory = dirname($this->yamlPath);
-        if (! File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        File::put($this->yamlPath, $yamlContent);
-    }
-
-    /**
-     * YAMLデータからModelInfoコレクションを作成
-     *
-     * @return Collection<ModelInfo>
+     * YAMLファイルからモデルを読み込む
      */
     private function loadModelsFromYaml(): Collection
     {
@@ -388,5 +371,21 @@ class ModelRepository
         }
 
         return $errors;
+    }
+
+    /**
+     * YAMLファイルにデータを保存
+     */
+    private function saveYamlData(array $data): void
+    {
+        $yamlContent = Yaml::dump($data, 4, 2);
+
+        // ディレクトリが存在しない場合は作成
+        $directory = dirname($this->yamlPath);
+        if (! File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
+        File::put($this->yamlPath, $yamlContent);
     }
 }
