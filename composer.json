@@ -1,0 +1,84 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "cattyneo/laravel-genai",
+    "type": "library",
+    "description": "A comprehensive Laravel package for integrating multiple AI providers (OpenAI, Gemini, Claude, Grok) with unified API",
+    "keywords": [
+        "laravel",
+        "ai",
+        "genai",
+        "openai",
+        "gemini",
+        "claude",
+        "grok",
+        "llm",
+        "chatgpt"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "CattyNeo",
+            "email": "info@cattyneo.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0|^12.0",
+        "predis/predis": "^2.0|^3.0",
+        "spatie/laravel-data": "^4.15",
+        "symfony/yaml": "^6.0|^7.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "laravel/pint": "^1.13",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "orchestra/testbench": "^10.3",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CattyNeo\\LaravelGenAI\\": "src/",
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CattyNeo\\LaravelGenAI\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit"
+        ],
+        "test-coverage": [
+            "vendor/bin/phpunit --coverage-html coverage"
+        ],
+        "format": [
+            "vendor/bin/pint"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CattyNeo\\LaravelGenAI\\GenAIServiceProvider"
+            ],
+            "aliases": {
+                "GenAI": "CattyNeo\\LaravelGenAI\\Facades\\GenAI"
+            }
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
