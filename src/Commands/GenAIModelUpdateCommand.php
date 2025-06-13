@@ -2,10 +2,10 @@
 
 namespace CattyNeo\LaravelGenAI\Commands;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\ClaudeFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GrokFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -29,7 +29,9 @@ class GenAIModelUpdateCommand extends Command
     protected $description = 'APIからモデル情報を取得してYAMLファイルを更新します';
 
     private ModelRepository $modelRepository;
+
     private string $yamlPath;
+
     private array $fetchers = [];
 
     public function __construct()
@@ -56,14 +58,15 @@ class GenAIModelUpdateCommand extends Command
         $dryRun = $this->option('dry-run');
         $backup = $this->option('backup');
 
-        if ($provider && !array_key_exists($provider, $this->fetchers)) {
+        if ($provider && ! array_key_exists($provider, $this->fetchers)) {
             $this->error("❌ 無効なプロバイダー: {$provider}");
-            $this->line("利用可能なプロバイダー: " . implode(', ', array_keys($this->fetchers)));
+            $this->line('利用可能なプロバイダー: '.implode(', ', array_keys($this->fetchers)));
+
             return 1;
         }
 
         // バックアップの作成
-        if ($backup && !$dryRun) {
+        if ($backup && ! $dryRun) {
             $this->createBackup();
         }
 
@@ -84,10 +87,11 @@ class GenAIModelUpdateCommand extends Command
 
             $this->line("Testing {$providerName}...");
 
-            if (!$fetcher->isAvailable()) {
+            if (! $fetcher->isAvailable()) {
                 $message = "⚠️ {$providerName}: APIキーまたは設定が不足しています";
                 $this->warn($message);
                 $errors[] = $message;
+
                 continue;
             }
 
@@ -98,6 +102,7 @@ class GenAIModelUpdateCommand extends Command
                     $message = "⚠️ {$providerName}: モデル情報が取得できませんでした";
                     $this->warn($message);
                     $errors[] = $message;
+
                     continue;
                 }
 
@@ -107,7 +112,7 @@ class GenAIModelUpdateCommand extends Command
                 $yamlModels = $this->convertModelsToYaml($models);
 
                 // 現在のデータとマージまたは置換
-                if ($force || !isset($updatedData[$providerName])) {
+                if ($force || ! isset($updatedData[$providerName])) {
                     $updatedData[$providerName] = $yamlModels;
                     $totalUpdated += $models->count();
                 } else {
@@ -117,7 +122,7 @@ class GenAIModelUpdateCommand extends Command
                     $totalUpdated += count($yamlModels);
                 }
             } catch (\Exception $e) {
-                $message = "❌ {$providerName}: " . $e->getMessage();
+                $message = "❌ {$providerName}: ".$e->getMessage();
                 $this->error($message);
                 $errors[] = $message;
             }
@@ -127,13 +132,13 @@ class GenAIModelUpdateCommand extends Command
         $this->displayResults($updatedData, $totalUpdated, $errors, $dryRun);
 
         // 実際の更新
-        if (!$dryRun && $totalUpdated > 0) {
+        if (! $dryRun && $totalUpdated > 0) {
             $this->updateYamlFile($updatedData);
             $this->info("✅ YAMLファイルを更新しました: {$this->yamlPath}");
 
             // キャッシュをクリア
             $this->modelRepository->clearCache();
-            $this->info("🧹 モデルキャッシュをクリアしました");
+            $this->info('🧹 モデルキャッシュをクリアしました');
 
             // 検証の実行
             $this->call('genai:model-validate');
@@ -160,13 +165,14 @@ class GenAIModelUpdateCommand extends Command
      */
     private function createBackup(): void
     {
-        if (!File::exists($this->yamlPath)) {
-            $this->warn("⚠️ YAMLファイルが存在しないため、バックアップは作成されません");
+        if (! File::exists($this->yamlPath)) {
+            $this->warn('⚠️ YAMLファイルが存在しないため、バックアップは作成されません');
+
             return;
         }
 
         $timestamp = now()->format('Y-m-d_H-i-s');
-        $backupPath = $this->yamlPath . ".backup_{$timestamp}";
+        $backupPath = $this->yamlPath.".backup_{$timestamp}";
 
         File::copy($this->yamlPath, $backupPath);
         $this->info("💾 バックアップ作成: {$backupPath}");
@@ -177,17 +183,20 @@ class GenAIModelUpdateCommand extends Command
      */
     private function loadCurrentYaml(): array
     {
-        if (!File::exists($this->yamlPath)) {
-            $this->info("📝 新しいYAMLファイルを作成します");
+        if (! File::exists($this->yamlPath)) {
+            $this->info('📝 新しいYAMLファイルを作成します');
+
             return [];
         }
 
         try {
             $content = File::get($this->yamlPath);
             $data = Yaml::parse($content);
+
             return is_array($data) ? $data : [];
         } catch (\Exception $e) {
-            $this->warn("⚠️ 既存のYAMLファイルの読み込みに失敗: " . $e->getMessage());
+            $this->warn('⚠️ 既存のYAMLファイルの読み込みに失敗: '.$e->getMessage());
+
             return [];
         }
     }
@@ -222,7 +231,7 @@ class GenAIModelUpdateCommand extends Command
 
             // nullや空の値を除去
             $modelData = array_filter($modelData, function ($value) {
-                return !is_null($value) && $value !== [] && $value !== '';
+                return ! is_null($value) && $value !== [] && $value !== '';
             });
 
             // 正規化されたキーを生成
@@ -230,7 +239,7 @@ class GenAIModelUpdateCommand extends Command
             $originalKey = $model->id;
 
             // グループ化
-            if (!isset($modelsByBaseKey[$baseKey])) {
+            if (! isset($modelsByBaseKey[$baseKey])) {
                 $modelsByBaseKey[$baseKey] = [];
             }
 
@@ -259,21 +268,21 @@ class GenAIModelUpdateCommand extends Command
                 }
 
                 // 修飾子なしがない場合は最初のモデルを選択
-                if (!$selectedModel) {
+                if (! $selectedModel) {
                     $selectedModel = $modelGroup[0];
                 }
 
                 $yamlModels[$baseKey] = $selectedModel['data'];
 
                 // デバッグ情報出力
-                $skippedKeys = array_map(function ($model) use ($selectedModel) {
+                $skippedKeys = array_map(function ($model) {
                     return $model['original_key'];
                 }, array_filter($modelGroup, function ($model) use ($selectedModel) {
                     return $model['original_key'] !== $selectedModel['original_key'];
                 }));
 
-                if (!empty($skippedKeys)) {
-                    $this->line("🔄 重複処理: {$baseKey} を選択、スキップ: " . implode(', ', $skippedKeys));
+                if (! empty($skippedKeys)) {
+                    $this->line("🔄 重複処理: {$baseKey} を選択、スキップ: ".implode(', ', $skippedKeys));
                 }
             }
         }
@@ -329,7 +338,7 @@ class GenAIModelUpdateCommand extends Command
             '-flash',
             '-sonnet',
             '-opus',
-            '-haiku'
+            '-haiku',
         ];
 
         foreach ($suffixes as $suffix) {
@@ -352,7 +361,7 @@ class GenAIModelUpdateCommand extends Command
     private function mergeModelData(array $existing, array $new): array
     {
         foreach ($new as $modelId => $modelData) {
-            if (!isset($existing[$modelId])) {
+            if (! isset($existing[$modelId])) {
                 $existing[$modelId] = $modelData;
             } else {
                 // 既存データを新しいデータで更新
@@ -369,7 +378,7 @@ class GenAIModelUpdateCommand extends Command
     private function displayResults(array $updatedData, int $totalUpdated, array $errors, bool $dryRun): void
     {
         $this->line("\n📊 更新結果");
-        $this->line("========================");
+        $this->line('========================');
 
         // 統計情報
         $totalModels = 0;
@@ -382,7 +391,7 @@ class GenAIModelUpdateCommand extends Command
         $this->line("  合計: {$totalModels} モデル");
         $this->line("  更新: {$totalUpdated} モデル");
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             $this->line("\n⚠️  エラー:");
             foreach ($errors as $error) {
                 $this->line("  • {$error}");
@@ -391,7 +400,7 @@ class GenAIModelUpdateCommand extends Command
 
         if ($dryRun) {
             $this->line("\n🔍 ドライランモード: 実際の更新は行われませんでした");
-            $this->line("実際に更新するには --dry-run オプションを外してください");
+            $this->line('実際に更新するには --dry-run オプションを外してください');
         }
     }
 
@@ -402,7 +411,7 @@ class GenAIModelUpdateCommand extends Command
     {
         // ディレクトリが存在しない場合は作成
         $directory = dirname($this->yamlPath);
-        if (!File::exists($directory)) {
+        if (! File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 
@@ -410,12 +419,12 @@ class GenAIModelUpdateCommand extends Command
         $header = [
             '# GenAI Models Configuration',
             '# This file contains all model definitions for different providers',
-            '# Last updated: ' . now()->toDateTimeString(),
+            '# Last updated: '.now()->toDateTimeString(),
             '# Updated by: genai:model-update command',
             '',
         ];
 
-        $yamlContent = implode("\n", $header) . Yaml::dump($data, 4, 2);
+        $yamlContent = implode("\n", $header).Yaml::dump($data, 4, 2);
 
         File::put($this->yamlPath, $yamlContent);
     }

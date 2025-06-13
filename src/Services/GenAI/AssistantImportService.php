@@ -6,9 +6,9 @@ namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
 use CattyNeo\LaravelGenAI\Data\AssistantInfo;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIAssistantFetcher;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 
 /**
  * OpenAI AssistantsをGenAIパッケージ形式でインポートするサービス
@@ -16,7 +16,9 @@ use Illuminate\Support\Collection;
 class AssistantImportService
 {
     private OpenAIAssistantFetcher $fetcher;
+
     private string $promptsPath;
+
     private string $presetsPath;
 
     public function __construct(OpenAIAssistantFetcher $fetcher)
@@ -51,11 +53,11 @@ class AssistantImportService
     {
         $assistant = $this->fetcher->fetchAssistant($assistantId);
 
-        if (!$assistant) {
+        if (! $assistant) {
             return [
                 'success' => false,
                 'assistant_id' => $assistantId,
-                'error' => 'Assistant not found'
+                'error' => 'Assistant not found',
             ];
         }
 
@@ -86,7 +88,7 @@ class AssistantImportService
             $promptPath = $this->savePromptFile($assistant);
             $presetPath = $this->savePresetFile($assistant);
 
-            Log::info("Imported OpenAI Assistant", [
+            Log::info('Imported OpenAI Assistant', [
                 'assistant_id' => $assistant->id,
                 'name' => $assistant->name,
                 'prompt_file' => $promptPath,
@@ -103,7 +105,7 @@ class AssistantImportService
                 'tools_count' => count($assistant->tools),
             ];
         } catch (\Exception $e) {
-            Log::error("Failed to import OpenAI Assistant", [
+            Log::error('Failed to import OpenAI Assistant', [
                 'assistant_id' => $assistant->id,
                 'error' => $e->getMessage(),
             ]);
@@ -122,8 +124,8 @@ class AssistantImportService
      */
     private function savePromptFile(AssistantInfo $assistant): string
     {
-        $filename = $this->sanitizeFilename($assistant->id) . '.md';
-        $filepath = $this->promptsPath . '/' . $filename;
+        $filename = $this->sanitizeFilename($assistant->id).'.md';
+        $filepath = $this->promptsPath.'/'.$filename;
 
         $content = $assistant->toPromptMarkdown();
         File::put($filepath, $content);
@@ -136,8 +138,8 @@ class AssistantImportService
      */
     private function savePresetFile(AssistantInfo $assistant): string
     {
-        $filename = $this->sanitizeFilename($assistant->id) . '.yaml';
-        $filepath = $this->presetsPath . '/' . $filename;
+        $filename = $this->sanitizeFilename($assistant->id).'.yaml';
+        $filepath = $this->presetsPath.'/'.$filename;
 
         $content = $assistant->toPresetYaml();
         File::put($filepath, $content);
@@ -158,11 +160,11 @@ class AssistantImportService
      */
     private function ensureDirectoriesExist(): void
     {
-        if (!File::exists($this->promptsPath)) {
+        if (! File::exists($this->promptsPath)) {
             File::makeDirectory($this->promptsPath, 0755, true);
         }
 
-        if (!File::exists($this->presetsPath)) {
+        if (! File::exists($this->presetsPath)) {
             File::makeDirectory($this->presetsPath, 0755, true);
         }
     }
@@ -198,15 +200,15 @@ class AssistantImportService
         if (File::exists($this->promptsPath)) {
             $files = File::files($this->promptsPath);
             foreach ($files as $file) {
-                if (!$dryRun) {
+                if (! $dryRun) {
                     try {
                         File::delete($file);
                         $results['removed'][] = $file->getBasename();
                     } catch (\Exception $e) {
-                        $results['errors'][] = $file->getBasename() . ': ' . $e->getMessage();
+                        $results['errors'][] = $file->getBasename().': '.$e->getMessage();
                     }
                 } else {
-                    $results['removed'][] = $file->getBasename() . ' (dry run)';
+                    $results['removed'][] = $file->getBasename().' (dry run)';
                 }
             }
         }
@@ -214,15 +216,15 @@ class AssistantImportService
         if (File::exists($this->presetsPath)) {
             $files = File::files($this->presetsPath);
             foreach ($files as $file) {
-                if (!$dryRun) {
+                if (! $dryRun) {
                     try {
                         File::delete($file);
                         $results['removed'][] = $file->getBasename();
                     } catch (\Exception $e) {
-                        $results['errors'][] = $file->getBasename() . ': ' . $e->getMessage();
+                        $results['errors'][] = $file->getBasename().': '.$e->getMessage();
                     }
                 } else {
-                    $results['removed'][] = $file->getBasename() . ' (dry run)';
+                    $results['removed'][] = $file->getBasename().' (dry run)';
                 }
             }
         }

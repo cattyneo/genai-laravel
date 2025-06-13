@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
 use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
-use CattyNeo\LaravelGenAI\Services\GenAI\ResolvedRequestConfig;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Pool;
+use Illuminate\Support\Facades\Http;
 
 /**
  * 非同期API リクエストの実行を担当するクラス
@@ -28,7 +27,7 @@ final class AsyncRequestProcessor
     ): \Illuminate\Http\Client\Response {
         $providerConfig = config("genai.providers.{$config->provider}");
 
-        if (!$providerConfig) {
+        if (! $providerConfig) {
             throw new \InvalidArgumentException("Provider '{$config->provider}' configuration not found");
         }
 
@@ -74,7 +73,7 @@ final class AsyncRequestProcessor
                 $results[] = $this->createResponse($raw, $config->model, $startTime);
             } else {
                 $results[] = $this->createErrorResponse(
-                    "Request failed: " . $response->body(),
+                    'Request failed: '.$response->body(),
                     $startTime
                 );
             }
@@ -100,15 +99,15 @@ final class AsyncRequestProcessor
                 $messages[] = ['role' => 'user', 'content' => $config->prompt];
 
                 return [
-                    'url' => $providerConfig['base_url'] . '/chat/completions',
+                    'url' => $providerConfig['base_url'].'/chat/completions',
                     'headers' => [
-                        'Authorization' => 'Bearer ' . $providerConfig['api_key'],
+                        'Authorization' => 'Bearer '.$providerConfig['api_key'],
                         'Content-Type' => 'application/json',
                     ],
                     'payload' => array_merge([
                         'model' => $config->model,
                         'messages' => $messages,
-                    ], $providerInstance->transformOptions($config->options))
+                    ], $providerInstance->transformOptions($config->options)),
                 ];
 
             case 'claude':
@@ -124,13 +123,13 @@ final class AsyncRequestProcessor
                 }
 
                 return [
-                    'url' => $providerConfig['base_url'] . '/messages',
+                    'url' => $providerConfig['base_url'].'/messages',
                     'headers' => [
                         'x-api-key' => $providerConfig['api_key'],
                         'Content-Type' => 'application/json',
                         'anthropic-version' => '2023-06-01',
                     ],
-                    'payload' => $payload
+                    'payload' => $payload,
                 ];
 
             case 'gemini':
@@ -138,12 +137,12 @@ final class AsyncRequestProcessor
                 if ($config->systemPrompt) {
                     $contents[] = [
                         'parts' => [['text' => $config->systemPrompt]],
-                        'role' => 'model'
+                        'role' => 'model',
                     ];
                 }
                 $contents[] = [
                     'parts' => [['text' => $config->prompt]],
-                    'role' => 'user'
+                    'role' => 'user',
                 ];
 
                 return [
@@ -153,7 +152,7 @@ final class AsyncRequestProcessor
                     ],
                     'payload' => array_merge([
                         'contents' => $contents,
-                    ], $providerInstance->transformOptions($config->options))
+                    ], $providerInstance->transformOptions($config->options)),
                 ];
 
             default:
@@ -182,7 +181,7 @@ final class AsyncRequestProcessor
             cost: $cost,
             meta: $raw,
             cached: false,
-            responseTimeMs: (int)((microtime(true) - $startTime) * 1000)
+            responseTimeMs: (int) ((microtime(true) - $startTime) * 1000)
         );
     }
 
@@ -198,7 +197,7 @@ final class AsyncRequestProcessor
             meta: [],
             error: $error,
             cached: false,
-            responseTimeMs: (int)((microtime(true) - $startTime) * 1000)
+            responseTimeMs: (int) ((microtime(true) - $startTime) * 1000)
         );
     }
 }

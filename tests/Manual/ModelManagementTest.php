@@ -2,10 +2,10 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Manual;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\ClaudeFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GrokFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
@@ -31,13 +31,13 @@ class ModelManagementTest extends TestCase
      */
     public function test_fetch_openai_models_from_api()
     {
-        if (!config('genai.providers.openai.api_key')) {
+        if (! config('genai.providers.openai.api_key')) {
             $this->markTestSkipped('OpenAI API key not configured');
         }
 
         $fetcher = app(OpenAIFetcher::class);
 
-        if (!$fetcher->isAvailable()) {
+        if (! $fetcher->isAvailable()) {
             $this->markTestSkipped('OpenAI fetcher not available');
         }
 
@@ -57,13 +57,13 @@ class ModelManagementTest extends TestCase
      */
     public function test_fetch_gemini_models_from_api()
     {
-        if (!config('genai.providers.gemini.api_key')) {
+        if (! config('genai.providers.gemini.api_key')) {
             $this->markTestSkipped('Gemini API key not configured');
         }
 
         $fetcher = app(GeminiFetcher::class);
 
-        if (!$fetcher->isAvailable()) {
+        if (! $fetcher->isAvailable()) {
             $this->markTestSkipped('Gemini fetcher not available');
         }
 
@@ -83,13 +83,13 @@ class ModelManagementTest extends TestCase
      */
     public function test_fetch_claude_models_from_api()
     {
-        if (!config('genai.providers.claude.api_key')) {
+        if (! config('genai.providers.claude.api_key')) {
             $this->markTestSkipped('Claude API key not configured');
         }
 
         $fetcher = app(ClaudeFetcher::class);
 
-        if (!$fetcher->isAvailable()) {
+        if (! $fetcher->isAvailable()) {
             $this->markTestSkipped('Claude fetcher not available');
         }
 
@@ -109,13 +109,13 @@ class ModelManagementTest extends TestCase
      */
     public function test_fetch_grok_models_from_api()
     {
-        if (!config('genai.providers.grok.api_key')) {
+        if (! config('genai.providers.grok.api_key')) {
             $this->markTestSkipped('Grok API key not configured');
         }
 
         $fetcher = app(GrokFetcher::class);
 
-        if (!$fetcher->isAvailable()) {
+        if (! $fetcher->isAvailable()) {
             $this->markTestSkipped('Grok fetcher not available');
         }
 
@@ -138,7 +138,7 @@ class ModelManagementTest extends TestCase
         // YAMLファイルが存在するかチェック
         $yamlPath = storage_path('genai/models.yaml');
 
-        if (!File::exists($yamlPath)) {
+        if (! File::exists($yamlPath)) {
             $this->markTestSkipped('Models YAML file not found');
         }
 
@@ -167,9 +167,9 @@ class ModelManagementTest extends TestCase
         $validation = $this->repository->validateYaml();
 
         echo "\n=== YAML Validation ===\n";
-        echo "Valid: " . ($validation['valid'] ? 'YES' : 'NO') . "\n";
+        echo 'Valid: '.($validation['valid'] ? 'YES' : 'NO')."\n";
 
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             echo "Errors:\n";
             foreach ($validation['errors'] as $error) {
                 echo "  • {$error}\n";
@@ -217,12 +217,12 @@ class ModelManagementTest extends TestCase
                 echo "✅ {$modelId}:\n";
                 echo "   Provider: {$model->provider}\n";
                 echo "   Type: {$model->type}\n";
-                echo "   Features: " . implode(', ', $model->features) . "\n";
+                echo '   Features: '.implode(', ', $model->features)."\n";
                 if ($model->maxTokens) {
-                    echo "   Max Tokens: " . number_format($model->maxTokens) . "\n";
+                    echo '   Max Tokens: '.number_format($model->maxTokens)."\n";
                 }
                 if ($model->contextWindow) {
-                    echo "   Context Window: " . number_format($model->contextWindow) . "\n";
+                    echo '   Context Window: '.number_format($model->contextWindow)."\n";
                 }
                 echo "\n";
             } else {
@@ -250,7 +250,7 @@ class ModelManagementTest extends TestCase
 
         echo "First load: {$time1}ms ({$models1->count()} models)\n";
         echo "Cached load: {$time2}ms ({$models2->count()} models)\n";
-        echo "Speed improvement: " . round($time1 / $time2, 1) . "x\n\n";
+        echo 'Speed improvement: '.round($time1 / $time2, 1)."x\n\n";
 
         $this->assertEquals($models1->count(), $models2->count());
         $this->assertLessThan($time1, $time2);

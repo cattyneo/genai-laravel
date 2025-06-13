@@ -51,14 +51,16 @@ class GenAIModelAddCommand extends Command
 
         // プロバイダーの検証
         $validProviders = ['openai', 'gemini', 'claude', 'grok'];
-        if (!in_array($provider, $validProviders)) {
-            $this->error("無効なプロバイダーです。利用可能: " . implode(', ', $validProviders));
+        if (! in_array($provider, $validProviders)) {
+            $this->error('無効なプロバイダーです。利用可能: '.implode(', ', $validProviders));
+
             return 1;
         }
 
         // 既存モデルのチェック
         if ($this->modelRepository->exists($modelId)) {
             $this->error("モデル '{$modelId}' は既に存在します。");
+
             return 1;
         }
 
@@ -69,13 +71,15 @@ class GenAIModelAddCommand extends Command
         $this->displayModelPreview($modelInfo);
 
         if ($dryRun) {
-            $this->info("Dry-runモードです。実際には追加されませんでした。");
+            $this->info('Dry-runモードです。実際には追加されませんでした。');
+
             return 0;
         }
 
         // 確認
-        if (!$this->confirm('このモデルをYAMLファイルに追加しますか？')) {
+        if (! $this->confirm('このモデルをYAMLファイルに追加しますか？')) {
             $this->info('キャンセルされました。');
+
             return 0;
         }
 
@@ -85,13 +89,15 @@ class GenAIModelAddCommand extends Command
 
             if ($success) {
                 $this->info("✅ モデル '{$modelId}' を正常に追加しました。");
-                $this->line("ファイル: " . storage_path('genai/models.yaml'));
+                $this->line('ファイル: '.storage_path('genai/models.yaml'));
             } else {
-                $this->error("❌ モデルの追加に失敗しました。");
+                $this->error('❌ モデルの追加に失敗しました。');
+
                 return 1;
             }
         } catch (\Exception $e) {
-            $this->error("❌ エラーが発生しました: " . $e->getMessage());
+            $this->error('❌ エラーが発生しました: '.$e->getMessage());
+
             return 1;
         }
 
@@ -142,7 +148,7 @@ class GenAIModelAddCommand extends Command
      */
     private function displayModelPreview(ModelInfo $modelInfo): void
     {
-        $this->info("📋 追加予定モデル情報:");
+        $this->info('📋 追加予定モデル情報:');
         $this->newLine();
 
         $data = [
@@ -158,12 +164,12 @@ class GenAIModelAddCommand extends Command
         ];
 
         // 価格情報があれば追加
-        if (!empty($modelInfo->pricing)) {
+        if (! empty($modelInfo->pricing)) {
             if (isset($modelInfo->pricing['input'])) {
-                $data[] = ['入力価格', '$' . $modelInfo->pricing['input'] . '/1M tokens'];
+                $data[] = ['入力価格', '$'.$modelInfo->pricing['input'].'/1M tokens'];
             }
             if (isset($modelInfo->pricing['output'])) {
-                $data[] = ['出力価格', '$' . $modelInfo->pricing['output'] . '/1M tokens'];
+                $data[] = ['出力価格', '$'.$modelInfo->pricing['output'].'/1M tokens'];
             }
         }
 

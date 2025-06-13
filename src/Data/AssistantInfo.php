@@ -34,7 +34,7 @@ final readonly class AssistantInfo
     public function toPromptMarkdown(): string
     {
         $variables = $this->extractVariables($this->instructions);
-        $variablesYaml = empty($variables) ? '' : "\nvariables: [" . implode(', ', $variables) . "]";
+        $variablesYaml = empty($variables) ? '' : "\nvariables: [".implode(', ', $variables).']';
 
         return "---
 title: {$this->name}
@@ -57,13 +57,13 @@ description: {$this->description}{$variablesYaml}
             'temperature' => $this->temperature,
             'top_p' => $this->topP,
             'max_tokens' => $this->getMaxTokensFromModel($model),
-        ], fn($value) => $value !== null);
+        ], fn ($value) => $value !== null);
 
         $yaml = "provider: {$provider}\n";
         $yaml .= "model: {$model}\n";
-        $yaml .= "system_prompt: " . json_encode($systemPrompt) . "\n";
+        $yaml .= 'system_prompt: '.json_encode($systemPrompt)."\n";
 
-        if (!empty($options)) {
+        if (! empty($options)) {
             $yaml .= "options:\n";
             foreach ($options as $key => $value) {
                 $yaml .= "  {$key}: {$value}\n";
@@ -71,7 +71,7 @@ description: {$this->description}{$variablesYaml}
         }
 
         // ツール情報をコメントとして追加
-        if (!empty($this->tools)) {
+        if (! empty($this->tools)) {
             $yaml .= "\n# Tools configured:\n";
             foreach ($this->tools as $tool) {
                 $toolType = $tool['type'] ?? 'unknown';
@@ -80,7 +80,7 @@ description: {$this->description}{$variablesYaml}
         }
 
         // ファイル情報をコメントとして追加
-        if (!empty($this->fileIds)) {
+        if (! empty($this->fileIds)) {
             $yaml .= "\n# Files attached:\n";
             foreach ($this->fileIds as $fileId) {
                 $yaml .= "#   - {$fileId}\n";
@@ -96,6 +96,7 @@ description: {$this->description}{$variablesYaml}
     private function extractVariables(string $text): array
     {
         preg_match_all('/\{\{(\w+)\}\}/', $text, $matches);
+
         return array_unique($matches[1] ?? []);
     }
 

@@ -2,8 +2,8 @@
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI\Fetcher;
 
-use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use Illuminate\Support\Collection;
 
 /**
@@ -19,14 +19,16 @@ class ClaudeFetcher extends AbstractFetcher
     public function fetchModels(): Collection
     {
         $response = $this->makeRequest($this->config['models_endpoint']);
+
         return $this->parseModelsResponse($response->json());
     }
 
     public function fetchModel(string $modelId): ?ModelInfo
     {
         try {
-            $endpoint = $this->config['models_endpoint'] . '/' . $modelId;
+            $endpoint = $this->config['models_endpoint'].'/'.$modelId;
             $response = $this->makeRequest($endpoint);
+
             return $this->parseModelResponse($response->json());
         } catch (\Exception $e) {
             return null;
@@ -35,7 +37,7 @@ class ClaudeFetcher extends AbstractFetcher
 
     protected function parseModelsResponse(array $data): Collection
     {
-        if (!isset($data['data']) || !is_array($data['data'])) {
+        if (! isset($data['data']) || ! is_array($data['data'])) {
             return collect();
         }
 
@@ -138,8 +140,10 @@ class ClaudeFetcher extends AbstractFetcher
             if (str_contains($modelId, 'opus')) {
                 return 4096;
             }
+
             return 4096;
         }
+
         return 4096; // デフォルト
     }
 
@@ -157,6 +161,7 @@ class ClaudeFetcher extends AbstractFetcher
         if (str_contains($modelId, 'claude-3')) {
             return 200000; // 200K tokens
         }
+
         return 200000; // デフォルト
     }
 
@@ -189,6 +194,7 @@ class ClaudeFetcher extends AbstractFetcher
         if (str_contains($modelId, 'haiku-3')) {
             return 'Fast and compact Claude 3 model';
         }
+
         return 'Anthropic Claude language model';
     }
 
@@ -209,6 +215,7 @@ class ClaudeFetcher extends AbstractFetcher
         if (preg_match('/-(\d{8})$/', $modelId, $matches)) {
             return $matches[1];
         }
+
         return null;
     }
 }

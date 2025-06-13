@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
-use CattyNeo\LaravelGenAI\Models\GenAIRequest;
-use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 /**
  * パフォーマンス監視サービス
@@ -19,7 +16,9 @@ use Carbon\Carbon;
 final class PerformanceMonitoringService
 {
     private const CACHE_PREFIX = 'genai_perf_';
+
     private const ALERT_COOLDOWN = 300; // 5分間のアラートクールダウン
+
     private const CACHE_TTL = 3600; // 1時間のキャッシュタイム
 
     public function __construct(
@@ -32,11 +31,11 @@ final class PerformanceMonitoringService
     public function recordMetrics(array $metrics): array
     {
         // 監視が無効化されている場合
-        if (!config('genai.performance_monitoring.enabled', true)) {
+        if (! config('genai.performance_monitoring.enabled', true)) {
             return [
                 'success' => true,
                 'status' => 'disabled',
-                'metric_id' => uniqid('metric_', true)
+                'metric_id' => uniqid('metric_', true),
             ];
         }
 
@@ -51,7 +50,7 @@ final class PerformanceMonitoringService
 
         return array_merge($result, [
             'success' => true,
-            'metric_id' => uniqid('metric_', true)
+            'metric_id' => uniqid('metric_', true),
         ]);
     }
 
@@ -60,7 +59,7 @@ final class PerformanceMonitoringService
      */
     private function recordOptimizedMetrics(array $metrics): array
     {
-        $key = self::CACHE_PREFIX . 'realtime_' . now()->format('Y-m-d_H-i');
+        $key = self::CACHE_PREFIX.'realtime_'.now()->format('Y-m-d_H-i');
 
         // 現在のメトリクスを取得（効率的なデフォルト値設定）
         $currentMetrics = Cache::get($key, $this->getDefaultMetrics());
@@ -76,7 +75,7 @@ final class PerformanceMonitoringService
             'model' => $model,
             'success' => $metrics['success'] ?? true,
             'has_error' => $metrics['has_error'] ?? false,
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
 
         // 統計更新（最適化されたロジック）
@@ -91,7 +90,7 @@ final class PerformanceMonitoringService
         return [
             'recorded' => true,
             'metrics_key' => $key,
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
     }
 
@@ -108,7 +107,7 @@ final class PerformanceMonitoringService
             'response_times' => [],
             'providers' => [],
             'models' => [],
-            'last_updated' => now()->toISOString()
+            'last_updated' => now()->toISOString(),
         ];
     }
 
@@ -123,7 +122,7 @@ final class PerformanceMonitoringService
         $currentMetrics['last_updated'] = now()->toISOString();
 
         // エラーカウント更新
-        if ($performanceData['has_error'] || !$performanceData['success']) {
+        if ($performanceData['has_error'] || ! $performanceData['success']) {
             $currentMetrics['error_count']++;
         }
 
@@ -131,7 +130,7 @@ final class PerformanceMonitoringService
         $maxResponseTimes = 50; // より少ない配列サイズでメモリ効率化
         if (count($currentMetrics['response_times']) >= $maxResponseTimes) {
             // 古いエントリを複数削除して効率化
-            $currentMetrics['response_times'] = array_slice($currentMetrics['response_times'], - ($maxResponseTimes - 10));
+            $currentMetrics['response_times'] = array_slice($currentMetrics['response_times'], -($maxResponseTimes - 10));
         }
         $currentMetrics['response_times'][] = $responseTime;
 
@@ -147,12 +146,12 @@ final class PerformanceMonitoringService
      */
     private function updateProviderMetrics(array &$currentMetrics, string $provider, array $performanceData): void
     {
-        if (!isset($currentMetrics['providers'][$provider])) {
+        if (! isset($currentMetrics['providers'][$provider])) {
             $currentMetrics['providers'][$provider] = [
                 'count' => 0,
                 'total_time' => 0.0,
                 'errors' => 0,
-                'avg_time' => 0.0
+                'avg_time' => 0.0,
             ];
         }
 
@@ -161,7 +160,7 @@ final class PerformanceMonitoringService
         $providerMetrics['total_time'] += $performanceData['response_time'];
         $providerMetrics['avg_time'] = $providerMetrics['total_time'] / $providerMetrics['count'];
 
-        if ($performanceData['has_error'] || !$performanceData['success']) {
+        if ($performanceData['has_error'] || ! $performanceData['success']) {
             $providerMetrics['errors']++;
         }
     }
@@ -171,12 +170,12 @@ final class PerformanceMonitoringService
      */
     private function updateModelMetrics(array &$currentMetrics, string $model, array $performanceData): void
     {
-        if (!isset($currentMetrics['models'][$model])) {
+        if (! isset($currentMetrics['models'][$model])) {
             $currentMetrics['models'][$model] = [
                 'count' => 0,
                 'total_time' => 0.0,
                 'errors' => 0,
-                'avg_time' => 0.0
+                'avg_time' => 0.0,
             ];
         }
 
@@ -185,7 +184,7 @@ final class PerformanceMonitoringService
         $modelMetrics['total_time'] += $performanceData['response_time'];
         $modelMetrics['avg_time'] = $modelMetrics['total_time'] / $modelMetrics['count'];
 
-        if ($performanceData['has_error'] || !$performanceData['success']) {
+        if ($performanceData['has_error'] || ! $performanceData['success']) {
             $modelMetrics['errors']++;
         }
     }
@@ -203,7 +202,7 @@ final class PerformanceMonitoringService
             // アラートチェックでエラーが発生してもメトリクス記録を阻害しない
             Log::warning('Real-time alert check failed', [
                 'error' => $e->getMessage(),
-                'metrics' => $performanceData
+                'metrics' => $performanceData,
             ]);
         }
     }
@@ -213,7 +212,7 @@ final class PerformanceMonitoringService
      */
     public function recordRequestPerformance(array $performanceData): void
     {
-        $key = self::CACHE_PREFIX . 'realtime_' . now()->format('Y-m-d_H-i');
+        $key = self::CACHE_PREFIX.'realtime_'.now()->format('Y-m-d_H-i');
 
         $currentMetrics = Cache::get($key, [
             'request_count' => 0,
@@ -232,13 +231,13 @@ final class PerformanceMonitoringService
 
         if (isset($performanceData['has_error']) && $performanceData['has_error']) {
             $currentMetrics['error_count']++;
-        } elseif (isset($performanceData['success']) && !$performanceData['success']) {
+        } elseif (isset($performanceData['success']) && ! $performanceData['success']) {
             $currentMetrics['error_count']++;
         }
 
         // プロバイダー別統計
         $provider = $performanceData['provider'];
-        if (!isset($currentMetrics['providers'][$provider])) {
+        if (! isset($currentMetrics['providers'][$provider])) {
             $currentMetrics['providers'][$provider] = [
                 'count' => 0,
                 'total_time' => 0,
@@ -248,14 +247,14 @@ final class PerformanceMonitoringService
         $currentMetrics['providers'][$provider]['count']++;
         $currentMetrics['providers'][$provider]['total_time'] += $responseTime;
         if ((isset($performanceData['has_error']) && $performanceData['has_error']) ||
-            (isset($performanceData['success']) && !$performanceData['success'])
+            (isset($performanceData['success']) && ! $performanceData['success'])
         ) {
             $currentMetrics['providers'][$provider]['errors']++;
         }
 
         // モデル別統計
         $model = $performanceData['model'];
-        if (!isset($currentMetrics['models'][$model])) {
+        if (! isset($currentMetrics['models'][$model])) {
             $currentMetrics['models'][$model] = [
                 'count' => 0,
                 'total_time' => 0,
@@ -265,7 +264,7 @@ final class PerformanceMonitoringService
         $currentMetrics['models'][$model]['count']++;
         $currentMetrics['models'][$model]['total_time'] += $responseTime;
         if ((isset($performanceData['has_error']) && $performanceData['has_error']) ||
-            (isset($performanceData['success']) && !$performanceData['success'])
+            (isset($performanceData['success']) && ! $performanceData['success'])
         ) {
             $currentMetrics['models'][$model]['errors']++;
         }
@@ -325,7 +324,7 @@ final class PerformanceMonitoringService
      */
     private function triggerAlert(string $alertType, array $alertData): void
     {
-        $cooldownKey = self::CACHE_PREFIX . "alert_cooldown_{$alertType}";
+        $cooldownKey = self::CACHE_PREFIX."alert_cooldown_{$alertType}";
 
         if (Cache::has($cooldownKey)) {
             return; // クールダウン中はアラートを送信しない
@@ -371,7 +370,7 @@ final class PerformanceMonitoringService
      */
     private function getBaselinePerformance(string $provider, string $model): ?float
     {
-        $cacheKey = self::CACHE_PREFIX . "baseline_{$provider}_{$model}";
+        $cacheKey = self::CACHE_PREFIX."baseline_{$provider}_{$model}";
 
         return Cache::remember($cacheKey, 3600, function () use ($provider, $model) {
             return DB::table('genai_requests')
@@ -407,11 +406,12 @@ final class PerformanceMonitoringService
         // 引数なしの場合は簡易形式を返す（テスト用）
         if ($minutesBack === null) {
             $fullMetrics = $this->getRealTimeMetrics(60);
+
             return [
                 'current_rps' => $fullMetrics['summary']['total_requests'] / 60,
                 'avg_response_time' => $fullMetrics['summary']['avg_response_time'],
                 'active_requests' => 0, // 簡易実装
-                'error_rate' => $fullMetrics['summary']['error_rate']
+                'error_rate' => $fullMetrics['summary']['error_rate'],
             ];
         }
 
@@ -432,10 +432,10 @@ final class PerformanceMonitoringService
         // 時系列データ取得
         for ($i = $minutesBack; $i >= 0; $i--) {
             $timestamp = now()->subMinutes($i);
-            $key = self::CACHE_PREFIX . 'realtime_' . $timestamp->format('Y-m-d_H-i');
+            $key = self::CACHE_PREFIX.'realtime_'.$timestamp->format('Y-m-d_H-i');
             $data = Cache::get($key, []);
 
-            if (!empty($data)) {
+            if (! empty($data)) {
                 // デフォルト値を設定してキー不存在エラーを防ぐ
                 $requestCount = $data['request_count'] ?? $data['total_requests'] ?? 0;
                 $totalResponseTime = $data['total_response_time'] ?? 0;
@@ -456,7 +456,7 @@ final class PerformanceMonitoringService
 
                 // プロバイダー・モデル統計（キー存在チェック付き）
                 foreach ($data['providers'] ?? [] as $provider => $providerData) {
-                    if (!isset($metrics['providers'][$provider])) {
+                    if (! isset($metrics['providers'][$provider])) {
                         $metrics['providers'][$provider] = [
                             'request_count' => 0,
                             'total_response_time' => 0,
@@ -469,7 +469,7 @@ final class PerformanceMonitoringService
                 }
 
                 foreach ($data['models'] ?? [] as $model => $modelData) {
-                    if (!isset($metrics['models'][$model])) {
+                    if (! isset($metrics['models'][$model])) {
                         $metrics['models'][$model] = [
                             'request_count' => 0,
                             'total_response_time' => 0,
@@ -490,7 +490,7 @@ final class PerformanceMonitoringService
             $metrics['summary']['avg_response_time'] = $timelineCount > 0 ?
                 $totalResponseTime / $timelineCount : 0;
 
-            $totalErrors = array_sum(array_map(fn($p) => $p['error_count'], $metrics['providers']));
+            $totalErrors = array_sum(array_map(fn ($p) => $p['error_count'], $metrics['providers']));
             $metrics['summary']['error_rate'] = ($totalErrors / $metrics['summary']['total_requests']) * 100;
         }
 
@@ -570,7 +570,7 @@ final class PerformanceMonitoringService
                         ($modelData->sum('slow_requests') / $modelData->sum('request_count')) * 100 : 0,
                 ];
 
-                if (!empty($qualityTrend)) {
+                if (! empty($qualityTrend)) {
                     $analysis['quality_trends'][] = [
                         'provider' => $provider,
                         'model' => $model,
@@ -670,7 +670,7 @@ final class PerformanceMonitoringService
      */
     private function updateRealTimeQualityStats(array $qualityData): void
     {
-        $key = self::CACHE_PREFIX . 'quality_' . now()->format('Y-m-d_H');
+        $key = self::CACHE_PREFIX.'quality_'.now()->format('Y-m-d_H');
 
         $qualityStats = Cache::get($key, [
             'rating_count' => 0,
@@ -708,7 +708,7 @@ final class PerformanceMonitoringService
             'p50' => $this->getPercentile($responseTimes, 50),
             'p95' => $this->getPercentile($responseTimes, 95),
             'p99' => $this->getPercentile($responseTimes, 99),
-            'count' => $count
+            'count' => $count,
         ];
     }
 
@@ -720,12 +720,12 @@ final class PerformanceMonitoringService
         $metrics = $this->getRealTimeMetrics($this->periodToMinutes($period));
 
         $totalRequests = $metrics['summary']['total_requests'];
-        $totalErrors = array_sum(array_map(fn($p) => $p['error_count'], $metrics['providers']));
+        $totalErrors = array_sum(array_map(fn ($p) => $p['error_count'], $metrics['providers']));
 
         return [
             'rate' => $totalRequests > 0 ? $totalErrors / $totalRequests : 0,
             'total_errors' => $totalErrors,
-            'total_requests' => $totalRequests
+            'total_requests' => $totalRequests,
         ];
     }
 
@@ -740,7 +740,7 @@ final class PerformanceMonitoringService
         return [
             'rps' => $minutes > 0 ? $metrics['summary']['total_requests'] / $minutes : 0,
             'total_requests' => $metrics['summary']['total_requests'],
-            'period_minutes' => $minutes
+            'period_minutes' => $minutes,
         ];
     }
 
@@ -769,7 +769,7 @@ final class PerformanceMonitoringService
             'throughput' => $throughput,
             'providers' => $metrics['providers'],
             'models' => $metrics['models'],
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ];
     }
 
@@ -788,8 +788,8 @@ final class PerformanceMonitoringService
                     'type' => 'high_response_time',
                     'severity' => 'high',
                     'value' => 12000,
-                    'threshold' => 10000
-                ]
+                    'threshold' => 10000,
+                ],
             ];
         }
 
@@ -799,7 +799,7 @@ final class PerformanceMonitoringService
                 'type' => 'high_response_time',
                 'severity' => 'high',
                 'value' => $metrics['summary']['avg_response_time'],
-                'threshold' => 10000
+                'threshold' => 10000,
             ];
         }
 
@@ -809,7 +809,7 @@ final class PerformanceMonitoringService
                 'type' => 'high_error_rate',
                 'severity' => 'high',
                 'value' => $metrics['summary']['error_rate'],
-                'threshold' => 10
+                'threshold' => 10,
             ];
         }
 
@@ -839,10 +839,10 @@ final class PerformanceMonitoringService
 
         for ($i = $minutes; $i >= 0; $i--) {
             $timestamp = now()->subMinutes($i);
-            $key = self::CACHE_PREFIX . 'realtime_' . $timestamp->format('Y-m-d_H-i');
+            $key = self::CACHE_PREFIX.'realtime_'.$timestamp->format('Y-m-d_H-i');
             $data = Cache::get($key, []);
 
-            if (!empty($data['response_times'])) {
+            if (! empty($data['response_times'])) {
                 $responseTimes = array_merge($responseTimes, $data['response_times']);
             }
         }
@@ -856,7 +856,9 @@ final class PerformanceMonitoringService
     private function getPercentile(array $sortedArray, int $percentile): float
     {
         $count = count($sortedArray);
-        if ($count === 0) return 0;
+        if ($count === 0) {
+            return 0;
+        }
 
         $index = ($percentile / 100) * ($count - 1);
         $lower = floor($index);
@@ -867,6 +869,7 @@ final class PerformanceMonitoringService
         }
 
         $weight = $index - $lower;
+
         return $sortedArray[$lower] * (1 - $weight) + $sortedArray[$upper] * $weight;
     }
 
@@ -893,7 +896,7 @@ final class PerformanceMonitoringService
                 $comparison[$model] = [
                     'request_count' => 0,
                     'avg_response_time' => 0,
-                    'error_rate' => 0
+                    'error_rate' => 0,
                 ];
             }
         }
@@ -917,8 +920,8 @@ final class PerformanceMonitoringService
                     'model' => 'claude-3-opus',
                     'provider' => 'claude',
                     'avg_response_time' => 8500,
-                    'severity' => 'medium'
-                ]
+                    'severity' => 'medium',
+                ],
             ];
         }
 
@@ -930,7 +933,7 @@ final class PerformanceMonitoringService
                     'model' => $model,
                     'provider' => $data['provider'] ?? 'unknown',
                     'avg_response_time' => $data['avg_response_time'],
-                    'severity' => $data['avg_response_time'] > 10000 ? 'high' : 'medium'
+                    'severity' => $data['avg_response_time'] > 10000 ? 'high' : 'medium',
                 ];
             }
         }
@@ -942,7 +945,7 @@ final class PerformanceMonitoringService
                     'type' => 'high_error_provider',
                     'provider' => $provider,
                     'error_rate' => $data['error_rate'],
-                    'severity' => $data['error_rate'] > 10 ? 'high' : 'medium'
+                    'severity' => $data['error_rate'] > 10 ? 'high' : 'medium',
                 ];
             }
         }
@@ -969,14 +972,14 @@ final class PerformanceMonitoringService
             return [
                 'response_time_trend' => ['direction' => 'increasing'],
                 'throughput_trend' => ['direction' => 'stable'],
-                'error_rate_trend' => ['direction' => 'stable']
+                'error_rate_trend' => ['direction' => 'stable'],
             ];
         }
 
         return [
             'response_time_trend' => $trends['performance_trends'][0]['response_time_trend'] ?? ['direction' => 'stable'],
             'throughput_trend' => ['direction' => 'stable'],
-            'error_rate_trend' => ['direction' => 'stable']
+            'error_rate_trend' => ['direction' => 'stable'],
         ];
     }
 
@@ -985,7 +988,7 @@ final class PerformanceMonitoringService
      */
     public function getCachedMetrics(string $period = '1h'): array
     {
-        $cacheKey = self::CACHE_PREFIX . "cached_metrics_{$period}";
+        $cacheKey = self::CACHE_PREFIX."cached_metrics_{$period}";
 
         return Cache::remember($cacheKey, 300, function () use ($period) {
             $metrics = $this->getRealTimeMetrics($this->periodToMinutes($period));
@@ -993,7 +996,7 @@ final class PerformanceMonitoringService
             return [
                 'avg_response_time' => $metrics['summary']['avg_response_time'],
                 'throughput' => $metrics['summary']['total_requests'] / max($this->periodToMinutes($period), 1),
-                'error_rate' => $metrics['summary']['error_rate'] / 100
+                'error_rate' => $metrics['summary']['error_rate'] / 100,
             ];
         });
     }
@@ -1008,7 +1011,7 @@ final class PerformanceMonitoringService
             return [
                 'success' => true,
                 'deleted_count' => 5,
-                'cutoff_date' => now()->subDays(30)->toDateString()
+                'cutoff_date' => now()->subDays(30)->toDateString(),
             ];
         }
 
@@ -1020,7 +1023,7 @@ final class PerformanceMonitoringService
         $startTime = now()->subDays($retentionDays + 5);
 
         for ($date = $startTime; $date->lessThan($cutoffDate); $date->addMinute()) {
-            $key = self::CACHE_PREFIX . 'realtime_' . $date->format('Y-m-d_H-i');
+            $key = self::CACHE_PREFIX.'realtime_'.$date->format('Y-m-d_H-i');
             if (Cache::has($key)) {
                 Cache::forget($key);
                 $deletedCount++;
@@ -1030,7 +1033,7 @@ final class PerformanceMonitoringService
         return [
             'success' => true,
             'deleted_count' => $deletedCount,
-            'cutoff_date' => $cutoffDate->toDateString()
+            'cutoff_date' => $cutoffDate->toDateString(),
         ];
     }
 
@@ -1046,7 +1049,7 @@ final class PerformanceMonitoringService
             $recommendations[] = [
                 'type' => 'performance',
                 'priority' => 'high',
-                'message' => 'Consider optimizing slow models or switching to faster alternatives'
+                'message' => 'Consider optimizing slow models or switching to faster alternatives',
             ];
         }
 
@@ -1055,7 +1058,7 @@ final class PerformanceMonitoringService
             $recommendations[] = [
                 'type' => 'reliability',
                 'priority' => 'high',
-                'message' => 'Investigate and resolve high error rates'
+                'message' => 'Investigate and resolve high error rates',
             ];
         }
 
@@ -1064,7 +1067,7 @@ final class PerformanceMonitoringService
             $recommendations[] = [
                 'type' => 'usage',
                 'priority' => 'medium',
-                'message' => 'Consider increasing request volume for better insights'
+                'message' => 'Consider increasing request volume for better insights',
             ];
         }
 
@@ -1079,23 +1082,23 @@ final class PerformanceMonitoringService
         $required = ['provider', 'model'];
 
         // response_time または duration_ms のいずれかが必要
-        if (!isset($metrics['response_time']) && !isset($metrics['duration_ms'])) {
+        if (! isset($metrics['response_time']) && ! isset($metrics['duration_ms'])) {
             throw new \InvalidArgumentException("Either 'response_time' or 'duration_ms' is required");
         }
 
         foreach ($required as $field) {
-            if (!isset($metrics[$field])) {
+            if (! isset($metrics[$field])) {
                 throw new \InvalidArgumentException("Required field '{$field}' is missing from metrics data");
             }
         }
 
         $responseTime = $metrics['response_time'] ?? $metrics['duration_ms'] ?? 0;
-        if (!is_numeric($responseTime) || $responseTime < 0) {
-            throw new \InvalidArgumentException("Invalid response_time/duration_ms value");
+        if (! is_numeric($responseTime) || $responseTime < 0) {
+            throw new \InvalidArgumentException('Invalid response_time/duration_ms value');
         }
 
         if (empty($metrics['provider']) || empty($metrics['model'])) {
-            throw new \InvalidArgumentException("Provider and model cannot be empty");
+            throw new \InvalidArgumentException('Provider and model cannot be empty');
         }
     }
 
@@ -1105,6 +1108,7 @@ final class PerformanceMonitoringService
     public function getRps(): float
     {
         $metrics = $this->getRealTimeMetrics(1); // 1分間
+
         return $metrics['summary']['total_requests'];
     }
 }

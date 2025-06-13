@@ -16,7 +16,9 @@ use Symfony\Component\Yaml\Yaml;
 class ModelRepository
 {
     private string $yamlPath;
+
     private int $cacheTtl;
+
     private string $cacheKey;
 
     public function __construct()
@@ -41,7 +43,6 @@ class ModelRepository
     /**
      * 特定のプロバイダーのモデル一覧を取得
      *
-     * @param string $provider
      * @return Collection<ModelInfo>
      */
     public function getModelsByProvider(string $provider): Collection
@@ -53,9 +54,6 @@ class ModelRepository
 
     /**
      * 特定のモデルを取得
-     *
-     * @param string $modelId
-     * @return ModelInfo|null
      */
     public function getModel(string $modelId): ?ModelInfo
     {
@@ -66,9 +64,6 @@ class ModelRepository
 
     /**
      * モデルが存在するかチェック
-     *
-     * @param string $modelId
-     * @return bool
      */
     public function exists(string $modelId): bool
     {
@@ -77,16 +72,12 @@ class ModelRepository
 
     /**
      * 特定のプロバイダーとモデル名でモデル情報を取得
-     *
-     * @param string $provider
-     * @param string $modelName
-     * @return array|null
      */
     public function getModelInfo(string $provider, string $modelName): ?array
     {
         $data = $this->loadYamlData();
 
-        if (!isset($data[$provider])) {
+        if (! isset($data[$provider])) {
             return null;
         }
 
@@ -95,6 +86,7 @@ class ModelRepository
             $modelData = $data[$provider][$modelName];
             $modelData['provider'] = $provider;
             $modelData['id'] = $modelName;
+
             return $modelData;
         }
 
@@ -103,6 +95,7 @@ class ModelRepository
             if (isset($modelData['model']) && $modelData['model'] === $modelName) {
                 $modelData['provider'] = $provider;
                 $modelData['id'] = $modelId;
+
                 return $modelData;
             }
         }
@@ -112,9 +105,6 @@ class ModelRepository
 
     /**
      * モデルをYAMLファイルに追加
-     *
-     * @param ModelInfo $modelInfo
-     * @return bool
      */
     public function addModel(ModelInfo $modelInfo): bool
     {
@@ -122,7 +112,7 @@ class ModelRepository
             $data = $this->loadYamlData();
 
             // プロバイダーセクションが存在しない場合は作成
-            if (!isset($data[$modelInfo->provider])) {
+            if (! isset($data[$modelInfo->provider])) {
                 $data[$modelInfo->provider] = [];
             }
 
@@ -140,10 +130,6 @@ class ModelRepository
 
     /**
      * モデルをYAMLファイルから削除
-     *
-     * @param string $provider
-     * @param string $modelId
-     * @return bool
      */
     public function removeModel(string $provider, string $modelId): bool
     {
@@ -180,26 +166,30 @@ class ModelRepository
         $errors = [];
 
         try {
-            if (!File::exists($this->yamlPath)) {
+            if (! File::exists($this->yamlPath)) {
                 $errors[] = "YAML file not found: {$this->yamlPath}";
+
                 return ['valid' => false, 'errors' => $errors];
             }
 
             $data = $this->loadYamlData();
 
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 $errors[] = 'YAML file must contain an array/object structure';
+
                 return ['valid' => false, 'errors' => $errors];
             }
 
             foreach ($data as $provider => $models) {
-                if (!is_string($provider)) {
-                    $errors[] = "Provider name must be string, got: " . gettype($provider);
+                if (! is_string($provider)) {
+                    $errors[] = 'Provider name must be string, got: '.gettype($provider);
+
                     continue;
                 }
 
-                if (!is_array($models)) {
+                if (! is_array($models)) {
                     $errors[] = "Provider '{$provider}' must contain an array of models";
+
                     continue;
                 }
 
@@ -208,7 +198,7 @@ class ModelRepository
                 }
             }
         } catch (\Exception $e) {
-            $errors[] = "YAML parsing error: " . $e->getMessage();
+            $errors[] = 'YAML parsing error: '.$e->getMessage();
         }
 
         return ['valid' => empty($errors), 'errors' => $errors];
@@ -227,7 +217,7 @@ class ModelRepository
      */
     private function loadYamlData(): array
     {
-        if (!File::exists($this->yamlPath)) {
+        if (! File::exists($this->yamlPath)) {
             throw new InvalidConfigException("Models YAML file not found: {$this->yamlPath}");
         }
 
@@ -235,9 +225,10 @@ class ModelRepository
 
         try {
             $data = Yaml::parse($content);
+
             return is_array($data) ? $data : [];
         } catch (\Exception $e) {
-            throw new InvalidConfigException("Invalid YAML format: " . $e->getMessage());
+            throw new InvalidConfigException('Invalid YAML format: '.$e->getMessage());
         }
     }
 
@@ -250,7 +241,7 @@ class ModelRepository
 
         // ディレクトリが存在しない場合は作成
         $directory = dirname($this->yamlPath);
-        if (!File::exists($directory)) {
+        if (! File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 
@@ -268,7 +259,7 @@ class ModelRepository
         $models = collect();
 
         foreach ($data as $provider => $providerModels) {
-            if (!is_array($providerModels)) {
+            if (! is_array($providerModels)) {
                 continue;
             }
 
@@ -280,7 +271,7 @@ class ModelRepository
                     // ログに記録して続行
                     Log::warning("Failed to parse model {$provider}:{$modelId}", [
                         'error' => $e->getMessage(),
-                        'data' => $modelData
+                        'data' => $modelData,
                     ]);
                 }
             }
@@ -319,11 +310,11 @@ class ModelRepository
             'type' => $modelInfo->type,
         ];
 
-        if (!empty($modelInfo->features)) {
+        if (! empty($modelInfo->features)) {
             $data['features'] = array_values($modelInfo->features);
         }
 
-        if (!empty($modelInfo->pricing)) {
+        if (! empty($modelInfo->pricing)) {
             $data['pricing'] = $modelInfo->pricing;
         }
 
@@ -344,20 +335,22 @@ class ModelRepository
     {
         $errors = [];
 
-        if (!is_string($modelId)) {
-            $errors[] = "Model ID must be string in provider '{$provider}', got: " . gettype($modelId);
+        if (! is_string($modelId)) {
+            $errors[] = "Model ID must be string in provider '{$provider}', got: ".gettype($modelId);
+
             return $errors;
         }
 
-        if (!is_array($modelData)) {
+        if (! is_array($modelData)) {
             $errors[] = "Model '{$provider}:{$modelId}' data must be an array";
+
             return $errors;
         }
 
         // 必須フィールドのチェック
         $requiredFields = ['provider', 'model', 'type'];
         foreach ($requiredFields as $field) {
-            if (!isset($modelData[$field])) {
+            if (! isset($modelData[$field])) {
                 $errors[] = "Model '{$provider}:{$modelId}' missing required field: {$field}";
             }
         }
@@ -370,7 +363,7 @@ class ModelRepository
         // 配列フィールドのチェック
         $arrayFields = ['features', 'pricing', 'limits'];
         foreach ($arrayFields as $field) {
-            if (isset($modelData[$field]) && !is_array($modelData[$field])) {
+            if (isset($modelData[$field]) && ! is_array($modelData[$field])) {
                 $errors[] = "Model '{$provider}:{$modelId}' field '{$field}' must be an array";
             }
         }

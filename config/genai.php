@@ -28,8 +28,8 @@ return [
 
     // ----- パス設定 -----
     'paths' => [
-        'presets'  => env('GENAI_PRESETS_PATH', 'genai/presets'),
-        'prompts'  => env('GENAI_PROMPTS_PATH', 'genai/prompts'),
+        'presets' => env('GENAI_PRESETS_PATH', 'genai/presets'),
+        'prompts' => env('GENAI_PROMPTS_PATH', 'genai/prompts'),
     ],
 
     // ----- プロバイダー設定

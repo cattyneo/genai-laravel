@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Commands;
 
-use Illuminate\Console\Command;
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\ClaudeFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GrokFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
-use CattyNeo\LaravelGenAI\Models\GenAIRequest;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Models\GenAIRequest;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\ClaudeFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GrokFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
+use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 定期的なモデル更新と廃止チェックコマンド
@@ -44,7 +42,7 @@ class GenAIScheduledUpdateCommand extends Command
 
     public function handle(): int
     {
-        $this->info('🔄 GenAI Scheduled Update Started at ' . now()->format('Y-m-d H:i:s'));
+        $this->info('🔄 GenAI Scheduled Update Started at '.now()->format('Y-m-d H:i:s'));
 
         $config = config('genai.scheduled_tasks');
         $shouldRunModelCheck = $this->shouldRunTask('model_update_check', $config);
@@ -81,7 +79,7 @@ class GenAIScheduledUpdateCommand extends Command
         $this->sendNotifications($results);
 
         $this->line('');
-        $this->info('✅ GenAI Scheduled Update Completed at ' . now()->format('Y-m-d H:i:s'));
+        $this->info('✅ GenAI Scheduled Update Completed at '.now()->format('Y-m-d H:i:s'));
 
         return 0;
     }
@@ -97,7 +95,7 @@ class GenAIScheduledUpdateCommand extends Command
 
         $taskConfig = $config[$taskName] ?? [];
 
-        if (!($taskConfig['enabled'] ?? false)) {
+        if (! ($taskConfig['enabled'] ?? false)) {
             return false;
         }
 
@@ -123,7 +121,7 @@ class GenAIScheduledUpdateCommand extends Command
         $results = [
             'new_models' => [],
             'updated_models' => [],
-            'errors' => []
+            'errors' => [],
         ];
 
         $providers = [
@@ -148,11 +146,11 @@ class GenAIScheduledUpdateCommand extends Command
                 $updatedCount = 0;
 
                 foreach ($normalizedModels[$providerName] ?? [] as $modelId => $modelData) {
-                    if (!isset($currentModels[$modelId])) {
+                    if (! isset($currentModels[$modelId])) {
                         $results['new_models'][] = [
                             'provider' => $providerName,
                             'model' => $modelId,
-                            'data' => $modelData
+                            'data' => $modelData,
                         ];
                         $newCount++;
                     } else {
@@ -162,7 +160,7 @@ class GenAIScheduledUpdateCommand extends Command
                                 'provider' => $providerName,
                                 'model' => $modelId,
                                 'old_data' => $currentModels[$modelId],
-                                'new_data' => $modelData
+                                'new_data' => $modelData,
                             ];
                             $updatedCount++;
                         }
@@ -171,19 +169,19 @@ class GenAIScheduledUpdateCommand extends Command
 
                 $this->line("    ✅ {$providerName}: {$newCount} new, {$updatedCount} updated");
             } catch (\Exception $e) {
-                $error = "Failed to check {$providerName}: " . $e->getMessage();
+                $error = "Failed to check {$providerName}: ".$e->getMessage();
                 $results['errors'][] = $error;
                 $this->error("    ❌ {$error}");
                 Log::error('GenAI scheduled update error', [
                     'provider' => $providerName,
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'trace' => $e->getTraceAsString(),
                 ]);
             }
         }
 
         // Dry runでない場合は実際に更新
-        if (!$this->option('dry-run') && (!empty($results['new_models']) || !empty($results['updated_models']))) {
+        if (! $this->option('dry-run') && (! empty($results['new_models']) || ! empty($results['updated_models']))) {
             $this->applyModelUpdates($results);
         }
 
@@ -198,7 +196,7 @@ class GenAIScheduledUpdateCommand extends Command
         $results = [
             'deprecated_models' => [],
             'replacement_suggestions' => [],
-            'affected_requests' => []
+            'affected_requests' => [],
         ];
 
         $warningDays = config('genai.scheduled_tasks.deprecation_check.advance_warning_days', 30);
@@ -214,7 +212,7 @@ class GenAIScheduledUpdateCommand extends Command
         foreach ($activeModels as $activeModel) {
             $modelInfo = $this->modelRepository->getModelInfo($activeModel->provider, $activeModel->model);
 
-            if (!$modelInfo) {
+            if (! $modelInfo) {
                 continue;
             }
 
@@ -229,7 +227,7 @@ class GenAIScheduledUpdateCommand extends Command
                     'provider' => $activeModel->provider,
                     'model' => $activeModel->model,
                     'usage_count' => $usageCount,
-                    'model_info' => $modelInfo
+                    'model_info' => $modelInfo,
                 ];
 
                 // 代替モデル提案
@@ -238,11 +236,11 @@ class GenAIScheduledUpdateCommand extends Command
                     $activeModel->provider
                 );
 
-                if (!empty($replacements)) {
+                if (! empty($replacements)) {
                     $results['replacement_suggestions'][] = [
                         'deprecated_model' => $activeModel->model,
                         'provider' => $activeModel->provider,
-                        'suggestions' => array_slice($replacements, 0, 3) // トップ3を提案
+                        'suggestions' => array_slice($replacements, 0, 3), // トップ3を提案
                     ];
                 }
             }
@@ -260,14 +258,14 @@ class GenAIScheduledUpdateCommand extends Command
                         'model' => $activeModel->model,
                         'reason' => 'experimental_model_long_usage',
                         'first_used' => $firstUsed,
-                        'days_used' => Carbon::parse($firstUsed)->diffInDays(now())
+                        'days_used' => Carbon::parse($firstUsed)->diffInDays(now()),
                     ];
                 }
             }
         }
 
-        $this->line("  ⚠️  Found " . count($results['deprecated_models']) . " deprecated/experimental models in use");
-        $this->line("  💡 Generated " . count($results['replacement_suggestions']) . " replacement suggestions");
+        $this->line('  ⚠️  Found '.count($results['deprecated_models']).' deprecated/experimental models in use');
+        $this->line('  💡 Generated '.count($results['replacement_suggestions']).' replacement suggestions');
 
         return $results;
     }
@@ -302,7 +300,7 @@ class GenAIScheduledUpdateCommand extends Command
                 // 新しいモデル追加のロジック実装
                 $this->line("  ➕ Adding {$newModel['provider']}/{$newModel['model']}");
             } catch (\Exception $e) {
-                $this->error("    ❌ Failed to add {$newModel['provider']}/{$newModel['model']}: " . $e->getMessage());
+                $this->error("    ❌ Failed to add {$newModel['provider']}/{$newModel['model']}: ".$e->getMessage());
             }
         }
 
@@ -311,7 +309,7 @@ class GenAIScheduledUpdateCommand extends Command
                 // モデル更新のロジック実装
                 $this->line("  🔄 Updating {$updatedModel['provider']}/{$updatedModel['model']}");
             } catch (\Exception $e) {
-                $this->error("    ❌ Failed to update {$updatedModel['provider']}/{$updatedModel['model']}: " . $e->getMessage());
+                $this->error("    ❌ Failed to update {$updatedModel['provider']}/{$updatedModel['model']}: ".$e->getMessage());
             }
         }
     }
@@ -335,7 +333,7 @@ class GenAIScheduledUpdateCommand extends Command
                     default => null
                 };
             } catch (\Exception $e) {
-                $this->error("Failed to send {$channel} notification: " . $e->getMessage());
+                $this->error("Failed to send {$channel} notification: ".$e->getMessage());
             }
         }
     }
@@ -377,7 +375,7 @@ class GenAIScheduledUpdateCommand extends Command
             'total_new_models' => 0,
             'total_updated_models' => 0,
             'total_deprecated_models' => 0,
-            'total_errors' => 0
+            'total_errors' => 0,
         ];
 
         if (isset($results['model_update'])) {

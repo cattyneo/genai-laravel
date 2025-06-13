@@ -2,23 +2,20 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
-use CattyNeo\LaravelGenAI\Tests\TestCase;
-use Mockery as m;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
 use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use CattyNeo\LaravelGenAI\Models\GenAIRequest;
-use CattyNeo\LaravelGenAI\Models\GenAIStats;
+use CattyNeo\LaravelGenAI\Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Mockery as m;
 
 class NotificationServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private NotificationService $notificationService;
+
     private array $mockConfig;
 
     protected function setUp(): void
@@ -32,27 +29,27 @@ class NotificationServiceTest extends TestCase
             'performance_alert_channels' => ['log', 'slack'],
             'report_channels' => ['mail'],
             'mail_recipients' => ['admin@example.com'],
-            'slack_webhook_url' => 'https://hooks.slack.com/test'
+            'slack_webhook_url' => 'https://hooks.slack.com/test',
         ];
 
         // config設定をセット
         config(['genai.notifications' => $this->mockConfig]);
 
-        $this->notificationService = new NotificationService();
+        $this->notificationService = new NotificationService;
     }
 
-    public function testCanSendDeprecationWarning()
+    public function test_can_send_deprecation_warning()
     {
         Log::spy();
 
         $deprecatedModels = [
             ['provider' => 'openai', 'model' => 'gpt-3.5-turbo', 'deprecated_date' => '2024-06-01'],
-            ['provider' => 'claude', 'model' => 'claude-1', 'deprecated_date' => '2024-05-15']
+            ['provider' => 'claude', 'model' => 'claude-1', 'deprecated_date' => '2024-05-15'],
         ];
 
         $replacementSuggestions = [
             'gpt-3.5-turbo' => 'gpt-4o-mini',
-            'claude-1' => 'claude-3-sonnet'
+            'claude-1' => 'claude-3-sonnet',
         ];
 
         $this->notificationService->sendDeprecationWarning($deprecatedModels, $replacementSuggestions);
@@ -65,17 +62,17 @@ class NotificationServiceTest extends TestCase
             });
     }
 
-    public function testCanSendModelUpdateNotification()
+    public function test_can_send_model_update_notification()
     {
         Log::spy();
 
         $newModels = [
             ['provider' => 'openai', 'model' => 'gpt-4-turbo-new'],
-            ['provider' => 'gemini', 'model' => 'gemini-2.0-pro']
+            ['provider' => 'gemini', 'model' => 'gemini-2.0-pro'],
         ];
 
         $updatedModels = [
-            ['provider' => 'claude', 'model' => 'claude-3-opus', 'changes' => ['pricing updated']]
+            ['provider' => 'claude', 'model' => 'claude-3-opus', 'changes' => ['pricing updated']],
         ];
 
         $this->notificationService->sendModelUpdateNotification($newModels, $updatedModels);
@@ -88,7 +85,7 @@ class NotificationServiceTest extends TestCase
             });
     }
 
-    public function testCanSendCostAlert()
+    public function test_can_send_cost_alert()
     {
         Log::spy();
         Mail::fake();
@@ -99,7 +96,7 @@ class NotificationServiceTest extends TestCase
             'threshold_exceeded' => true,
             'budget_exceed_percent' => 130, // high severity になるように
             'provider' => 'openai',
-            'period' => 'daily'
+            'period' => 'daily',
         ];
 
         $this->notificationService->sendCostAlert($costData);
@@ -115,7 +112,7 @@ class NotificationServiceTest extends TestCase
         $this->assertTrue(true); // Mail::rawを使用しているため、Mailableクラスは使用されない
     }
 
-    public function testCanSendPerformanceAlert()
+    public function test_can_send_performance_alert()
     {
         Log::spy();
 
@@ -125,7 +122,7 @@ class NotificationServiceTest extends TestCase
             'affected_models' => ['gpt-4', 'claude-3-opus'],
             'threshold' => 5000,
             'period' => '1h',
-            'performance_degradation_percent' => 40 // high severity になるように
+            'performance_degradation_percent' => 40, // high severity になるように
         ];
 
         $this->notificationService->sendPerformanceAlert($performanceData);
@@ -137,7 +134,7 @@ class NotificationServiceTest extends TestCase
             });
     }
 
-    public function testCanSendScheduledReport()
+    public function test_can_send_scheduled_report()
     {
         Mail::fake();
 
@@ -146,7 +143,7 @@ class NotificationServiceTest extends TestCase
             'total_requests' => 1500,
             'total_cost' => 45.30,
             'top_models' => ['gpt-4', 'claude-3-sonnet'],
-            'summary' => 'Weekly usage summary'
+            'summary' => 'Weekly usage summary',
         ];
 
         $this->notificationService->sendScheduledReport('weekly_usage', $reportData);
@@ -154,7 +151,7 @@ class NotificationServiceTest extends TestCase
         $this->assertTrue(true); // Mail::rawを使用しているため、Mailableクラスは使用されない
     }
 
-    public function testDeterminesCostSeverityCorrectly()
+    public function test_determines_cost_severity_correctly()
     {
         $reflection = new \ReflectionClass($this->notificationService);
         $method = $reflection->getMethod('determineCostSeverity');
@@ -176,7 +173,7 @@ class NotificationServiceTest extends TestCase
         $this->assertEquals('critical', $severity);
     }
 
-    public function testDeterminesPerformanceSeverityCorrectly()
+    public function test_determines_performance_severity_correctly()
     {
         $reflection = new \ReflectionClass($this->notificationService);
         $method = $reflection->getMethod('determinePerformanceSeverity');
@@ -193,14 +190,14 @@ class NotificationServiceTest extends TestCase
         $this->assertEquals('high', $severity);
     }
 
-    public function testGeneratesCostRecommendations()
+    public function test_generates_cost_recommendations()
     {
         $reflection = new \ReflectionClass($this->notificationService);
         $method = $reflection->getMethod('generateCostRecommendations');
         $method->setAccessible(true);
 
         $costData = [
-            'budget_exceed_percent' => 120
+            'budget_exceed_percent' => 120,
         ];
 
         $recommendations = $method->invoke($this->notificationService, $costData);
@@ -210,7 +207,7 @@ class NotificationServiceTest extends TestCase
         $this->assertContains('Consider switching to more cost-effective models', $recommendations);
     }
 
-    public function testGeneratesPerformanceRecommendations()
+    public function test_generates_performance_recommendations()
     {
         $reflection = new \ReflectionClass($this->notificationService);
         $method = $reflection->getMethod('generatePerformanceRecommendations');
@@ -219,7 +216,7 @@ class NotificationServiceTest extends TestCase
         $performanceData = [
             'avg_response_time' => 8000, // generatePerformanceRecommendationsで使用されるキー
             'error_rate' => 0.15,
-            'affected_models' => ['gpt-4']
+            'affected_models' => ['gpt-4'],
         ];
 
         $recommendations = $method->invoke($this->notificationService, $performanceData);
@@ -228,16 +225,16 @@ class NotificationServiceTest extends TestCase
         $this->assertNotEmpty($recommendations);
     }
 
-    public function testHandlesSlackNotificationConfiguration()
+    public function test_handles_slack_notification_configuration()
     {
         Http::fake([
-            'hooks.slack.com/*' => Http::response(['ok' => true], 200)
+            'hooks.slack.com/*' => Http::response(['ok' => true], 200),
         ]);
 
         $costData = [
             'current_cost' => 150.0,
             'threshold' => 100.0,
-            'threshold_exceeded' => true
+            'threshold_exceeded' => true,
         ];
 
         // Slack URLが設定されている場合
@@ -249,18 +246,18 @@ class NotificationServiceTest extends TestCase
         });
     }
 
-    public function testHandlesMissingSlackConfiguration()
+    public function test_handles_missing_slack_configuration()
     {
         Log::spy();
 
         // Slack設定を削除
         config(['genai.notifications.slack_webhook_url' => null]);
-        $serviceWithoutSlack = new NotificationService();
+        $serviceWithoutSlack = new NotificationService;
 
         $costData = [
             'current_cost' => 150.0,
             'threshold' => 100.0,
-            'threshold_exceeded' => true
+            'threshold_exceeded' => true,
         ];
 
         $serviceWithoutSlack->sendCostAlert($costData);
@@ -272,7 +269,7 @@ class NotificationServiceTest extends TestCase
             });
     }
 
-    public function testGeneratesCorrectEmailSubject()
+    public function test_generates_correct_email_subject()
     {
         $reflection = new \ReflectionClass($this->notificationService);
         $method = $reflection->getMethod('generateEmailSubject');
@@ -280,7 +277,7 @@ class NotificationServiceTest extends TestCase
 
         $data = [
             'type' => 'cost_alert',
-            'severity' => 'high'
+            'severity' => 'high',
         ];
 
         $subject = $method->invoke($this->notificationService, $data);
@@ -290,7 +287,7 @@ class NotificationServiceTest extends TestCase
         $this->assertStringContainsString('IMPORTANT', $subject); // 実際の実装では[IMPORTANT]が使用される
     }
 
-    public function testGeneratesCorrectSlackEmoji()
+    public function test_generates_correct_slack_emoji()
     {
         $reflection = new \ReflectionClass($this->notificationService);
         $method = $reflection->getMethod('getSlackEmoji');

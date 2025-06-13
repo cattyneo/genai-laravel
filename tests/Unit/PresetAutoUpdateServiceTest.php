@@ -2,16 +2,15 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
-use CattyNeo\LaravelGenAI\Tests\TestCase;
-use Mockery as m;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Event;
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetAutoUpdateService;
-use Carbon\Carbon;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
 use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PresetAutoUpdateService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
+use CattyNeo\LaravelGenAI\Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
+use Mockery as m;
 use Symfony\Component\Yaml\Yaml;
 
 class PresetAutoUpdateServiceTest extends TestCase
@@ -19,6 +18,7 @@ class PresetAutoUpdateServiceTest extends TestCase
     use RefreshDatabase;
 
     private PresetAutoUpdateService $autoUpdateService;
+
     private array $mockConfig;
 
     protected function setUp(): void
@@ -32,8 +32,8 @@ class PresetAutoUpdateServiceTest extends TestCase
             'rules' => [
                 'enable_performance_upgrades' => true,
                 'enable_cost_optimization' => true,
-                'enable_deprecation_updates' => true
-            ]
+                'enable_deprecation_updates' => true,
+            ],
         ];
 
         config(['genai.preset_auto_update' => $this->mockConfig]);
@@ -57,7 +57,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->createTestPresets();
     }
 
-    public function testCanCheckForUpdates()
+    public function test_can_check_for_updates()
     {
         $updates = $this->autoUpdateService->checkForUpdates();
 
@@ -68,7 +68,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertArrayHasKey('errors', $updates);
     }
 
-    public function testCanUpdatePresets()
+    public function test_can_update_presets()
     {
         // プリセット名の配列を渡す
         $presetNames = ['default', 'summarize'];
@@ -80,7 +80,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertArrayHasKey('errors', $result);
     }
 
-    public function testCanCreateBackups()
+    public function test_can_create_backups()
     {
         $presetName = 'default';
         $backupResult = $this->autoUpdateService->createBackup($presetName);
@@ -94,7 +94,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         }
     }
 
-    public function testCanRestoreFromBackup()
+    public function test_can_restore_from_backup()
     {
         // まずバックアップを作成
         $presetName = 'default';
@@ -113,7 +113,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         }
     }
 
-    public function testCanTrackVersionHistory()
+    public function test_can_track_version_history()
     {
         $presetName = 'default';
 
@@ -122,7 +122,7 @@ class PresetAutoUpdateServiceTest extends TestCase
             'from_version' => '1.0.0',
             'to_version' => '1.1.0',
             'changes' => ['improved prompts'],
-            'strategy' => 'moderate'
+            'strategy' => 'moderate',
         ]);
 
         $history = $this->autoUpdateService->getVersionHistory($presetName);
@@ -130,7 +130,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertIsArray($history);
     }
 
-    public function testCanDetectConflicts()
+    public function test_can_detect_conflicts()
     {
         // プリセット名の配列を渡す
         $presetNames = ['default', 'custom'];
@@ -139,22 +139,22 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertIsArray($conflicts);
     }
 
-    public function testCanResolveConflicts()
+    public function test_can_resolve_conflicts()
     {
         $conflicts = [
             [
                 'preset' => 'custom',
                 'type' => 'parameter_mismatch',
                 'manual_changes' => ['temperature' => 0.8],
-                'upstream_changes' => ['temperature' => 0.7]
-            ]
+                'upstream_changes' => ['temperature' => 0.7],
+            ],
         ];
 
         $resolutions = [
             'custom' => [
                 'new_model' => 'gpt-4o-mini',
-                'resolution_strategy' => 'keep_manual'
-            ]
+                'resolution_strategy' => 'keep_manual',
+            ],
         ];
 
         $result = $this->autoUpdateService->resolveConflicts($conflicts, $resolutions);
@@ -162,7 +162,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertIsArray($result);
     }
 
-    public function testCanValidatePresetIntegrity()
+    public function test_can_validate_preset_integrity()
     {
         $presetName = 'default';
         $validation = $this->autoUpdateService->validatePresetIntegrity($presetName);
@@ -173,7 +173,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertArrayHasKey('preset_name', $validation);
     }
 
-    public function testCanScheduleUpdates()
+    public function test_can_schedule_updates()
     {
         Event::fake();
 
@@ -186,19 +186,19 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertTrue($schedule['scheduled']);
     }
 
-    public function testCanGenerateUpdateReport()
+    public function test_can_generate_update_report()
     {
         // いくつかの更新を実行
         $this->autoUpdateService->recordVersionChange('default', [
             'from_version' => '1.0.0',
             'to_version' => '1.1.0',
-            'changes' => ['prompt improvements']
+            'changes' => ['prompt improvements'],
         ]);
 
         $this->autoUpdateService->recordVersionChange('summarize', [
             'from_version' => '2.0.0',
             'to_version' => '2.1.0',
-            'changes' => ['new parameters']
+            'changes' => ['new parameters'],
         ]);
 
         $report = $this->autoUpdateService->generateUpdateReport('last_week');
@@ -210,7 +210,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertArrayHasKey('statistics', $report);
     }
 
-    public function testCanRollbackUpdates()
+    public function test_can_rollback_updates()
     {
         // 更新を実行
         $presetNames = ['default'];
@@ -225,7 +225,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertArrayHasKey('success', $rollbackResult);
     }
 
-    public function testHandlesDifferentUpdateStrategies()
+    public function test_handles_different_update_strategies()
     {
         $strategies = ['conservative', 'moderate', 'aggressive'];
 
@@ -256,17 +256,17 @@ class PresetAutoUpdateServiceTest extends TestCase
         }
     }
 
-    public function testCanCleanupOldBackups()
+    public function test_can_cleanup_old_backups()
     {
         // 古いバックアップを作成
         for ($i = 0; $i < 5; $i++) {
-            $oldBackupPath = "genai/backups/old_backup_{$i}_" . now()->subDays(35)->format('Y-m-d_H-i-s') . '.json';
+            $oldBackupPath = "genai/backups/old_backup_{$i}_".now()->subDays(35)->format('Y-m-d_H-i-s').'.json';
             Storage::put($oldBackupPath, json_encode(['test' => 'data']));
         }
 
         // 新しいバックアップを作成
         for ($i = 0; $i < 3; $i++) {
-            $newBackupPath = "genai/backups/new_backup_{$i}_" . now()->subDays(5)->format('Y-m-d_H-i-s') . '.json';
+            $newBackupPath = "genai/backups/new_backup_{$i}_".now()->subDays(5)->format('Y-m-d_H-i-s').'.json';
             Storage::put($newBackupPath, json_encode(['test' => 'data']));
         }
 
@@ -278,7 +278,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertArrayHasKey('remaining_count', $cleanupResult);
     }
 
-    public function testHandlesDisabledAutoUpdate()
+    public function test_handles_disabled_auto_update()
     {
         config(['genai.preset_auto_update.enabled' => false]);
 
@@ -302,7 +302,7 @@ class PresetAutoUpdateServiceTest extends TestCase
         $this->assertIsArray($result);
     }
 
-    public function testValidatesUpdateConfiguration()
+    public function test_validates_update_configuration()
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -330,19 +330,19 @@ class PresetAutoUpdateServiceTest extends TestCase
                 'model' => 'gpt-4',
                 'options' => [
                     'temperature' => 0.7,
-                    'max_tokens' => 1000
+                    'max_tokens' => 1000,
                 ],
-                'version' => '1.0.0'
+                'version' => '1.0.0',
             ],
             'summarize' => [
                 'provider' => 'claude',
                 'model' => 'claude-3-sonnet',
                 'options' => [
                     'temperature' => 0.3,
-                    'max_tokens' => 500
+                    'max_tokens' => 500,
                 ],
-                'version' => '2.0.0'
-            ]
+                'version' => '2.0.0',
+            ],
         ];
 
         foreach ($presets as $name => $config) {
@@ -365,11 +365,11 @@ class PresetAutoUpdateServiceTest extends TestCase
             'model' => 'gpt-4',
             'options' => [
                 'temperature' => 0.8, // 手動で変更された値
-                'max_tokens' => 1200
+                'max_tokens' => 1200,
             ],
             'version' => '1.0.0',
             'manually_modified' => true,
-            'last_manual_change' => now()->toISOString()
+            'last_manual_change' => now()->toISOString(),
         ];
 
         Storage::put('genai/presets/custom.yaml', Yaml::dump($customPreset));

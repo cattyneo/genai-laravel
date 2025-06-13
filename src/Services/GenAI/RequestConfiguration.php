@@ -73,7 +73,7 @@ final class RequestConfiguration
     {
         $config = config("genai.providers.{$provider}");
 
-        if (!$config) {
+        if (! $config) {
             throw new \InvalidArgumentException("Provider '{$provider}' configuration not found");
         }
 

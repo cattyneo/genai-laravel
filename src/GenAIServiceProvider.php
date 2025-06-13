@@ -4,45 +4,45 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI;
 
-use Illuminate\Support\ServiceProvider;
-use CattyNeo\LaravelGenAI\Services\GenAI\GenAIManager;
-use CattyNeo\LaravelGenAI\Services\GenAI\PromptManager;
-use CattyNeo\LaravelGenAI\Services\GenAI\ProviderFactory;
-use CattyNeo\LaravelGenAI\Services\GenAI\CacheManager;
-use CattyNeo\LaravelGenAI\Services\GenAI\RequestLogger;
-use CattyNeo\LaravelGenAI\Services\GenAI\CostCalculator;
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
-use CattyNeo\LaravelGenAI\Services\GenAI\RequestConfiguration;
-use CattyNeo\LaravelGenAI\Services\GenAI\RequestProcessor;
-use CattyNeo\LaravelGenAI\Services\GenAI\DatabaseLogger;
-use CattyNeo\LaravelGenAI\Services\GenAI\LoggerAdapter;
 use CattyNeo\LaravelGenAI\Actions\RequestAction;
-use CattyNeo\LaravelGenAI\Commands\GenAIInstallCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAITestCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIStatsCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIModelListCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIModelAddCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIModelValidateCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIPresetGenerateCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIModelUpdateCommand;
-use CattyNeo\LaravelGenAI\Commands\GenAIScheduledUpdateCommand;
 use CattyNeo\LaravelGenAI\Commands\GenAIAnalyticsCommand;
 use CattyNeo\LaravelGenAI\Commands\GenAIAssistantImportCommand;
-use CattyNeo\LaravelGenAI\Services\GenAI\AsyncRequestProcessor;
-use CattyNeo\LaravelGenAI\Services\GenAI\RateLimiter;
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\ClaudeFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GrokFetcher;
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
-use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetAutoUpdateService;
-use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
-use CattyNeo\LaravelGenAI\Services\GenAI\CostOptimizationService;
+use CattyNeo\LaravelGenAI\Commands\GenAIInstallCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIModelAddCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIModelListCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIModelUpdateCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIModelValidateCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIPresetGenerateCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIScheduledUpdateCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAIStatsCommand;
+use CattyNeo\LaravelGenAI\Commands\GenAITestCommand;
 use CattyNeo\LaravelGenAI\Services\GenAI\AssistantImportService;
+use CattyNeo\LaravelGenAI\Services\GenAI\AsyncRequestProcessor;
+use CattyNeo\LaravelGenAI\Services\GenAI\CacheManager;
+use CattyNeo\LaravelGenAI\Services\GenAI\CostCalculator;
+use CattyNeo\LaravelGenAI\Services\GenAI\CostOptimizationService;
+use CattyNeo\LaravelGenAI\Services\GenAI\DatabaseLogger;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\ClaudeFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GeminiFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\GrokFetcher;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIAssistantFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIFetcher;
+use CattyNeo\LaravelGenAI\Services\GenAI\GenAIManager;
+use CattyNeo\LaravelGenAI\Services\GenAI\LoggerAdapter;
+use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
+use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
+use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PresetAutoUpdateService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
+use CattyNeo\LaravelGenAI\Services\GenAI\PromptManager;
+use CattyNeo\LaravelGenAI\Services\GenAI\ProviderFactory;
+use CattyNeo\LaravelGenAI\Services\GenAI\RateLimiter;
+use CattyNeo\LaravelGenAI\Services\GenAI\RequestConfiguration;
+use CattyNeo\LaravelGenAI\Services\GenAI\RequestLogger;
+use CattyNeo\LaravelGenAI\Services\GenAI\RequestProcessor;
 use Illuminate\Http\Client\Factory as HttpFactory;
+use Illuminate\Support\ServiceProvider;
 
 class GenAIServiceProvider extends ServiceProvider
 {
@@ -53,26 +53,26 @@ class GenAIServiceProvider extends ServiceProvider
     {
         // 設定ファイルのpublish
         $this->publishes([
-            __DIR__ . '/../config/genai.php' => config_path('genai.php'),
+            __DIR__.'/../config/genai.php' => config_path('genai.php'),
         ], 'config');
 
         // マイグレーションファイルのpublish
         $this->publishes([
-            __DIR__ . '/../database/migrations/' => database_path('migrations'),
+            __DIR__.'/../database/migrations/' => database_path('migrations'),
         ], 'migrations');
 
         // プリセット設定ファイルのpublish
         $this->publishes([
-            __DIR__ . '/../storage/genai/presets/' => storage_path('genai/presets'),
+            __DIR__.'/../storage/genai/presets/' => storage_path('genai/presets'),
         ], 'presets');
 
         // プロンプトファイルのpublish
         $this->publishes([
-            __DIR__ . '/../storage/genai/prompts/' => storage_path('genai/prompts'),
+            __DIR__.'/../storage/genai/prompts/' => storage_path('genai/prompts'),
         ], 'prompts');
 
         // ルートファイルの読み込み
-        $this->loadRoutesFrom(__DIR__ . '/../routes/genai-api.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/genai-api.php');
 
         // Artisan コマンドの登録
         if ($this->app->runningInConsole()) {
@@ -98,7 +98,7 @@ class GenAIServiceProvider extends ServiceProvider
     public function register(): void
     {
         // 設定ファイルのマージ
-        $this->mergeConfigFrom(__DIR__ . '/../config/genai.php', 'genai');
+        $this->mergeConfigFrom(__DIR__.'/../config/genai.php', 'genai');
 
         // Core services registration
         $this->registerCoreServices();
@@ -123,33 +123,38 @@ class GenAIServiceProvider extends ServiceProvider
     {
         // ModelRepository
         $this->app->singleton(ModelRepository::class, function ($app) {
-            return new ModelRepository();
+            return new ModelRepository;
         });
 
         // Fetcher services
         $this->app->bind(OpenAIFetcher::class, function ($app) {
             $config = config('genai.providers.openai', []);
+
             return new OpenAIFetcher($app->make(HttpFactory::class), $config);
         });
 
         $this->app->bind(GeminiFetcher::class, function ($app) {
             $config = config('genai.providers.gemini', []);
+
             return new GeminiFetcher($app->make(HttpFactory::class), $config);
         });
 
         $this->app->bind(ClaudeFetcher::class, function ($app) {
             $config = config('genai.providers.claude', []);
+
             return new ClaudeFetcher($app->make(HttpFactory::class), $config);
         });
 
         $this->app->bind(GrokFetcher::class, function ($app) {
             $config = config('genai.providers.grok', []);
+
             return new GrokFetcher($app->make(HttpFactory::class), $config);
         });
 
         // OpenAI Assistant Fetcher
         $this->app->bind(OpenAIAssistantFetcher::class, function ($app) {
             $config = config('genai.providers.openai', []);
+
             return new OpenAIAssistantFetcher($config);
         });
 
@@ -177,6 +182,7 @@ class GenAIServiceProvider extends ServiceProvider
         // 最適化されたDatabaseLoggerを使用
         $this->app->singleton(DatabaseLogger::class, function ($app) {
             $config = config('genai.logging', []);
+
             return new DatabaseLogger(
                 enabled: $config['enabled'] ?? true,
                 batchSize: $config['batch_size'] ?? 10,
@@ -218,7 +224,7 @@ class GenAIServiceProvider extends ServiceProvider
                 }
             } catch (\Exception $e) {
                 // YAML読み込みに失敗した場合はログ出力して空配列で続行
-                logger()->warning('Failed to load models from YAML: ' . $e->getMessage());
+                logger()->warning('Failed to load models from YAML: '.$e->getMessage());
             }
 
             return new CostCalculator(

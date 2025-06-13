@@ -1,15 +1,17 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 // 必要な環境変数をロード
-if (file_exists(__DIR__ . '/.env')) {
-    $lines = file(__DIR__ . '/.env');
+if (file_exists(__DIR__.'/.env')) {
+    $lines = file(__DIR__.'/.env');
     foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0 || empty(trim($line))) continue;
-        list($name, $value) = explode('=', $line, 2);
+        if (strpos(trim($line), '#') === 0 || empty(trim($line))) {
+            continue;
+        }
+        [$name, $value] = explode('=', $line, 2);
         $_ENV[trim($name)] = trim($value);
-        putenv(trim($name) . '=' . trim($value));
+        putenv(trim($name).'='.trim($value));
     }
 }
 
@@ -23,9 +25,9 @@ use CattyNeo\LaravelGenAI\Facades\GenAI;
 echo "Testing GenAI with cache disabled...\n";
 
 try {
-    $response = GenAI::ask("こんにちは！");
-    echo "Success! Response: " . $response . "\n";
+    $response = GenAI::ask('こんにちは！');
+    echo 'Success! Response: '.$response."\n";
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
-    echo "File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
+    echo 'Error: '.$e->getMessage()."\n";
+    echo 'File: '.$e->getFile().' Line: '.$e->getLine()."\n";
 }

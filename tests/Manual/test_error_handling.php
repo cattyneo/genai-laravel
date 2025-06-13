@@ -1,14 +1,13 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-use CattyNeo\LaravelGenAI\Facades\GenAI;
 use CattyNeo\LaravelGenAI\Exceptions\GenAIException;
-use CattyNeo\LaravelGenAI\Exceptions\ProviderException;
-use CattyNeo\LaravelGenAI\Exceptions\RateLimitException;
 use CattyNeo\LaravelGenAI\Exceptions\InvalidConfigException;
+use CattyNeo\LaravelGenAI\Exceptions\ProviderException;
+use CattyNeo\LaravelGenAI\Facades\GenAI;
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "=== GenAI エラーハンドリング詳細テスト ===\n\n";
@@ -17,13 +16,13 @@ echo "=== GenAI エラーハンドリング詳細テスト ===\n\n";
 echo "1. 無効なプロバイダーテスト:\n";
 try {
     $response = GenAI::provider('invalid_provider')
-        ->prompt("テスト")
+        ->prompt('テスト')
         ->request();
     echo "- 予期しない成功\n";
 } catch (InvalidConfigException $e) {
-    echo "- ✓ InvalidConfigException: " . $e->getMessage() . "\n";
+    echo '- ✓ InvalidConfigException: '.$e->getMessage()."\n";
 } catch (Exception $e) {
-    echo "- ✓ 期待通りのエラー: " . get_class($e) . " - " . $e->getMessage() . "\n";
+    echo '- ✓ 期待通りのエラー: '.get_class($e).' - '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -34,7 +33,7 @@ $invalidModels = [
     'openai' => 'gpt-invalid',
     'gemini' => 'gemini-invalid',
     'claude' => 'claude-invalid',
-    'grok' => 'grok-invalid'
+    'grok' => 'grok-invalid',
 ];
 
 foreach ($invalidModels as $provider => $model) {
@@ -42,13 +41,13 @@ foreach ($invalidModels as $provider => $model) {
     try {
         $response = GenAI::provider($provider)
             ->model($model)
-            ->prompt("テスト")
+            ->prompt('テスト')
             ->request();
         echo "  予期しない成功\n";
     } catch (ProviderException $e) {
-        echo "  ✓ ProviderException: " . substr($e->getMessage(), 0, 100) . "...\n";
+        echo '  ✓ ProviderException: '.substr($e->getMessage(), 0, 100)."...\n";
     } catch (Exception $e) {
-        echo "  ✓ " . get_class($e) . ": " . substr($e->getMessage(), 0, 100) . "...\n";
+        echo '  ✓ '.get_class($e).': '.substr($e->getMessage(), 0, 100)."...\n";
     }
 }
 
@@ -74,13 +73,13 @@ foreach ($testProviders as $provider) {
     try {
         // 無効なAPIキーを設定したプロバイダーを作成
         $config = config("genai.providers.{$provider}");
-        $config['api_key'] = 'invalid_key_' . $provider;
+        $config['api_key'] = 'invalid_key_'.$provider;
 
         $providerFactory = app(\CattyNeo\LaravelGenAI\Services\GenAI\ProviderFactory::class);
         $providerInstance = $providerFactory->create($provider, $config);
 
         $response = $providerInstance->request(
-            userPrompt: "テスト",
+            userPrompt: 'テスト',
             systemPrompt: null,
             options: ['temperature' => 0.7, 'max_tokens' => 10],
             model: match ($provider) {
@@ -92,7 +91,7 @@ foreach ($testProviders as $provider) {
         );
         echo "  予期しない成功\n";
     } catch (Exception $e) {
-        echo "  ✓ " . get_class($e) . ": " . substr($e->getMessage(), 0, 100) . "...\n";
+        echo '  ✓ '.get_class($e).': '.substr($e->getMessage(), 0, 100)."...\n";
     }
 }
 
@@ -109,14 +108,14 @@ try {
     $providerInstance = $providerFactory->create('openai', $config);
 
     $response = $providerInstance->request(
-        userPrompt: "テスト",
+        userPrompt: 'テスト',
         systemPrompt: null,
         options: ['temperature' => 0.7, 'max_tokens' => 10],
         model: 'gpt-4.1-mini'
     );
     echo "- 予期しない成功\n";
 } catch (Exception $e) {
-    echo "- ✓ ネットワークエラー: " . get_class($e) . " - " . substr($e->getMessage(), 0, 100) . "...\n";
+    echo '- ✓ ネットワークエラー: '.get_class($e).' - '.substr($e->getMessage(), 0, 100)."...\n";
 }
 
 echo "\n";
@@ -125,14 +124,14 @@ echo "\n";
 echo "5. 大きすぎるリクエストテスト:\n";
 try {
     // 非常に長いプロンプトを作成
-    $longPrompt = str_repeat("これは非常に長いプロンプトです。", 1000);
+    $longPrompt = str_repeat('これは非常に長いプロンプトです。', 1000);
 
     $response = GenAI::prompt($longPrompt)
         ->maxTokens(1)
         ->request();
     echo "- 予期しない成功\n";
 } catch (Exception $e) {
-    echo "- ✓ " . get_class($e) . ": " . substr($e->getMessage(), 0, 100) . "...\n";
+    echo '- ✓ '.get_class($e).': '.substr($e->getMessage(), 0, 100)."...\n";
 }
 
 echo "\n";
@@ -144,22 +143,22 @@ echo "6. 無効なオプションテスト:\n";
 echo "- 無効な温度設定 (temperature=5.0):\n";
 try {
     $response = GenAI::temperature(5.0)
-        ->prompt("テスト")
+        ->prompt('テスト')
         ->request();
     echo "  予期しない成功\n";
 } catch (Exception $e) {
-    echo "  ✓ " . get_class($e) . ": " . substr($e->getMessage(), 0, 100) . "...\n";
+    echo '  ✓ '.get_class($e).': '.substr($e->getMessage(), 0, 100)."...\n";
 }
 
 // 負の最大トークン数
 echo "- 負の最大トークン数 (max_tokens=-100):\n";
 try {
     $response = GenAI::maxTokens(-100)
-        ->prompt("テスト")
+        ->prompt('テスト')
         ->request();
     echo "  予期しない成功\n";
 } catch (Exception $e) {
-    echo "  ✓ " . get_class($e) . ": " . substr($e->getMessage(), 0, 100) . "...\n";
+    echo '  ✓ '.get_class($e).': '.substr($e->getMessage(), 0, 100)."...\n";
 }
 
 echo "\n";
@@ -168,11 +167,11 @@ echo "\n";
 echo "7. プリセットエラーテスト:\n";
 try {
     $response = GenAI::preset('non_existent_preset')
-        ->prompt("テスト")
+        ->prompt('テスト')
         ->request();
     echo "- 予期しない成功\n";
 } catch (Exception $e) {
-    echo "- ✓ " . get_class($e) . ": " . $e->getMessage() . "\n";
+    echo '- ✓ '.get_class($e).': '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -181,11 +180,11 @@ echo "\n";
 echo "8. タイムアウトテスト:\n";
 try {
     $response = GenAI::options(['timeout' => 0.001]) // 1ms timeout
-        ->prompt("非常に複雑な計算を実行してください。素数を1000個見つけて、それぞれについて詳細な説明を書いてください。")
+        ->prompt('非常に複雑な計算を実行してください。素数を1000個見つけて、それぞれについて詳細な説明を書いてください。')
         ->request();
     echo "- 予期しない成功\n";
 } catch (Exception $e) {
-    echo "- ✓ " . get_class($e) . ": " . substr($e->getMessage(), 0, 100) . "...\n";
+    echo '- ✓ '.get_class($e).': '.substr($e->getMessage(), 0, 100)."...\n";
 }
 
 echo "\n";
@@ -193,11 +192,11 @@ echo "\n";
 // 9. 例外の階層テスト
 echo "9. 例外の階層テスト:\n";
 try {
-    throw new ProviderException("テスト例外");
+    throw new ProviderException('テスト例外');
 } catch (GenAIException $e) {
-    echo "- ✓ ProviderExceptionはGenAIExceptionを継承: " . get_class($e) . "\n";
+    echo '- ✓ ProviderExceptionはGenAIExceptionを継承: '.get_class($e)."\n";
 } catch (Exception $e) {
-    echo "- ✗ 予期しない例外階層: " . get_class($e) . "\n";
+    echo '- ✗ 予期しない例外階層: '.get_class($e)."\n";
 }
 
 echo "\n";
@@ -216,7 +215,7 @@ try {
         echo "- ログファイル存在: ✗\n";
     }
 } catch (Exception $e) {
-    echo "- ログ確認エラー: " . $e->getMessage() . "\n";
+    echo '- ログ確認エラー: '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -225,10 +224,10 @@ echo "\n";
 echo "11. リカバリーテスト:\n";
 echo "- エラー後の正常リクエスト:\n";
 try {
-    $response = GenAI::ask("こんにちは");
-    echo "  ✓ 正常復旧: " . substr($response, 0, 50) . "...\n";
+    $response = GenAI::ask('こんにちは');
+    echo '  ✓ 正常復旧: '.substr($response, 0, 50)."...\n";
 } catch (Exception $e) {
-    echo "  ✗ 復旧失敗: " . $e->getMessage() . "\n";
+    echo '  ✗ 復旧失敗: '.$e->getMessage()."\n";
 }
 
 echo "\n=== エラーハンドリングテスト完了 ===\n";

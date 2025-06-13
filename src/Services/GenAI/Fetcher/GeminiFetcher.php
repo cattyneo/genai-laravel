@@ -3,7 +3,6 @@
 namespace CattyNeo\LaravelGenAI\Services\GenAI\Fetcher;
 
 use CattyNeo\LaravelGenAI\Data\ModelInfo;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -20,6 +19,7 @@ class GeminiFetcher extends AbstractFetcher
     {
         $queryParams = $this->prepareQueryParams();
         $response = $this->makeRequest($this->config['models_endpoint'], $queryParams);
+
         return $this->parseModelsResponse($response->json());
     }
 
@@ -27,8 +27,9 @@ class GeminiFetcher extends AbstractFetcher
     {
         try {
             $queryParams = $this->prepareQueryParams();
-            $endpoint = $this->config['models_endpoint'] . '/' . $modelId;
+            $endpoint = $this->config['models_endpoint'].'/'.$modelId;
             $response = $this->makeRequest($endpoint, $queryParams);
+
             return $this->parseModelResponse($response->json());
         } catch (\Exception $e) {
             return null;
@@ -37,7 +38,7 @@ class GeminiFetcher extends AbstractFetcher
 
     protected function parseModelsResponse(array $data): Collection
     {
-        if (!isset($data['models']) || !is_array($data['models'])) {
+        if (! isset($data['models']) || ! is_array($data['models'])) {
             return collect();
         }
 
@@ -82,6 +83,7 @@ class GeminiFetcher extends AbstractFetcher
         if (str_starts_with($name, 'models/')) {
             return substr($name, 7);
         }
+
         return $name;
     }
 
@@ -93,6 +95,7 @@ class GeminiFetcher extends AbstractFetcher
         if (str_contains($modelId, 'vision') || str_contains($modelId, 'image')) {
             return 'vision';
         }
+
         return 'text';
     }
 
@@ -137,6 +140,7 @@ class GeminiFetcher extends AbstractFetcher
         if (str_contains($modelId, 'flash')) {
             return 8192;
         }
+
         return 8192; // Geminiのデフォルト
     }
 
@@ -151,6 +155,7 @@ class GeminiFetcher extends AbstractFetcher
         if (str_contains($modelId, '1.5')) {
             return 1000000; // 1M tokens
         }
+
         return 32000; // 旧モデルのデフォルト
     }
 
@@ -174,6 +179,7 @@ class GeminiFetcher extends AbstractFetcher
         if (str_contains($modelId, 'flash')) {
             return 'Fast Gemini model';
         }
+
         return 'Google Gemini language model';
     }
 
@@ -197,6 +203,7 @@ class GeminiFetcher extends AbstractFetcher
         if (preg_match('/(\d+\.\d+)/', $modelId, $matches)) {
             return $matches[1];
         }
+
         return null;
     }
 }

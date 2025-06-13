@@ -22,8 +22,8 @@ final class ClaudeProvider implements ProviderInterface
         $messages = [
             [
                 'role' => 'user',
-                'content' => $userPrompt
-            ]
+                'content' => $userPrompt,
+            ],
         ];
 
         $payload = array_merge([
@@ -43,10 +43,10 @@ final class ClaudeProvider implements ProviderInterface
                 'x-api-key' => $this->apiKey,
                 'Content-Type' => 'application/json',
                 'anthropic-version' => '2023-06-01',
-            ])->post($this->baseUrl . '/messages', $payload);
+            ])->post($this->baseUrl.'/messages', $payload);
 
-        if (!$response->successful()) {
-            throw new \RuntimeException('Claude API request failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \RuntimeException('Claude API request failed: '.$response->body());
         }
 
         $data = $response->json();
@@ -56,9 +56,9 @@ final class ClaudeProvider implements ProviderInterface
             'choices' => [
                 [
                     'message' => [
-                        'content' => $data['content'][0]['text'] ?? ''
-                    ]
-                ]
+                        'content' => $data['content'][0]['text'] ?? '',
+                    ],
+                ],
             ],
             'usage' => [
                 'input_tokens' => $data['usage']['input_tokens'] ?? 0,
@@ -68,7 +68,7 @@ final class ClaudeProvider implements ProviderInterface
                 'prompt_tokens' => $data['usage']['input_tokens'] ?? 0,
                 'completion_tokens' => $data['usage']['output_tokens'] ?? 0,
             ],
-            'raw' => $data
+            'raw' => $data,
         ];
     }
 
@@ -77,6 +77,6 @@ final class ClaudeProvider implements ProviderInterface
         return array_filter([
             'temperature' => $options['temperature'] ?? null,
             'top_p' => $options['top_p'] ?? null,
-        ], fn($value) => $value !== null);
+        ], fn ($value) => $value !== null);
     }
 }

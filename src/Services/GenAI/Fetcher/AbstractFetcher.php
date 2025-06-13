@@ -4,7 +4,6 @@ namespace CattyNeo\LaravelGenAI\Services\GenAI\Fetcher;
 
 use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use CattyNeo\LaravelGenAI\Exceptions\ProviderException;
-use CattyNeo\LaravelGenAI\Exceptions\GenAIException;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
@@ -16,7 +15,9 @@ use Illuminate\Support\Facades\Log;
 abstract class AbstractFetcher implements FetcherInterface
 {
     protected HttpFactory $http;
+
     protected array $config;
+
     protected string $apiKey;
 
     public function __construct(HttpFactory $http, array $config)
@@ -28,7 +29,7 @@ abstract class AbstractFetcher implements FetcherInterface
 
     public function isAvailable(): bool
     {
-        return !empty($this->apiKey) && !empty($this->config['models_endpoint']);
+        return ! empty($this->apiKey) && ! empty($this->config['models_endpoint']);
     }
 
     /**
@@ -36,7 +37,7 @@ abstract class AbstractFetcher implements FetcherInterface
      */
     protected function makeRequest(string $endpoint, array $queryParams = []): Response
     {
-        if (!$this->isAvailable()) {
+        if (! $this->isAvailable()) {
             throw new ProviderException("Provider {$this->getProviderName()} is not properly configured");
         }
 
@@ -44,7 +45,7 @@ abstract class AbstractFetcher implements FetcherInterface
             $headers = $this->prepareHeaders();
             $client = $this->http->withHeaders($headers);
 
-            if (!empty($queryParams)) {
+            if (! empty($queryParams)) {
                 $client = $client->withOptions(['query' => $queryParams]);
             }
 
@@ -55,9 +56,9 @@ abstract class AbstractFetcher implements FetcherInterface
 
             $response = $client->get($endpoint);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 throw new ProviderException(
-                    "Failed to fetch models from {$this->getProviderName()}: " . $response->body(),
+                    "Failed to fetch models from {$this->getProviderName()}: ".$response->body(),
                     $response->status()
                 );
             }
@@ -70,7 +71,7 @@ abstract class AbstractFetcher implements FetcherInterface
             ]);
 
             throw new ProviderException(
-                "Error fetching models from {$this->getProviderName()}: " . $e->getMessage(),
+                "Error fetching models from {$this->getProviderName()}: ".$e->getMessage(),
                 previous: $e
             );
         }

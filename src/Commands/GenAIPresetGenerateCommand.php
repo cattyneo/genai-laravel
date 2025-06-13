@@ -41,15 +41,16 @@ class GenAIPresetGenerateCommand extends Command
         $filePath = "{$presetsPath}/{$name}.yaml";
 
         // 既存ファイルのチェック
-        if (File::exists($filePath) && !$overwrite) {
+        if (File::exists($filePath) && ! $overwrite) {
             $this->error("プリセット '{$name}' は既に存在します。");
-            $this->line("上書きするには --overwrite オプションを使用してください。");
+            $this->line('上書きするには --overwrite オプションを使用してください。');
+
             return 1;
         }
 
         try {
             // ディレクトリが存在しない場合は作成
-            if (!File::exists($presetsPath)) {
+            if (! File::exists($presetsPath)) {
                 File::makeDirectory($presetsPath, 0755, true);
                 $this->info("ディレクトリを作成しました: {$presetsPath}");
             }
@@ -65,10 +66,11 @@ class GenAIPresetGenerateCommand extends Command
             $this->newLine();
 
             // プレビューを表示
-            $this->info("📋 生成されたプリセット内容:");
+            $this->info('📋 生成されたプリセット内容:');
             $this->line($content);
         } catch (\Exception $e) {
-            $this->error("❌ プリセット生成中にエラーが発生しました: " . $e->getMessage());
+            $this->error('❌ プリセット生成中にエラーが発生しました: '.$e->getMessage());
+
             return 1;
         }
 
@@ -116,7 +118,7 @@ class GenAIPresetGenerateCommand extends Command
         // YAML内容を構築
         $yaml = "# GenAI Preset: {$name}\n";
         $yaml .= "# Template: {$template}\n";
-        $yaml .= "# Generated: " . now()->toDateTimeString() . "\n\n";
+        $yaml .= '# Generated: '.now()->toDateTimeString()."\n\n";
 
         $yaml .= "name: \"{$name}\"\n";
         $yaml .= "description: \"{$config['description']}\"\n\n";

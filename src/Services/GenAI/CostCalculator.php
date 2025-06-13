@@ -24,7 +24,7 @@ final class CostCalculator
     ): float {
         $modelConfig = $this->getModelConfig($model);
 
-        if (!$modelConfig) {
+        if (! $modelConfig) {
             return 0.0;
         }
 

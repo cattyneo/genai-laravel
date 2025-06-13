@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Notification;
-use Carbon\Carbon;
 
 /**
  * GenAI通知サービス
@@ -139,7 +137,7 @@ class NotificationService
             } catch (\Exception $e) {
                 Log::error("Failed to send notification via {$channel}", [
                     'error' => $e->getMessage(),
-                    'notification_data' => $notificationData
+                    'notification_data' => $notificationData,
                 ]);
             }
         }
@@ -158,7 +156,7 @@ class NotificationService
             default => 'info'
         };
 
-        Log::$level('[GenAI] ' . $data['type'], $data);
+        Log::$level('[GenAI] '.$data['type'], $data);
     }
 
     /**
@@ -189,8 +187,9 @@ class NotificationService
     {
         $webhookUrl = $this->config['slack_webhook_url'] ?? null;
 
-        if (!$webhookUrl) {
+        if (! $webhookUrl) {
             Log::warning('Slack webhook URL not configured');
+
             return;
         }
 
@@ -211,8 +210,9 @@ class NotificationService
     {
         $webhookUrl = $this->config['teams_webhook_url'] ?? null;
 
-        if (!$webhookUrl) {
+        if (! $webhookUrl) {
             Log::warning('Teams webhook URL not configured');
+
             return;
         }
 
@@ -259,6 +259,7 @@ class NotificationService
     private function calculateDeprecationDeadline(array $deprecatedModels): ?string
     {
         $warningDays = config('genai.scheduled_tasks.deprecation_check.advance_warning_days', 30);
+
         return now()->addDays($warningDays)->toDateString();
     }
 
@@ -344,7 +345,7 @@ class NotificationService
             default => 'GenAI Notification'
         };
 
-        return $urgency . '[GenAI] ' . $subject;
+        return $urgency.'[GenAI] '.$subject;
     }
 
     /**
@@ -354,9 +355,9 @@ class NotificationService
     {
         $content = "GenAI Notification\n";
         $content .= "==================\n\n";
-        $content .= "Type: " . $data['type'] . "\n";
-        $content .= "Severity: " . strtoupper($data['severity']) . "\n";
-        $content .= "Timestamp: " . $data['timestamp'] . "\n\n";
+        $content .= 'Type: '.$data['type']."\n";
+        $content .= 'Severity: '.strtoupper($data['severity'])."\n";
+        $content .= 'Timestamp: '.$data['timestamp']."\n\n";
 
         switch ($data['type']) {
             case 'model_deprecation_warning':
@@ -371,14 +372,14 @@ class NotificationService
                 break;
 
             case 'model_update':
-                $content .= "NEW MODELS: " . $data['total_new'] . "\n";
-                $content .= "UPDATED MODELS: " . $data['total_updated'] . "\n";
+                $content .= 'NEW MODELS: '.$data['total_new']."\n";
+                $content .= 'UPDATED MODELS: '.$data['total_updated']."\n";
                 break;
 
             case 'cost_alert':
                 $content .= "COST OVERVIEW:\n";
-                $content .= "Current Spend: ¥" . number_format($data['cost_data']['current_spend'] ?? 0, 2) . "\n";
-                $content .= "Budget Threshold: ¥" . number_format($data['cost_data']['budget_threshold'] ?? 0, 2) . "\n";
+                $content .= 'Current Spend: ¥'.number_format($data['cost_data']['current_spend'] ?? 0, 2)."\n";
+                $content .= 'Budget Threshold: ¥'.number_format($data['cost_data']['budget_threshold'] ?? 0, 2)."\n";
                 break;
         }
 
@@ -391,6 +392,7 @@ class NotificationService
     private function generateSlackMessage(array $data): string
     {
         $emoji = $this->getSlackEmoji($data['type']);
+
         return "{$emoji} *GenAI {$data['type']}* - Severity: {$data['severity']}";
     }
 
@@ -419,7 +421,7 @@ class NotificationService
                 'color' => $this->getSlackColor($data['severity']),
                 'fields' => $this->generateSlackFields($data),
                 'ts' => now()->timestamp,
-            ]
+            ],
         ];
     }
 
@@ -446,20 +448,20 @@ class NotificationService
             [
                 'title' => 'Type',
                 'value' => $data['type'],
-                'short' => true
+                'short' => true,
             ],
             [
                 'title' => 'Severity',
                 'value' => strtoupper($data['severity']),
-                'short' => true
-            ]
+                'short' => true,
+            ],
         ];
 
         if (isset($data['deprecated_models'])) {
             $fields[] = [
                 'title' => 'Deprecated Models',
-                'value' => count($data['deprecated_models']) . ' models require attention',
-                'short' => false
+                'value' => count($data['deprecated_models']).' models require attention',
+                'short' => false,
             ];
         }
 
@@ -485,7 +487,7 @@ class NotificationService
      */
     private function generateTeamsTitle(array $data): string
     {
-        return "GenAI " . ucwords(str_replace('_', ' ', $data['type']));
+        return 'GenAI '.ucwords(str_replace('_', ' ', $data['type']));
     }
 
     /**
@@ -496,9 +498,9 @@ class NotificationService
         return [
             [
                 'activityTitle' => $this->generateTeamsTitle($data),
-                'activitySubtitle' => 'Severity: ' . strtoupper($data['severity']),
+                'activitySubtitle' => 'Severity: '.strtoupper($data['severity']),
                 'facts' => $this->generateTeamsFacts($data),
-            ]
+            ],
         ];
     }
 
@@ -527,7 +529,7 @@ class NotificationService
         try {
             $config = config('genai.notifications', []);
 
-            if (!($config['enabled'] ?? false)) {
+            if (! ($config['enabled'] ?? false)) {
                 return false;
             }
 
@@ -535,19 +537,19 @@ class NotificationService
             $sent = false;
 
             // メール通知
-            if (in_array('mail', $channels) && !empty($config['mail']['to'])) {
+            if (in_array('mail', $channels) && ! empty($config['mail']['to'])) {
                 $this->sendPresetUpdateEmail($updateData, $config['mail']);
                 $sent = true;
             }
 
             // Slack通知
-            if (in_array('slack', $channels) && !empty($config['slack']['webhook_url'])) {
+            if (in_array('slack', $channels) && ! empty($config['slack']['webhook_url'])) {
                 $this->sendPresetUpdateSlack($updateData, $config['slack']);
                 $sent = true;
             }
 
             // Teams通知
-            if (in_array('teams', $channels) && !empty($config['teams']['webhook_url'])) {
+            if (in_array('teams', $channels) && ! empty($config['teams']['webhook_url'])) {
                 $this->sendPresetUpdateTeams($updateData, $config['teams']);
                 $sent = true;
             }
@@ -556,8 +558,9 @@ class NotificationService
         } catch (\Exception $e) {
             Log::error('Failed to send preset update notification', [
                 'error' => $e->getMessage(),
-                'data' => $updateData
+                'data' => $updateData,
             ]);
+
             return false;
         }
     }
@@ -567,7 +570,7 @@ class NotificationService
      */
     private function sendPresetUpdateEmail(array $data, array $config): void
     {
-        $subject = "GenAI Preset Update Notification";
+        $subject = 'GenAI Preset Update Notification';
         $message = $this->formatPresetUpdateMessage($data);
 
         Mail::raw($message, function ($mail) use ($config, $subject) {
@@ -588,9 +591,9 @@ class NotificationService
                     'color' => 'good',
                     'title' => 'Preset Update Notification',
                     'text' => $this->formatPresetUpdateMessage($data),
-                    'ts' => now()->timestamp
-                ]
-            ]
+                    'ts' => now()->timestamp,
+                ],
+            ],
         ];
 
         Http::post($config['webhook_url'], $payload);
@@ -607,7 +610,7 @@ class NotificationService
             'summary' => 'GenAI Preset Update',
             'themeColor' => '0078D4',
             'title' => 'Preset Update Notification',
-            'text' => $this->formatPresetUpdateMessage($data)
+            'text' => $this->formatPresetUpdateMessage($data),
         ];
 
         Http::post($config['webhook_url'], $payload);
@@ -621,21 +624,21 @@ class NotificationService
         $message = "Preset Update Summary:\n\n";
 
         if (isset($data['updated_presets'])) {
-            $message .= "Updated Presets: " . count($data['updated_presets']) . "\n";
+            $message .= 'Updated Presets: '.count($data['updated_presets'])."\n";
             foreach ($data['updated_presets'] as $preset) {
                 $message .= "- {$preset}\n";
             }
         }
 
         if (isset($data['suggestions'])) {
-            $message .= "\nSuggestions: " . count($data['suggestions']) . "\n";
+            $message .= "\nSuggestions: ".count($data['suggestions'])."\n";
         }
 
-        if (isset($data['errors']) && !empty($data['errors'])) {
-            $message .= "\nErrors: " . count($data['errors']) . "\n";
+        if (isset($data['errors']) && ! empty($data['errors'])) {
+            $message .= "\nErrors: ".count($data['errors'])."\n";
         }
 
-        $message .= "\nTimestamp: " . now()->toDateTimeString();
+        $message .= "\nTimestamp: ".now()->toDateTimeString();
 
         return $message;
     }

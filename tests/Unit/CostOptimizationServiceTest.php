@@ -2,23 +2,24 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
-use CattyNeo\LaravelGenAI\Tests\TestCase;
-use Mockery as m;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
+use CattyNeo\LaravelGenAI\Models\GenAIRequest;
 use CattyNeo\LaravelGenAI\Services\GenAI\CostOptimizationService;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
 use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use CattyNeo\LaravelGenAI\Models\GenAIRequest;
-use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery as m;
 
 class CostOptimizationServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private CostOptimizationService $costService;
+
     private array $mockConfig;
+
     private $mockReplacementService;
+
     private $mockNotificationService;
 
     protected function setUp(): void
@@ -30,16 +31,16 @@ class CostOptimizationServiceTest extends TestCase
             'budget_limits' => [
                 'daily' => 100.0,
                 'weekly' => 500.0,
-                'monthly' => 2000.0
+                'monthly' => 2000.0,
             ],
             'optimization_targets' => [
                 'cost_reduction_percentage' => 20,
-                'maintain_quality_threshold' => 0.9
+                'maintain_quality_threshold' => 0.9,
             ],
             'alert_thresholds' => [
                 'budget_warning' => 0.8,
-                'budget_critical' => 0.95
-            ]
+                'budget_critical' => 0.95,
+            ],
         ];
 
         config(['genai.cost_optimization' => $this->mockConfig]);
@@ -54,7 +55,7 @@ class CostOptimizationServiceTest extends TestCase
         );
     }
 
-    public function testCanAnalyzeCostTrends()
+    public function test_can_analyze_cost_trends()
     {
         $this->createTestRequests();
 
@@ -67,7 +68,7 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertArrayHasKey('cost_by_provider', $trends);
     }
 
-    public function testCanIdentifyExpensiveModels()
+    public function test_can_identify_expensive_models()
     {
         $this->createTestRequests();
 
@@ -85,7 +86,7 @@ class CostOptimizationServiceTest extends TestCase
         }
     }
 
-    public function testCanGenerateOptimizationSuggestions()
+    public function test_can_generate_optimization_suggestions()
     {
         $this->createTestRequests();
 
@@ -97,7 +98,7 @@ class CostOptimizationServiceTest extends TestCase
                     'model' => 'gpt-4o-mini',
                     'performance_score' => 0.9,
                     'cost_efficiency' => 0.8,
-                ]
+                ],
             ]);
 
         $suggestions = $this->costService->generateOptimizationSuggestions();
@@ -113,20 +114,20 @@ class CostOptimizationServiceTest extends TestCase
         }
     }
 
-    public function testCanCalculatePotentialSavings()
+    public function test_can_calculate_potential_savings()
     {
         $this->createTestRequests();
 
         $currentModel = [
             'provider' => 'openai',
             'model' => 'gpt-4',
-            'avg_cost_per_token' => 0.00003
+            'avg_cost_per_token' => 0.00003,
         ];
 
         $alternativeModel = [
             'provider' => 'openai',
             'model' => 'gpt-4o-mini',
-            'avg_cost_per_token' => 0.00001
+            'avg_cost_per_token' => 0.00001,
         ];
 
         $monthlyTokens = 1000000;
@@ -147,7 +148,7 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertEquals($expectedSavings, $savings['potential_savings']);
     }
 
-    public function testCanCheckBudgetStatus()
+    public function test_can_check_budget_status()
     {
         $this->createTestRequests();
 
@@ -162,7 +163,7 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertArrayHasKey('status', $budgetStatus);
     }
 
-    public function testCanGenerateBudgetAlerts()
+    public function test_can_generate_budget_alerts()
     {
         // 予算の80%以上使用する高コストリクエストを作成
         $this->createHighCostRequests();
@@ -171,7 +172,7 @@ class CostOptimizationServiceTest extends TestCase
 
         $this->assertIsArray($alerts);
 
-        if (!empty($alerts)) {
+        if (! empty($alerts)) {
             foreach ($alerts as $alert) {
                 $this->assertArrayHasKey('type', $alert);
                 $this->assertArrayHasKey('period', $alert);
@@ -182,7 +183,7 @@ class CostOptimizationServiceTest extends TestCase
         }
     }
 
-    public function testCanGenerateCostReport()
+    public function test_can_generate_cost_report()
     {
         $this->createTestRequests();
 
@@ -203,14 +204,14 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertArrayHasKey('top_providers', $summary);
     }
 
-    public function testCanRecommendAlternativeModels()
+    public function test_can_recommend_alternative_models()
     {
         $currentUsage = [
             'provider' => 'openai',
             'model' => 'gpt-4',
             'monthly_requests' => 1000,
             'avg_tokens_per_request' => 500,
-            'current_monthly_cost' => 50.0
+            'current_monthly_cost' => 50.0,
         ];
 
         // ModelReplacementServiceのモック期待値を設定
@@ -221,7 +222,7 @@ class CostOptimizationServiceTest extends TestCase
                     'provider' => 'openai',
                     'model' => 'gpt-4o-mini',
                     'performance_score' => 0.9,
-                ]
+                ],
             ]);
 
         $recommendations = $this->costService->recommendAlternativeModels($currentUsage);
@@ -238,7 +239,7 @@ class CostOptimizationServiceTest extends TestCase
         }
     }
 
-    public function testCanOptimizeRequestFrequency()
+    public function test_can_optimize_request_frequency()
     {
         $this->createDuplicateRequests();
 
@@ -251,7 +252,7 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertArrayHasKey('potential_savings', $optimizations);
     }
 
-    public function testCanTrackCostByFeature()
+    public function test_can_track_cost_by_feature()
     {
         $this->createTestRequestsWithFeatures();
 
@@ -266,12 +267,12 @@ class CostOptimizationServiceTest extends TestCase
         }
     }
 
-    public function testCanSetBudgetLimits()
+    public function test_can_set_budget_limits()
     {
         $newLimits = [
             'daily' => 150.0,
             'weekly' => 750.0,
-            'monthly' => 2500.0
+            'monthly' => 2500.0,
         ];
 
         $result = $this->costService->setBudgetLimits($newLimits);
@@ -284,7 +285,7 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertEquals($newLimits['monthly'], $updatedLimits['monthly']);
     }
 
-    public function testCanForecastCosts()
+    public function test_can_forecast_costs()
     {
         $this->createTestRequests();
 
@@ -297,7 +298,7 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertArrayHasKey('risk_assessment', $forecast);
     }
 
-    public function testHandlesDisabledOptimization()
+    public function test_handles_disabled_optimization()
     {
         config(['genai.cost_optimization.enabled' => false]);
 
@@ -316,12 +317,12 @@ class CostOptimizationServiceTest extends TestCase
         $this->assertEquals('disabled', $result['status']);
     }
 
-    public function testValidatesBudgetLimits()
+    public function test_validates_budget_limits()
     {
         $invalidLimits = [
             'daily' => -100,
             'weekly' => 'invalid',
-            'monthly' => null
+            'monthly' => null,
         ];
 
         $this->expectException(\InvalidArgumentException::class);
@@ -334,7 +335,7 @@ class CostOptimizationServiceTest extends TestCase
         $models = [
             'openai' => ['gpt-4', 'gpt-4o-mini'],
             'claude' => ['claude-3-opus', 'claude-3-sonnet'],
-            'gemini' => ['gemini-1.5-pro', 'gemini-1.5-flash']
+            'gemini' => ['gemini-1.5-pro', 'gemini-1.5-flash'],
         ];
 
         for ($i = 0; $i < 50; $i++) {
@@ -352,7 +353,7 @@ class CostOptimizationServiceTest extends TestCase
                 'cost' => rand(1, 10) / 100, // 0.01 to 0.10
                 'response_time_ms' => rand(1000, 3000),
                 'is_cached' => rand(0, 1),
-                'created_at' => now()->subDays(rand(0, 7))
+                'created_at' => now()->subDays(rand(0, 7)),
             ]);
         }
     }
@@ -371,28 +372,28 @@ class CostOptimizationServiceTest extends TestCase
                 'cost' => rand(10, 20) / 100, // 0.10 to 0.20 (高コスト)
                 'response_time_ms' => rand(2000, 5000),
                 'is_cached' => false,
-                'created_at' => now()
+                'created_at' => now(),
             ]);
         }
     }
 
     private function createDuplicateRequests(): void
     {
-        $duplicatePrompt = "What is artificial intelligence?";
+        $duplicatePrompt = 'What is artificial intelligence?';
 
         for ($i = 0; $i < 5; $i++) {
             GenAIRequest::create([
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'prompt' => $duplicatePrompt,
-                'response' => "AI is a field of computer science...",
+                'response' => 'AI is a field of computer science...',
                 'input_tokens' => 100,
                 'output_tokens' => 50,
                 'total_tokens' => 150,
                 'cost' => 0.05,
                 'response_time_ms' => 1500,
                 'is_cached' => false,
-                'created_at' => now()->subMinutes($i * 10)
+                'created_at' => now()->subMinutes($i * 10),
             ]);
         }
     }
@@ -415,7 +416,7 @@ class CostOptimizationServiceTest extends TestCase
                     'response_time_ms' => rand(1000, 3000),
                     'is_cached' => false,
                     'created_at' => now()->subDays(rand(0, 3)),
-                    'metadata' => json_encode(['feature' => $feature])
+                    'metadata' => json_encode(['feature' => $feature]),
                 ]);
             }
         }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use CattyNeo\LaravelGenAI\Tests\TestCase;
-use CattyNeo\LaravelGenAI\Services\GenAI\ProviderInterface;
 use Mockery;
 
 class GenAIControllerTest extends TestCase

@@ -24,13 +24,13 @@ final class GeminiProvider implements ProviderInterface
         if ($systemPrompt) {
             $contents[] = [
                 'parts' => [['text' => $systemPrompt]],
-                'role' => 'model'
+                'role' => 'model',
             ];
         }
 
         $contents[] = [
             'parts' => [['text' => $userPrompt]],
-            'role' => 'user'
+            'role' => 'user',
         ];
 
         $payload = array_merge([
@@ -44,8 +44,8 @@ final class GeminiProvider implements ProviderInterface
                 'Content-Type' => 'application/json',
             ])->post("{$this->baseUrl}/models/{$model}:generateContent?key={$this->apiKey}", $payload);
 
-        if (!$response->successful()) {
-            throw new \RuntimeException('Gemini API request failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \RuntimeException('Gemini API request failed: '.$response->body());
         }
 
         $data = $response->json();
@@ -55,9 +55,9 @@ final class GeminiProvider implements ProviderInterface
             'choices' => [
                 [
                     'message' => [
-                        'content' => $data['candidates'][0]['content']['parts'][0]['text'] ?? ''
-                    ]
-                ]
+                        'content' => $data['candidates'][0]['content']['parts'][0]['text'] ?? '',
+                    ],
+                ],
             ],
             'usage' => [
                 'input_tokens' => $data['usageMetadata']['promptTokenCount'] ?? 0,
@@ -67,7 +67,7 @@ final class GeminiProvider implements ProviderInterface
                 'prompt_tokens' => $data['usageMetadata']['promptTokenCount'] ?? 0,
                 'completion_tokens' => $data['usageMetadata']['candidatesTokenCount'] ?? 0,
             ],
-            'raw' => $data
+            'raw' => $data,
         ];
     }
 

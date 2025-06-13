@@ -30,6 +30,7 @@ class GenAIAssistantImportCommand extends Command
     protected $description = 'OpenAI Playground/Assistants BuilderからAssistantsをインポート';
 
     private AssistantImportService $importService;
+
     private OpenAIAssistantFetcher $fetcher;
 
     public function __construct(AssistantImportService $importService, OpenAIAssistantFetcher $fetcher)
@@ -44,8 +45,9 @@ class GenAIAssistantImportCommand extends Command
      */
     public function handle(): int
     {
-        if (!$this->fetcher->isAvailable()) {
+        if (! $this->fetcher->isAvailable()) {
             $this->error('OpenAI API key is not configured. Please set OPENAI_API_KEY in your .env file.');
+
             return self::FAILURE;
         }
 
@@ -66,11 +68,12 @@ class GenAIAssistantImportCommand extends Command
         }
 
         $assistantIds = $this->option('id');
-        if (!empty($assistantIds)) {
+        if (! empty($assistantIds)) {
             return $this->importSpecificAssistants($assistantIds);
         }
 
         $this->info('Please specify an option. Use --help for available options.');
+
         return self::SUCCESS;
     }
 
@@ -86,6 +89,7 @@ class GenAIAssistantImportCommand extends Command
 
             if ($assistants->isEmpty()) {
                 $this->warn('No Assistants found in your OpenAI account.');
+
                 return self::SUCCESS;
             }
 
@@ -108,6 +112,7 @@ class GenAIAssistantImportCommand extends Command
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error("Failed to fetch Assistants: {$e->getMessage()}");
+
             return self::FAILURE;
         }
     }
@@ -124,7 +129,7 @@ class GenAIAssistantImportCommand extends Command
         $this->line("  Presets: {$status['presets_count']} files");
         $this->newLine();
 
-        if (!empty($status['prompts'])) {
+        if (! empty($status['prompts'])) {
             $this->info('Imported Prompts:');
             foreach ($status['prompts'] as $file) {
                 $this->line("  - {$file}");
@@ -132,7 +137,7 @@ class GenAIAssistantImportCommand extends Command
             $this->newLine();
         }
 
-        if (!empty($status['presets'])) {
+        if (! empty($status['presets'])) {
             $this->info('Imported Presets:');
             foreach ($status['presets'] as $file) {
                 $this->line("  - {$file}");
@@ -149,8 +154,9 @@ class GenAIAssistantImportCommand extends Command
     {
         $dryRun = $this->option('dry-run');
 
-        if (!$dryRun && !$this->confirm('Are you sure you want to delete all imported files?')) {
+        if (! $dryRun && ! $this->confirm('Are you sure you want to delete all imported files?')) {
             $this->info('Operation cancelled.');
+
             return self::SUCCESS;
         }
 
@@ -158,21 +164,21 @@ class GenAIAssistantImportCommand extends Command
 
         $results = $this->importService->cleanup($dryRun);
 
-        if (!empty($results['removed'])) {
+        if (! empty($results['removed'])) {
             $this->info('Files to be removed:');
             foreach ($results['removed'] as $file) {
                 $this->line("  - {$file}");
             }
         }
 
-        if (!empty($results['errors'])) {
+        if (! empty($results['errors'])) {
             $this->error('Errors encountered:');
             foreach ($results['errors'] as $error) {
                 $this->line("  - {$error}");
             }
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $this->info('✅ Cleanup completed.');
         }
 
@@ -195,13 +201,14 @@ class GenAIAssistantImportCommand extends Command
 
             if ($assistants->isEmpty()) {
                 $this->warn('No Assistants found to import.');
+
                 return self::SUCCESS;
             }
 
             $this->info("Found {$assistants->count()} Assistant(s) to import.");
             $this->newLine();
 
-            if (!$this->option('dry-run')) {
+            if (! $this->option('dry-run')) {
                 $results = $this->importService->importAll();
                 $this->displayImportResults($results);
             } else {
@@ -211,6 +218,7 @@ class GenAIAssistantImportCommand extends Command
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error("Import failed: {$e->getMessage()}");
+
             return self::FAILURE;
         }
     }
@@ -220,14 +228,14 @@ class GenAIAssistantImportCommand extends Command
      */
     private function importSpecificAssistants(array $assistantIds): int
     {
-        $this->info("📥 Importing specific Assistants: " . implode(', ', $assistantIds));
+        $this->info('📥 Importing specific Assistants: '.implode(', ', $assistantIds));
 
         if ($this->option('dry-run')) {
             $this->warn('🔍 Dry run mode - no files will be created.');
         }
 
         try {
-            if (!$this->option('dry-run')) {
+            if (! $this->option('dry-run')) {
                 $results = $this->importService->importByIds($assistantIds);
                 $this->displayImportResults($results);
             } else {
@@ -244,6 +252,7 @@ class GenAIAssistantImportCommand extends Command
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error("Import failed: {$e->getMessage()}");
+
             return self::FAILURE;
         }
     }
@@ -293,8 +302,8 @@ class GenAIAssistantImportCommand extends Command
         foreach ($assistants as $assistant) {
             $this->line("  - {$assistant->name} ({$assistant->id})");
             $this->line("    Model: {$assistant->model}");
-            $this->line("    Tools: " . count($assistant->tools));
-            $this->line("    Files: " . count($assistant->fileIds));
+            $this->line('    Tools: '.count($assistant->tools));
+            $this->line('    Files: '.count($assistant->fileIds));
             $this->newLine();
         }
     }

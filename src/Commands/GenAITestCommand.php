@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace CattyNeo\LaravelGenAI\Commands;
 
 use CattyNeo\LaravelGenAI\Services\GenAI\GenAIManager;
-use Illuminate\Console\Command;
 use Exception;
+use Illuminate\Console\Command;
 
 class GenAITestCommand extends Command
 {
@@ -62,10 +62,12 @@ class GenAITestCommand extends Command
 
         if ($successCount === 0) {
             $this->error('❌ All provider tests failed');
+
             return Command::FAILURE;
         }
 
         $this->info("✅ {$successCount}/{$totalCount} providers are working correctly");
+
         return Command::SUCCESS;
     }
 
@@ -78,10 +80,12 @@ class GenAITestCommand extends Command
 
         if ($result) {
             $this->info("✅ {$provider} is working correctly");
+
             return Command::SUCCESS;
         }
 
         $this->error("❌ {$provider} test failed");
+
         return Command::FAILURE;
     }
 
@@ -94,8 +98,9 @@ class GenAITestCommand extends Command
 
         try {
             // 設定確認
-            if (!$this->checkProviderConfig($provider)) {
+            if (! $this->checkProviderConfig($provider)) {
                 $this->warn("  ⚠️  API key not configured for {$provider}");
+
                 return false;
             }
 
@@ -110,15 +115,17 @@ class GenAITestCommand extends Command
 
             if (empty($response)) {
                 $this->error("  ❌ Empty response from {$provider}");
+
                 return false;
             }
 
             $this->info("  ✅ {$provider} responded successfully");
-            $this->line("  📝 Response: " . substr($response, 0, 100) . (strlen($response) > 100 ? '...' : ''));
+            $this->line('  📝 Response: '.substr($response, 0, 100).(strlen($response) > 100 ? '...' : ''));
 
             return true;
         } catch (Exception $e) {
-            $this->error("  ❌ {$provider} failed: " . $e->getMessage());
+            $this->error("  ❌ {$provider} failed: ".$e->getMessage());
+
             return false;
         }
     }
@@ -142,11 +149,11 @@ class GenAITestCommand extends Command
 
         $envKey = $envKeys[$provider] ?? null;
 
-        if (!$envKey) {
+        if (! $envKey) {
             return false;
         }
 
-        return !empty(env($envKey));
+        return ! empty(env($envKey));
     }
 
     /**

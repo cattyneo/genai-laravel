@@ -2,20 +2,19 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
+use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
 use CattyNeo\LaravelGenAI\Tests\TestCase;
-use Mockery as m;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
-use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
-use Carbon\Carbon;
-use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
+use Mockery as m;
 
 class PerformanceMonitoringServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     private PerformanceMonitoringService $performanceService;
+
     private array $mockConfig;
 
     protected function setUp(): void
@@ -30,12 +29,12 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'response_time_warning' => 5000,
                 'response_time_critical' => 10000,
                 'error_rate_warning' => 5.0,
-                'error_rate_critical' => 10.0
+                'error_rate_critical' => 10.0,
             ],
             'anomaly_detection' => [
                 'enabled' => true,
-                'sensitivity' => 0.7
-            ]
+                'sensitivity' => 0.7,
+            ],
         ];
 
         config(['genai.performance_monitoring' => $this->mockConfig]);
@@ -47,7 +46,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->performanceService = new PerformanceMonitoringService($mockNotificationService);
     }
 
-    public function testCanRecordRequestMetrics()
+    public function test_can_record_request_metrics()
     {
         $metrics = [
             'response_time' => 1500,
@@ -56,7 +55,7 @@ class PerformanceMonitoringServiceTest extends TestCase
             'input_tokens' => 100,
             'output_tokens' => 50,
             'success' => true,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         $result = $this->performanceService->recordMetrics($metrics);
@@ -65,7 +64,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertArrayHasKey('metric_id', $result);
     }
 
-    public function testCanCalculatePercentiles()
+    public function test_can_calculate_percentiles()
     {
         // テスト用のレスポンス時間データを記録
         $responseTimes = [1000, 1200, 1500, 2000, 2500, 3000, 5000, 8000, 10000, 15000];
@@ -76,7 +75,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         }
 
@@ -91,7 +90,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(8000, $percentiles['p95']);
     }
 
-    public function testCanCalculateErrorRate()
+    public function test_can_calculate_error_rate()
     {
         // 成功リクエスト
         for ($i = 0; $i < 9; $i++) {
@@ -100,7 +99,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         }
 
@@ -111,7 +110,7 @@ class PerformanceMonitoringServiceTest extends TestCase
             'model' => 'gpt-4',
             'success' => false,
             'error' => 'rate_limit_exceeded',
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
 
         $errorRate = $this->performanceService->calculateErrorRate('1h');
@@ -121,7 +120,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertEquals(10, $errorRate['total_requests']);
     }
 
-    public function testCanCalculateThroughput()
+    public function test_can_calculate_throughput()
     {
         // 1分間で5回のリクエストを記録
         $baseTime = now();
@@ -132,7 +131,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => $baseTime->copy()->addSeconds($i * 10)
+                'timestamp' => $baseTime->copy()->addSeconds($i * 10),
             ]);
         }
 
@@ -144,7 +143,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertGreaterThan(0, $throughput['rps']);
     }
 
-    public function testCanDetectPerformanceAnomalies()
+    public function test_can_detect_performance_anomalies()
     {
         // 正常なパフォーマンスデータを記録
         for ($i = 0; $i < 50; $i++) {
@@ -153,7 +152,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()->subMinutes($i)
+                'timestamp' => now()->subMinutes($i),
             ]);
         }
 
@@ -164,7 +163,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         }
 
@@ -175,7 +174,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertArrayHasKey('response_time_anomaly', $anomalies);
     }
 
-    public function testCanGeneratePerformanceReport()
+    public function test_can_generate_performance_report()
     {
         // テストデータを記録
         for ($i = 0; $i < 20; $i++) {
@@ -186,7 +185,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'input_tokens' => rand(50, 200),
                 'output_tokens' => rand(20, 100),
                 'success' => $i < 18, // 10%エラー率
-                'timestamp' => now()->subMinutes($i)
+                'timestamp' => now()->subMinutes($i),
             ]);
         }
 
@@ -206,7 +205,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertArrayHasKey('throughput', $summary);
     }
 
-    public function testCanGetRealTimeMetrics()
+    public function test_can_get_real_time_metrics()
     {
         // 最近のメトリクスを記録
         for ($i = 0; $i < 10; $i++) {
@@ -215,7 +214,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()->subSeconds($i * 6)
+                'timestamp' => now()->subSeconds($i * 6),
             ]);
         }
 
@@ -228,7 +227,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertArrayHasKey('error_rate', $realTimeMetrics);
     }
 
-    public function testCanTrackModelPerformance()
+    public function test_can_track_model_performance()
     {
         $models = ['gpt-4', 'gpt-4o-mini', 'claude-3-sonnet'];
 
@@ -239,7 +238,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                     'provider' => $model === 'claude-3-sonnet' ? 'claude' : 'openai',
                     'model' => $model,
                     'success' => true,
-                    'timestamp' => now()
+                    'timestamp' => now(),
                 ]);
             }
         }
@@ -257,7 +256,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         }
     }
 
-    public function testCanIdentifyPerformanceBottlenecks()
+    public function test_can_identify_performance_bottlenecks()
     {
         // 特定のプロバイダーで遅いレスポンス時間を記録
         for ($i = 0; $i < 10; $i++) {
@@ -266,7 +265,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'claude',
                 'model' => 'claude-3-opus',
                 'success' => true,
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         }
 
@@ -277,7 +276,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         }
 
@@ -295,7 +294,7 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertGreaterThan(5000, $claudeBottleneck['avg_response_time']);
     }
 
-    public function testCanGeneratePerformanceTrends()
+    public function test_can_generate_performance_trends()
     {
         // 異なる時間帯でメトリクスを記録
         $hoursAgo = 24;
@@ -306,7 +305,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                     'provider' => 'openai',
                     'model' => 'gpt-4',
                     'success' => true,
-                    'timestamp' => now()->subHours($hour)
+                    'timestamp' => now()->subHours($hour),
                 ]);
             }
         }
@@ -323,13 +322,13 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertEquals('increasing', $responseTrend['direction']);
     }
 
-    public function testCanCacheMetricsForPerformance()
+    public function test_can_cache_metrics_for_performance()
     {
         Cache::shouldReceive('remember')
             ->andReturn([
                 'avg_response_time' => 1500,
                 'throughput' => 2.5,
-                'error_rate' => 0.02
+                'error_rate' => 0.02,
             ]);
 
         $cachedMetrics = $this->performanceService->getCachedMetrics('1h');
@@ -339,35 +338,35 @@ class PerformanceMonitoringServiceTest extends TestCase
         $this->assertEquals(2.5, $cachedMetrics['throughput']);
     }
 
-    public function testHandlesDisabledMonitoring()
+    public function test_handles_disabled_monitoring()
     {
         config(['genai.performance_monitoring.enabled' => false]);
-        $disabledService = new PerformanceMonitoringService();
+        $disabledService = new PerformanceMonitoringService;
 
         $result = $disabledService->recordMetrics([
             'response_time' => 1500,
             'provider' => 'openai',
             'model' => 'gpt-4',
-            'success' => true
+            'success' => true,
         ]);
 
         $this->assertTrue($result['success']);
         $this->assertEquals('disabled', $result['status']);
     }
 
-    public function testValidatesMetricsData()
+    public function test_validates_metrics_data()
     {
         $invalidMetrics = [
             'response_time' => 'invalid',
             'provider' => null,
-            'model' => ''
+            'model' => '',
         ];
 
         $this->expectException(\InvalidArgumentException::class);
         $this->performanceService->recordMetrics($invalidMetrics);
     }
 
-    public function testCanCleanupOldMetrics()
+    public function test_can_cleanup_old_metrics()
     {
         // 古いメトリクスを記録
         for ($i = 0; $i < 5; $i++) {
@@ -376,7 +375,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()->subDays(35) // 保持期間より古い
+                'timestamp' => now()->subDays(35), // 保持期間より古い
             ]);
         }
 
@@ -387,7 +386,7 @@ class PerformanceMonitoringServiceTest extends TestCase
                 'provider' => 'openai',
                 'model' => 'gpt-4',
                 'success' => true,
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         }
 

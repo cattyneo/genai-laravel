@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 final class OpenAIProvider implements ProviderInterface
@@ -37,12 +36,12 @@ final class OpenAIProvider implements ProviderInterface
 
         $response = Http::timeout($timeout)
             ->withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer '.$this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->baseUrl . '/chat/completions', $payload);
+            ])->post($this->baseUrl.'/chat/completions', $payload);
 
-        if (!$response->successful()) {
-            throw new \RuntimeException('OpenAI API request failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \RuntimeException('OpenAI API request failed: '.$response->body());
         }
 
         return $response->json();
@@ -56,7 +55,7 @@ final class OpenAIProvider implements ProviderInterface
             'top_p' => $options['top_p'] ?? null,
             'frequency_penalty' => $options['frequency_penalty'] ?? null,
             'presence_penalty' => $options['presence_penalty'] ?? null,
-        ], fn($value) => $value !== null);
+        ], fn ($value) => $value !== null);
 
         return $transformed;
     }

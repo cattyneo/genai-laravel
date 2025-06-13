@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Http\Controllers;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
 use CattyNeo\LaravelGenAI\Services\GenAI\PresetAutoUpdateService;
+use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -30,13 +30,13 @@ class PresetController extends Controller
             $category = $request->get('category');
             $provider = $request->get('provider');
             $includeArchived = $request->boolean('include_archived', false);
-            
+
             $presets = $this->presetRepository->getPresets([
                 'category' => $category,
                 'provider' => $provider,
                 'include_archived' => $includeArchived,
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -50,13 +50,13 @@ class PresetController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get presets',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -68,16 +68,16 @@ class PresetController extends Controller
     {
         try {
             $includeHistory = $request->boolean('include_history', false);
-            
+
             $presetData = $this->presetRepository->getPreset($preset);
-            
-            if (!$presetData) {
+
+            if (! $presetData) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Preset not found',
                 ], 404);
             }
-            
+
             $response = [
                 'success' => true,
                 'data' => [
@@ -85,19 +85,19 @@ class PresetController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ];
-            
+
             if ($includeHistory) {
                 $response['data']['history'] = $this->presetRepository->getPresetHistory($preset);
             }
-            
+
             return response()->json($response);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get preset',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -120,18 +120,18 @@ class PresetController extends Controller
                 'category' => 'sometimes|string|max:50',
                 'tags' => 'sometimes|array',
             ]);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Validation failed',
-                    'details' => $validator->errors()
+                    'details' => $validator->errors(),
                 ], 422);
             }
-            
+
             $presetData = $validator->validated();
             $created = $this->presetRepository->createPreset($presetData);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -140,13 +140,13 @@ class PresetController extends Controller
                 ],
                 'meta' => [
                     'created_at' => now()->toISOString(),
-                ]
+                ],
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to create preset',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -169,25 +169,25 @@ class PresetController extends Controller
                 'category' => 'sometimes|string|max:50',
                 'tags' => 'sometimes|array',
             ]);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Validation failed',
-                    'details' => $validator->errors()
+                    'details' => $validator->errors(),
                 ], 422);
             }
-            
+
             $updateData = $validator->validated();
             $updated = $this->presetRepository->updatePreset($preset, $updateData);
-            
-            if (!$updated) {
+
+            if (! $updated) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Preset not found',
                 ], 404);
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -196,13 +196,13 @@ class PresetController extends Controller
                 ],
                 'meta' => [
                     'updated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to update preset',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -214,16 +214,16 @@ class PresetController extends Controller
     {
         try {
             $forceDelete = $request->boolean('force', false);
-            
+
             $deleted = $this->presetRepository->deletePreset($preset, $forceDelete);
-            
-            if (!$deleted) {
+
+            if (! $deleted) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Preset not found',
                 ], 404);
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -233,13 +233,13 @@ class PresetController extends Controller
                 'meta' => [
                     'deleted_at' => now()->toISOString(),
                     'force_delete' => $forceDelete,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to delete preset',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -251,7 +251,7 @@ class PresetController extends Controller
     {
         try {
             $status = $this->autoUpdateService->getPresetUpdateStatus($preset);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -260,13 +260,13 @@ class PresetController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get auto-update status',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

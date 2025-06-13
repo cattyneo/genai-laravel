@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use CattyNeo\LaravelGenAI\Tests\TestCase;
+use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
 use CattyNeo\LaravelGenAI\Facades\GenAI as GenAIFacade;
 use CattyNeo\LaravelGenAI\Services\GenAI\GenAIManager;
-use CattyNeo\LaravelGenAI\Services\GenAI\ProviderInterface;
-use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
-use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
+use CattyNeo\LaravelGenAI\Tests\TestCase;
 use Mockery;
 
 class GenAIFacadeTest extends TestCase

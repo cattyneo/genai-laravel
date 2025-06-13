@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Contracts\Cache\Repository as CacheRepository;
-use Illuminate\Cache\TaggableStore;
 
 final class CacheManager
 {
@@ -20,7 +19,7 @@ final class CacheManager
      */
     public function get(string $provider, string $model, string $prompt, array $options): ?array
     {
-        if (!$this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return null;
         }
 
@@ -30,7 +29,8 @@ final class CacheManager
         try {
             return $cache->get($key);
         } catch (\Exception $e) {
-            Log::warning("Cache get failed: " . $e->getMessage());
+            Log::warning('Cache get failed: '.$e->getMessage());
+
             return null;
         }
     }
@@ -40,7 +40,7 @@ final class CacheManager
      */
     public function put(string $provider, string $model, string $prompt, array $options, array $response): void
     {
-        if (!$this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return;
         }
 
@@ -57,7 +57,7 @@ final class CacheManager
                     $cache->tags($tags)->put($key, $response, $ttl);
                 } catch (\Exception $tagException) {
                     // タグ機能が利用できない場合は通常のキャッシュを使用
-                    Log::debug("Tag caching failed, using regular cache: " . $tagException->getMessage());
+                    Log::debug('Tag caching failed, using regular cache: '.$tagException->getMessage());
                     $cache->put($key, $response, $ttl);
                 }
             } else {
@@ -67,7 +67,7 @@ final class CacheManager
             // メタデータ保存
             $this->storeKeyMetadata($key, $provider, $model);
         } catch (\Exception $e) {
-            Log::warning("Cache put failed: " . $e->getMessage());
+            Log::warning('Cache put failed: '.$e->getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ final class CacheManager
             $cache->forget($key);
             $this->removeKeyMetadata($key);
         } catch (\Exception $e) {
-            Log::warning("Cache forget failed: " . $e->getMessage());
+            Log::warning('Cache forget failed: '.$e->getMessage());
         }
     }
 
@@ -101,7 +101,7 @@ final class CacheManager
                     // @phpstan-ignore-next-line
                     $cache->tags([$tag])->flush();
                 } catch (\Exception $tagException) {
-                    Log::debug("Tag flush failed, using full flush: " . $tagException->getMessage());
+                    Log::debug('Tag flush failed, using full flush: '.$tagException->getMessage());
                     $cache->flush();
                     $this->clearKeyMetadata();
                 }
@@ -111,7 +111,7 @@ final class CacheManager
                 $this->clearKeyMetadata();
             }
         } catch (\Exception $e) {
-            Log::warning("Cache flush failed: " . $e->getMessage());
+            Log::warning('Cache flush failed: '.$e->getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ final class CacheManager
                 // @phpstan-ignore-next-line
                 $cache->tags($tags)->flush();
             } catch (\Exception $e) {
-                Log::warning("Cache flush by provider-model failed: " . $e->getMessage());
+                Log::warning('Cache flush by provider-model failed: '.$e->getMessage());
                 // フォールバックとして全キャッシュクリア
                 $this->flush();
             }
@@ -256,7 +256,7 @@ final class CacheManager
                 try {
                     return Cache::store($driver);
                 } catch (\Exception $e) {
-                    Log::warning("Failed to use cache driver '{$driver}': " . $e->getMessage());
+                    Log::warning("Failed to use cache driver '{$driver}': ".$e->getMessage());
                 }
             }
         }
@@ -304,7 +304,8 @@ final class CacheManager
 
             return $total > 0 ? $hits / $total : 0.0;
         } catch (\Exception $e) {
-            Log::warning("Failed to get hit rate: " . $e->getMessage());
+            Log::warning('Failed to get hit rate: '.$e->getMessage());
+
             return 0.0;
         }
     }
@@ -317,7 +318,7 @@ final class CacheManager
         try {
             $this->getCacheStore()->increment('genai:cache:hits');
         } catch (\Exception $e) {
-            Log::warning("Failed to record cache hit: " . $e->getMessage());
+            Log::warning('Failed to record cache hit: '.$e->getMessage());
         }
     }
 
@@ -329,7 +330,7 @@ final class CacheManager
         try {
             $this->getCacheStore()->increment('genai:cache:misses');
         } catch (\Exception $e) {
-            Log::warning("Failed to record cache miss: " . $e->getMessage());
+            Log::warning('Failed to record cache miss: '.$e->getMessage());
         }
     }
 
@@ -381,7 +382,7 @@ final class CacheManager
     private function supportsTagging(): bool
     {
         $driver = $this->cacheConfig['driver'] ?? 'redis';
-        $hasTags = !empty($this->cacheConfig['tags']);
+        $hasTags = ! empty($this->cacheConfig['tags']);
 
         // Redisドライバーのみタグ機能をサポート
         return $hasTags && $driver === 'redis';

@@ -2,8 +2,8 @@
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI\Fetcher;
 
-use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use Illuminate\Support\Collection;
 
 /**
@@ -19,14 +19,16 @@ class GrokFetcher extends AbstractFetcher
     public function fetchModels(): Collection
     {
         $response = $this->makeRequest($this->config['models_endpoint']);
+
         return $this->parseModelsResponse($response->json());
     }
 
     public function fetchModel(string $modelId): ?ModelInfo
     {
         try {
-            $endpoint = $this->config['models_endpoint'] . '/' . $modelId;
+            $endpoint = $this->config['models_endpoint'].'/'.$modelId;
             $response = $this->makeRequest($endpoint);
+
             return $this->parseModelResponse($response->json());
         } catch (\Exception $e) {
             return null;
@@ -35,7 +37,7 @@ class GrokFetcher extends AbstractFetcher
 
     protected function parseModelsResponse(array $data): Collection
     {
-        if (!isset($data['data']) || !is_array($data['data'])) {
+        if (! isset($data['data']) || ! is_array($data['data'])) {
             return collect();
         }
 
@@ -80,6 +82,7 @@ class GrokFetcher extends AbstractFetcher
         if (str_contains($modelId, 'vision')) {
             return 'vision';
         }
+
         return 'text';
     }
 
@@ -96,7 +99,7 @@ class GrokFetcher extends AbstractFetcher
         }
 
         // 推理機能
-        if (str_contains($modelId, 'grok-3') && !str_contains($modelId, 'fast')) {
+        if (str_contains($modelId, 'grok-3') && ! str_contains($modelId, 'fast')) {
             $features[] = 'reasoning';
         }
 
@@ -122,6 +125,7 @@ class GrokFetcher extends AbstractFetcher
         if (str_contains($modelId, 'grok-3') || str_contains($modelId, 'grok-beta')) {
             return 131072; // 131K tokens
         }
+
         return 131072; // デフォルト
     }
 
@@ -130,12 +134,13 @@ class GrokFetcher extends AbstractFetcher
      */
     private function inferContextWindow(string $modelId): ?int
     {
-        if (str_contains($modelId, 'grok-3') && !str_contains($modelId, 'fast') && !str_contains($modelId, 'mini')) {
+        if (str_contains($modelId, 'grok-3') && ! str_contains($modelId, 'fast') && ! str_contains($modelId, 'mini')) {
             return 1000000; // 1M tokens (announced but API limited)
         }
         if (str_contains($modelId, 'grok-beta')) {
             return 131072; // 131K tokens
         }
+
         return 131072; // デフォルト
     }
 
@@ -165,6 +170,7 @@ class GrokFetcher extends AbstractFetcher
         if (str_contains($modelId, 'vision')) {
             return 'Grok model with vision capabilities';
         }
+
         return 'xAI Grok language model';
     }
 
@@ -188,6 +194,7 @@ class GrokFetcher extends AbstractFetcher
         if (str_contains($modelId, 'beta')) {
             return 'beta';
         }
+
         return null;
     }
 }

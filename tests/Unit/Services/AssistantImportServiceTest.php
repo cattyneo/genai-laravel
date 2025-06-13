@@ -2,21 +2,24 @@
 
 namespace Tests\Unit\Services;
 
-use CattyNeo\LaravelGenAI\Tests\TestCase;
+use Carbon\Carbon;
 use CattyNeo\LaravelGenAI\Data\AssistantInfo;
 use CattyNeo\LaravelGenAI\Services\GenAI\AssistantImportService;
 use CattyNeo\LaravelGenAI\Services\GenAI\Fetcher\OpenAIAssistantFetcher;
+use CattyNeo\LaravelGenAI\Tests\TestCase;
 use Illuminate\Support\Facades\File;
-use Carbon\Carbon;
 use Mockery;
 use Mockery\MockInterface;
 
 class AssistantImportServiceTest extends TestCase
 {
     private AssistantImportService $service;
+
     /** @var MockInterface&OpenAIAssistantFetcher */
     private MockInterface $mockFetcher;
+
     private string $testPromptsPath;
+
     private string $testPresetsPath;
 
     protected function setUp(): void
@@ -61,7 +64,7 @@ class AssistantImportServiceTest extends TestCase
             model: 'gpt-4.1',
             tools: [
                 ['type' => 'code_interpreter'],
-                ['type' => 'file_search']
+                ['type' => 'file_search'],
             ],
             fileIds: ['file-abc123'],
             metadata: ['version' => '1.0'],
@@ -72,8 +75,6 @@ class AssistantImportServiceTest extends TestCase
 
         $result = $this->service->importAssistant($assistant);
 
-
-
         $this->assertTrue($result['success']);
         $this->assertEquals('asst_test123', $result['assistant_id']);
         $this->assertEquals('Test Assistant', $result['name']);
@@ -81,18 +82,18 @@ class AssistantImportServiceTest extends TestCase
         $this->assertEquals(2, $result['tools_count']);
 
         // ファイルが作成されたことを確認
-        $this->assertTrue(File::exists($this->testPromptsPath . '/asst_test123.md'));
-        $this->assertTrue(File::exists($this->testPresetsPath . '/asst_test123.yaml'));
+        $this->assertTrue(File::exists($this->testPromptsPath.'/asst_test123.md'));
+        $this->assertTrue(File::exists($this->testPresetsPath.'/asst_test123.yaml'));
 
         // プロンプトファイルの内容を確認
-        $promptContent = File::get($this->testPromptsPath . '/asst_test123.md');
+        $promptContent = File::get($this->testPromptsPath.'/asst_test123.md');
         $this->assertStringContainsString('title: Test Assistant', $promptContent);
         $this->assertStringContainsString('description: Test description', $promptContent);
         $this->assertStringContainsString('variables: [topic]', $promptContent);
         $this->assertStringContainsString('You are a helpful assistant for {{topic}}.', $promptContent);
 
         // プリセットファイルの内容を確認
-        $presetContent = File::get($this->testPresetsPath . '/asst_test123.yaml');
+        $presetContent = File::get($this->testPresetsPath.'/asst_test123.yaml');
         $this->assertStringContainsString('provider: openai', $presetContent);
         $this->assertStringContainsString('model: gpt-4.1', $presetContent);
         $this->assertStringContainsString('temperature: 0.7', $presetContent);
@@ -149,9 +150,9 @@ class AssistantImportServiceTest extends TestCase
         File::ensureDirectoryExists($this->testPromptsPath);
         File::ensureDirectoryExists($this->testPresetsPath);
 
-        File::put($this->testPromptsPath . '/test1.md', 'test content');
-        File::put($this->testPromptsPath . '/test2.md', 'test content');
-        File::put($this->testPresetsPath . '/test1.yaml', 'test content');
+        File::put($this->testPromptsPath.'/test1.md', 'test content');
+        File::put($this->testPromptsPath.'/test2.md', 'test content');
+        File::put($this->testPresetsPath.'/test1.yaml', 'test content');
 
         $status = $this->service->getImportedFiles();
 
@@ -166,23 +167,23 @@ class AssistantImportServiceTest extends TestCase
     {
         // テストファイルを作成
         File::ensureDirectoryExists($this->testPromptsPath);
-        File::put($this->testPromptsPath . '/test.md', 'test content');
+        File::put($this->testPromptsPath.'/test.md', 'test content');
 
         $results = $this->service->cleanup(true); // dry run
 
         $this->assertContains('test.md (dry run)', $results['removed']);
-        $this->assertTrue(File::exists($this->testPromptsPath . '/test.md')); // ファイルは残っている
+        $this->assertTrue(File::exists($this->testPromptsPath.'/test.md')); // ファイルは残っている
     }
 
     public function test_cleanup_actually_deletes_files()
     {
         // テストファイルを作成
         File::ensureDirectoryExists($this->testPromptsPath);
-        File::put($this->testPromptsPath . '/test.md', 'test content');
+        File::put($this->testPromptsPath.'/test.md', 'test content');
 
         $results = $this->service->cleanup(false); // actual cleanup
 
         $this->assertContains('test.md', $results['removed']);
-        $this->assertFalse(File::exists($this->testPromptsPath . '/test.md')); // ファイルが削除されている
+        $this->assertFalse(File::exists($this->testPromptsPath.'/test.md')); // ファイルが削除されている
     }
 }

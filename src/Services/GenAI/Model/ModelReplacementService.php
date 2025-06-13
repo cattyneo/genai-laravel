@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI\Model;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
-use CattyNeo\LaravelGenAI\Models\GenAIRequest;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 /**
  * 代替モデル探索サービス
@@ -24,9 +22,9 @@ class ModelReplacementService
     /**
      * 代替モデルを検索
      *
-     * @param string $currentModel 現在のモデル
-     * @param string $provider プロバイダー
-     * @param array $context 使用コンテキスト（use_case, performance_requirements等）
+     * @param  string  $currentModel  現在のモデル
+     * @param  string  $provider  プロバイダー
+     * @param  array  $context  使用コンテキスト（use_case, performance_requirements等）
      * @return array 推奨代替モデルリスト（優先順位順）
      */
     public function findReplacements(
@@ -35,7 +33,7 @@ class ModelReplacementService
         array $context = []
     ): array {
         $currentModelInfo = $this->modelRepository->getModelInfo($provider, $currentModel);
-        if (!$currentModelInfo) {
+        if (! $currentModelInfo) {
             return [];
         }
 
@@ -76,7 +74,7 @@ class ModelReplacementService
             // 必須機能チェック
             $modelFeatures = $model['features'] ?? [];
             foreach ($requiredFeatures as $feature) {
-                if (!in_array($feature, $modelFeatures)) {
+                if (! in_array($feature, $modelFeatures)) {
                     return false;
                 }
             }
@@ -376,6 +374,7 @@ class ModelReplacementService
         }
 
         $matches = array_intersect($features, $requiredFeatures);
+
         return count($matches) / count($requiredFeatures);
     }
 

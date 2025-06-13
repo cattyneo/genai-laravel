@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Http\Controllers;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
 use CattyNeo\LaravelGenAI\Services\GenAI\CostOptimizationService;
+use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
+use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -30,10 +30,10 @@ class WebhookController extends Controller
     {
         try {
             // Webhook認証（必要に応じて）
-            if (!$this->validateWebhookSignature($request)) {
+            if (! $this->validateWebhookSignature($request)) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Invalid webhook signature'
+                    'error' => 'Invalid webhook signature',
                 ], 401);
             }
 
@@ -44,10 +44,10 @@ class WebhookController extends Controller
             $updateType = $payload['type'] ?? 'model_update';
             $data = $payload['data'] ?? [];
 
-            if (!$provider) {
+            if (! $provider) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Provider is required'
+                    'error' => 'Provider is required',
                 ], 400);
             }
 
@@ -67,18 +67,18 @@ class WebhookController extends Controller
                     'webhook_type' => 'model_update',
                     'provider' => $provider,
                     'update_type' => $updateType,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Model update webhook error', [
                 'error' => $e->getMessage(),
-                'payload' => $request->all()
+                'payload' => $request->all(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to process model update webhook',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -90,10 +90,10 @@ class WebhookController extends Controller
     {
         try {
             // Webhook認証（必要に応じて）
-            if (!$this->validateWebhookSignature($request)) {
+            if (! $this->validateWebhookSignature($request)) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Invalid webhook signature'
+                    'error' => 'Invalid webhook signature',
                 ], 401);
             }
 
@@ -118,18 +118,18 @@ class WebhookController extends Controller
                     'processed_at' => now()->toISOString(),
                     'webhook_type' => 'cost_alert',
                     'alert_type' => $alertType,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Cost alert webhook error', [
                 'error' => $e->getMessage(),
-                'payload' => $request->all()
+                'payload' => $request->all(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to process cost alert webhook',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -140,10 +140,10 @@ class WebhookController extends Controller
     public function handleSystemAlert(Request $request): JsonResponse
     {
         try {
-            if (!$this->validateWebhookSignature($request)) {
+            if (! $this->validateWebhookSignature($request)) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Invalid webhook signature'
+                    'error' => 'Invalid webhook signature',
                 ], 401);
             }
 
@@ -174,18 +174,18 @@ class WebhookController extends Controller
                     'webhook_type' => 'system_alert',
                     'alert_type' => $alertType,
                     'severity' => $severity,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('System alert webhook error', [
                 'error' => $e->getMessage(),
-                'payload' => $request->all()
+                'payload' => $request->all(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to process system alert webhook',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -196,10 +196,10 @@ class WebhookController extends Controller
     public function handleGenericWebhook(Request $request, string $type): JsonResponse
     {
         try {
-            if (!$this->validateWebhookSignature($request)) {
+            if (! $this->validateWebhookSignature($request)) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'Invalid webhook signature'
+                    'error' => 'Invalid webhook signature',
                 ], 401);
             }
 
@@ -215,18 +215,18 @@ class WebhookController extends Controller
                 'meta' => [
                     'processed_at' => now()->toISOString(),
                     'webhook_type' => $type,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error("Generic webhook error: {$type}", [
                 'error' => $e->getMessage(),
-                'payload' => $request->all()
+                'payload' => $request->all(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'error' => "Failed to process {$type} webhook",
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -240,17 +240,17 @@ class WebhookController extends Controller
     {
         // 実装に応じてWebhookの署名検証を行う
         // 例: HMACシグネチャ、API キー検証など
-        
+
         $signature = $request->header('X-Webhook-Signature');
         $secret = config('genai.webhook_secret');
-        
-        if (!$signature || !$secret) {
+
+        if (! $signature || ! $secret) {
             return true; // 開発環境では無効化する場合
         }
-        
+
         $payload = $request->getContent();
         $expectedSignature = hash_hmac('sha256', $payload, $secret);
-        
+
         return hash_equals($expectedSignature, $signature);
     }
 
@@ -260,13 +260,13 @@ class WebhookController extends Controller
     private function handleNewModel(string $provider, array $data): array
     {
         $modelData = $data['model'] ?? [];
-        
+
         if (empty($modelData)) {
             throw new \InvalidArgumentException('Model data is required');
         }
 
         $added = $this->modelRepository->addNewModel($provider, $modelData);
-        
+
         // 新モデル通知
         $this->notificationService->sendModelUpdateNotification(
             [$modelData], // new models
@@ -287,7 +287,7 @@ class WebhookController extends Controller
     {
         $deprecatedModels = $data['deprecated_models'] ?? [];
         $replacementSuggestions = $data['replacement_suggestions'] ?? [];
-        
+
         if (empty($deprecatedModels)) {
             throw new \InvalidArgumentException('Deprecated models data is required');
         }
@@ -296,7 +296,7 @@ class WebhookController extends Controller
         foreach ($deprecatedModels as $modelId) {
             $this->modelRepository->markModelAsDeprecated($provider, $modelId);
         }
-        
+
         // 廃止警告通知
         $this->notificationService->sendDeprecationWarning(
             $deprecatedModels,
@@ -316,7 +316,7 @@ class WebhookController extends Controller
     private function handleModelVersionUpdate(string $provider, array $data): array
     {
         $updates = $data['updates'] ?? [];
-        
+
         if (empty($updates)) {
             throw new \InvalidArgumentException('Update data is required');
         }
@@ -339,7 +339,7 @@ class WebhookController extends Controller
     private function handlePricingUpdate(string $provider, array $data): array
     {
         $pricingData = $data['pricing'] ?? [];
-        
+
         if (empty($pricingData)) {
             throw new \InvalidArgumentException('Pricing data is required');
         }
@@ -361,7 +361,7 @@ class WebhookController extends Controller
         return [
             'action' => 'generic_update',
             'provider' => $provider,
-            'data_received' => !empty($data),
+            'data_received' => ! empty($data),
             'processed' => true,
         ];
     }

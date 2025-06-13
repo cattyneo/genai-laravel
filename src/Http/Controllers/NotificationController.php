@@ -8,8 +8,6 @@ use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * GenAI 通知管理 API コントローラー
@@ -31,7 +29,7 @@ class NotificationController extends Controller
             $severity = $request->get('severity'); // critical, warning, info
             $startDate = $request->get('start_date');
             $endDate = $request->get('end_date');
-            
+
             $history = $this->notificationService->getNotificationHistory([
                 'limit' => $limit,
                 'type' => $type,
@@ -39,7 +37,7 @@ class NotificationController extends Controller
                 'start_date' => $startDate,
                 'end_date' => $endDate,
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -55,13 +53,13 @@ class NotificationController extends Controller
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'count' => count($history),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get notification history',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -74,18 +72,18 @@ class NotificationController extends Controller
         try {
             $severity = $request->get('severity');
             $category = $request->get('category'); // cost, performance, system, deprecation
-            
+
             $alerts = $this->notificationService->getActiveAlerts($severity, $category);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'active_alerts' => $alerts,
                     'summary' => [
                         'total' => count($alerts),
-                        'critical' => count(array_filter($alerts, fn($a) => $a['severity'] === 'critical')),
-                        'warning' => count(array_filter($alerts, fn($a) => $a['severity'] === 'warning')),
-                        'info' => count(array_filter($alerts, fn($a) => $a['severity'] === 'info')),
+                        'critical' => count(array_filter($alerts, fn ($a) => $a['severity'] === 'critical')),
+                        'warning' => count(array_filter($alerts, fn ($a) => $a['severity'] === 'warning')),
+                        'info' => count(array_filter($alerts, fn ($a) => $a['severity'] === 'info')),
                     ],
                     'filters' => [
                         'severity' => $severity,
@@ -94,13 +92,13 @@ class NotificationController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get active alerts',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -116,7 +114,7 @@ class NotificationController extends Controller
                 $request->get('acknowledged_by', 'API'),
                 $request->get('notes')
             );
-            
+
             if ($acknowledged) {
                 return response()->json([
                     'success' => true,
@@ -137,7 +135,7 @@ class NotificationController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to acknowledge alert',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -149,7 +147,7 @@ class NotificationController extends Controller
     {
         try {
             $settings = $this->notificationService->getNotificationSettings();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -159,13 +157,13 @@ class NotificationController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get notification settings',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -195,9 +193,9 @@ class NotificationController extends Controller
                 'recipients.discord_webhook' => 'sometimes|string|url',
                 'recipients.teams_webhook' => 'sometimes|string|url',
             ]);
-            
+
             $updated = $this->notificationService->updateNotificationSettings($settings);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -206,13 +204,13 @@ class NotificationController extends Controller
                 ],
                 'meta' => [
                     'updated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to update notification settings',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -227,14 +225,14 @@ class NotificationController extends Controller
                 'channel' => 'required|in:email,slack,discord,teams',
                 'message' => 'sometimes|string|max:500',
             ]);
-            
+
             $testMessage = $channel['message'] ?? 'This is a test notification from GenAI system.';
-            
+
             $sent = $this->notificationService->sendTestNotification(
                 $channel['channel'],
                 $testMessage
             );
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -248,7 +246,7 @@ class NotificationController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to send test notification',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -261,15 +259,15 @@ class NotificationController extends Controller
         try {
             $period = $request->get('period', 'last_30_days');
             $groupBy = $request->get('group_by', 'day');
-            
+
             [$startDate, $endDate] = $this->getPeriodDates($period);
-            
+
             $stats = $this->notificationService->getNotificationStats(
                 $startDate,
                 $endDate,
                 $groupBy
             );
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -282,13 +280,13 @@ class NotificationController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get notification stats',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -300,7 +298,7 @@ class NotificationController extends Controller
     {
         try {
             $status = $this->notificationService->checkChannelStatus();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -309,13 +307,13 @@ class NotificationController extends Controller
                 ],
                 'meta' => [
                     'checked_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to check channel status',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -326,7 +324,7 @@ class NotificationController extends Controller
     private function getPeriodDates(string $period): array
     {
         $now = now();
-        
+
         return match ($period) {
             'today' => [$now->copy()->startOfDay(), $now->copy()->endOfDay()],
             'yesterday' => [$now->copy()->subDay()->startOfDay(), $now->copy()->subDay()->endOfDay()],
@@ -343,15 +341,15 @@ class NotificationController extends Controller
      */
     private function calculateOverallHealth(array $channelStatus): string
     {
-        $healthyChannels = count(array_filter($channelStatus, fn($status) => $status['status'] === 'healthy'));
+        $healthyChannels = count(array_filter($channelStatus, fn ($status) => $status['status'] === 'healthy'));
         $totalChannels = count($channelStatus);
-        
+
         if ($totalChannels === 0) {
             return 'unknown';
         }
-        
+
         $healthPercent = ($healthyChannels / $totalChannels) * 100;
-        
+
         if ($healthPercent === 100) {
             return 'excellent';
         } elseif ($healthPercent >= 75) {

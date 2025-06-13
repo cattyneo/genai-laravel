@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Http\Controllers;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
 use CattyNeo\LaravelGenAI\Services\GenAI\CostOptimizationService;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
+use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Artisan;
 
 /**
  * GenAI システム管理 API コントローラー
@@ -32,7 +32,7 @@ class SystemController extends Controller
     {
         try {
             $includeDetails = $request->boolean('include_details', false);
-            
+
             $status = [
                 'overall_status' => 'operational',
                 'timestamp' => now()->toISOString(),
@@ -49,7 +49,7 @@ class SystemController extends Controller
                     'uptime' => $this->getSystemUptime(),
                 ],
             ];
-            
+
             if ($includeDetails) {
                 $status['details'] = [
                     'performance_summary' => $this->performanceService->getRealTimeMetrics(),
@@ -57,23 +57,23 @@ class SystemController extends Controller
                     'system_resources' => $this->getSystemResources(),
                 ];
             }
-            
+
             // 全体的なステータスを決定
             $status['overall_status'] = $this->determineOverallStatus($status['services']);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $status,
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'include_details' => $includeDetails,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get system status',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -91,9 +91,9 @@ class SystemController extends Controller
                 'disk_space' => $this->performDiskSpaceCheck(),
                 'memory' => $this->performMemoryCheck(),
             ];
-            
-            $allHealthy = collect($checks)->every(fn($check) => $check['status'] === 'healthy');
-            
+
+            $allHealthy = collect($checks)->every(fn ($check) => $check['status'] === 'healthy');
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -106,7 +106,7 @@ class SystemController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => 'Health check failed',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -118,7 +118,7 @@ class SystemController extends Controller
     {
         try {
             $includeSecrets = $request->boolean('include_secrets', false);
-            
+
             $config = [
                 'general' => [
                     'defaults' => config('genai.defaults'),
@@ -132,34 +132,34 @@ class SystemController extends Controller
                 ],
                 'providers' => [],
             ];
-            
+
             // プロバイダー設定（シークレット除く）
             $providers = config('genai.providers', []);
             foreach ($providers as $name => $providerConfig) {
                 $config['providers'][$name] = [
                     'base_url' => $providerConfig['base_url'] ?? null,
                     'models_endpoint' => $providerConfig['models_endpoint'] ?? null,
-                    'api_key_configured' => !empty($providerConfig['api_key']),
+                    'api_key_configured' => ! empty($providerConfig['api_key']),
                 ];
-                
+
                 if ($includeSecrets) {
                     $config['providers'][$name]['api_key'] = $providerConfig['api_key'] ?? null;
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $config,
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'include_secrets' => $includeSecrets,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get config',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -172,7 +172,7 @@ class SystemController extends Controller
         try {
             $types = $request->get('types', ['all']);
             $cleared = [];
-            
+
             foreach ($types as $type) {
                 switch ($type) {
                     case 'genai':
@@ -200,7 +200,7 @@ class SystemController extends Controller
                         break;
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -209,13 +209,13 @@ class SystemController extends Controller
                 ],
                 'meta' => [
                     'cleared_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to clear cache',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -228,13 +228,13 @@ class SystemController extends Controller
         try {
             $providers = $request->get('providers', ['all']);
             $forceUpdate = $request->boolean('force', false);
-            
+
             $results = [];
-            
+
             if (in_array('all', $providers)) {
                 $providers = ['openai', 'gemini', 'claude', 'grok'];
             }
-            
+
             foreach ($providers as $provider) {
                 try {
                     $result = $this->modelRepository->updateModelsFromProvider($provider, $forceUpdate);
@@ -251,7 +251,7 @@ class SystemController extends Controller
                     ];
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -261,13 +261,13 @@ class SystemController extends Controller
                 ],
                 'meta' => [
                     'updated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to update models',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -280,9 +280,9 @@ class SystemController extends Controller
         try {
             $tasks = $request->get('tasks', ['cleanup', 'optimize']);
             $dryRun = $request->boolean('dry_run', false);
-            
+
             $results = [];
-            
+
             foreach ($tasks as $task) {
                 switch ($task) {
                     case 'cleanup':
@@ -296,7 +296,7 @@ class SystemController extends Controller
                         break;
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -305,13 +305,13 @@ class SystemController extends Controller
                 ],
                 'meta' => [
                     'performed_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to perform maintenance',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -322,6 +322,7 @@ class SystemController extends Controller
     {
         try {
             DB::select('SELECT 1');
+
             return ['status' => 'healthy', 'response_time' => 0];
         } catch (\Exception $e) {
             return ['status' => 'unhealthy', 'error' => $e->getMessage()];
@@ -331,11 +332,11 @@ class SystemController extends Controller
     private function checkCacheStatus(): array
     {
         try {
-            $key = 'health_check_' . time();
+            $key = 'health_check_'.time();
             Cache::put($key, 'test', 10);
             $retrieved = Cache::get($key);
             Cache::forget($key);
-            
+
             return [
                 'status' => $retrieved === 'test' ? 'healthy' : 'degraded',
                 'driver' => config('cache.default'),
@@ -349,14 +350,14 @@ class SystemController extends Controller
     {
         $providers = config('genai.providers', []);
         $status = [];
-        
+
         foreach ($providers as $name => $config) {
             $status[$name] = [
-                'configured' => !empty($config['api_key']),
+                'configured' => ! empty($config['api_key']),
                 'status' => 'unknown', // 実際のAPI呼び出しでテストする場合は実装
             ];
         }
-        
+
         return $status;
     }
 
@@ -365,7 +366,7 @@ class SystemController extends Controller
         $storagePath = storage_path();
         $freeSpace = disk_free_space($storagePath);
         $totalSpace = disk_total_space($storagePath);
-        
+
         return [
             'status' => $freeSpace > 1024 * 1024 * 100 ? 'healthy' : 'warning', // 100MB threshold
             'free_space' => $freeSpace,
@@ -397,13 +398,13 @@ class SystemController extends Controller
     private function getSystemUptime(): string
     {
         // Laravel アプリケーションの起動時間（概算）
-        return "24h 30m"; // 実装に応じて調整
+        return '24h 30m'; // 実装に応じて調整
     }
 
     private function determineOverallStatus(array $services): string
     {
         $statuses = collect($services)->flatten()->pluck('status');
-        
+
         if ($statuses->contains('unhealthy')) {
             return 'degraded';
         } elseif ($statuses->contains('warning')) {
@@ -453,7 +454,7 @@ class SystemController extends Controller
     {
         $memoryUsage = memory_get_usage(true);
         $memoryLimit = ini_get('memory_limit');
-        
+
         return [
             'status' => 'healthy',
             'current_usage' => $memoryUsage,

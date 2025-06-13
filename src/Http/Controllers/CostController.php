@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Http\Controllers;
 
+use Carbon\Carbon;
 use CattyNeo\LaravelGenAI\Services\GenAI\CostOptimizationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Carbon\Carbon;
 
 /**
  * GenAI コスト分析 API コントローラー
@@ -26,20 +26,20 @@ class CostController extends Controller
     {
         try {
             $report = $this->costService->generateMonthlyReport($month);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $report,
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'cache_enabled' => config('genai.cache.enabled', false),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to generate monthly report',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -66,19 +66,19 @@ class CostController extends Controller
                 'daily_trends' => $this->costService->getDailyCostBreakdown($startDate, $endDate),
                 'optimization_opportunities' => $this->costService->identifyOptimizationOpportunities($startDate, $endDate),
             ];
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $report,
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to generate weekly report',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -90,9 +90,9 @@ class CostController extends Controller
     {
         try {
             $period = $request->get('period', 'current_month');
-            
+
             [$startDate, $endDate] = $this->getPeriodDates($period);
-            
+
             $summary = [
                 'period' => [
                     'type' => $period,
@@ -104,19 +104,19 @@ class CostController extends Controller
                 'provider_distribution' => $this->costService->getProviderCostBreakdown($startDate, $endDate),
                 'recent_trends' => $this->costService->getRecentTrends($period),
             ];
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $summary,
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get cost summary',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -129,21 +129,21 @@ class CostController extends Controller
         try {
             $period = $request->get('period', 'last_30_days');
             $threshold = $request->get('savings_threshold', 10.0);
-            
+
             [$startDate, $endDate] = $this->getPeriodDates($period);
-            
+
             $opportunities = $this->costService->identifyOptimizationOpportunities($startDate, $endDate);
-            
+
             // しきい値でフィルタリング
-            $filteredOpportunities = array_filter($opportunities, function($opportunity) use ($threshold) {
+            $filteredOpportunities = array_filter($opportunities, function ($opportunity) use ($threshold) {
                 return ($opportunity['potential_savings_percent'] ?? 0) >= $threshold;
             });
-            
+
             // 節約額でソート
-            usort($filteredOpportunities, function($a, $b) {
+            usort($filteredOpportunities, function ($a, $b) {
                 return ($b['potential_savings_amount'] ?? 0) <=> ($a['potential_savings_amount'] ?? 0);
             });
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -153,18 +153,18 @@ class CostController extends Controller
                     'period' => [
                         'start_date' => $startDate->toDateString(),
                         'end_date' => $endDate->toDateString(),
-                    ]
+                    ],
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'opportunity_count' => count($filteredOpportunities),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get optimization opportunities',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -177,13 +177,13 @@ class CostController extends Controller
         try {
             $budgetLimits = config('genai.advanced_services.cost_optimization.budget_limits', []);
             $currentCosts = $this->costService->getCurrentPeriodCosts();
-            
+
             $status = [];
             foreach ($budgetLimits as $period => $limit) {
                 if ($limit) {
                     $currentCost = $currentCosts[$period] ?? 0;
                     $usagePercent = $limit > 0 ? ($currentCost / $limit) * 100 : 0;
-                    
+
                     $status[$period] = [
                         'limit' => $limit,
                         'current' => $currentCost,
@@ -193,7 +193,7 @@ class CostController extends Controller
                     ];
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -202,13 +202,13 @@ class CostController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get budget status',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -219,7 +219,7 @@ class CostController extends Controller
     private function getPeriodDates(string $period): array
     {
         $now = now();
-        
+
         return match ($period) {
             'today' => [$now->copy()->startOfDay(), $now->copy()->endOfDay()],
             'yesterday' => [$now->copy()->subDay()->startOfDay(), $now->copy()->subDay()->endOfDay()],

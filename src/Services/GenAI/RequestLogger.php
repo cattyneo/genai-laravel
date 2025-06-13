@@ -8,8 +8,6 @@ use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
 use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
 use CattyNeo\LaravelGenAI\Models\GenAIRequest;
 use CattyNeo\LaravelGenAI\Models\GenAIStat;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 final class RequestLogger
@@ -26,7 +24,7 @@ final class RequestLogger
         float $durationMs,
         ?string $error = null
     ): ?GenAIRequest {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return null;
         }
 
@@ -77,7 +75,7 @@ final class RequestLogger
                     'model' => $model,
                 ])->lockForUpdate()->first();
 
-                if (!$stat) {
+                if (! $stat) {
                     GenAIStat::create([
                         'date' => $date,
                         'provider' => $provider,
@@ -120,7 +118,7 @@ final class RequestLogger
                 'provider' => $provider,
                 'model' => $model,
                 'date' => $date,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

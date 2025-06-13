@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
+use Carbon\Carbon;
 use CattyNeo\LaravelGenAI\Models\GenAIRequest;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
-use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * コスト最適化サービス
@@ -289,9 +288,9 @@ class CostOptimizationService
         Carbon $startDate,
         Carbon $endDate,
         float $minCost = 500,
-        int $limit = null
+        ?int $limit = null
     ): \Illuminate\Support\Collection {
-        $cacheKey = "high_cost_models_" . $startDate->format('Y-m-d') . "_" . $endDate->format('Y-m-d') . "_" . $minCost;
+        $cacheKey = 'high_cost_models_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'_'.$minCost;
 
         return Cache::remember($cacheKey, 300, function () use ($startDate, $endDate, $minCost, $limit) {
             $query = DB::table('genai_requests')
@@ -333,7 +332,7 @@ class CostOptimizationService
                 ['cost_optimization' => true]
             );
 
-            if (!empty($replacements)) {
+            if (! empty($replacements)) {
                 $opportunities[] = [
                     'type' => 'model_replacement',
                     'current_model' => $model->model,
@@ -562,11 +561,13 @@ class CostOptimizationService
 
     private function calculateUsageStability($trendData): float
     {
-        if ($trendData->count() < 2) return 0;
+        if ($trendData->count() < 2) {
+            return 0;
+        }
 
         $costs = $trendData->pluck('daily_cost')->toArray();
         $mean = array_sum($costs) / count($costs);
-        $variance = array_sum(array_map(fn($x) => pow($x - $mean, 2), $costs)) / count($costs);
+        $variance = array_sum(array_map(fn ($x) => pow($x - $mean, 2), $costs)) / count($costs);
         $stdDev = sqrt($variance);
 
         return $mean > 0 ? max(0, 1 - ($stdDev / $mean)) : 0;
@@ -656,7 +657,7 @@ class CostOptimizationService
     public function analyzeCostTrends(string $period = '7d'): array
     {
         // 最適化機能が無効な場合
-        if (!config('genai.cost_optimization.enabled', true)) {
+        if (! config('genai.cost_optimization.enabled', true)) {
             return [
                 'status' => 'disabled',
                 'message' => 'Cost optimization is disabled',
@@ -738,7 +739,7 @@ class CostOptimizationService
                 ['use_case' => 'cost_optimization']
             );
 
-            if (!empty($alternatives)) {
+            if (! empty($alternatives)) {
                 $suggestions[] = [
                     'type' => 'model_replacement',
                     'description' => "Replace {$model['provider']}/{$model['model']} with a more cost-effective alternative",
@@ -771,7 +772,7 @@ class CostOptimizationService
     public function calculatePotentialSavings(
         array $currentModel,
         array $alternativeModel,
-        int $monthlyTokens = null
+        ?int $monthlyTokens = null
     ): array {
         if ($monthlyTokens === null) {
             // 過去30日の実際のトークン使用量を計算
@@ -958,7 +959,7 @@ class CostOptimizationService
     {
         // バリデーション
         foreach ($limits as $period => $limit) {
-            if (!is_numeric($limit) || $limit < 0) {
+            if (! is_numeric($limit) || $limit < 0) {
                 throw new \InvalidArgumentException("Invalid budget limit for {$period}: {$limit}");
             }
         }
@@ -1107,7 +1108,7 @@ class CostOptimizationService
      */
     private function getCachedCacheMissRate(Carbon $startDate, Carbon $endDate): float
     {
-        $cacheKey = "cache_miss_rate_" . $startDate->format('Y-m-d') . "_" . $endDate->format('Y-m-d');
+        $cacheKey = 'cache_miss_rate_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d');
 
         return Cache::remember($cacheKey, 300, function () use ($startDate, $endDate) {
             return $this->calculateCacheMissRate($startDate, $endDate);
@@ -1119,7 +1120,7 @@ class CostOptimizationService
      */
     private function calculateModelSavings(object $currentModel, array $alternativeModel): array
     {
-        if (empty($alternativeModel) || !isset($alternativeModel['pricing'])) {
+        if (empty($alternativeModel) || ! isset($alternativeModel['pricing'])) {
             return ['estimated_savings' => 0, 'savings_percentage' => 0];
         }
 
@@ -1134,7 +1135,7 @@ class CostOptimizationService
             'estimated_savings' => $totalSavings,
             'savings_percentage' => $savingsPercentage,
             'current_cost_per_token' => $currentCostPerToken,
-            'alternative_cost_per_token' => $alternativeCostPerToken
+            'alternative_cost_per_token' => $alternativeCostPerToken,
         ];
     }
 }

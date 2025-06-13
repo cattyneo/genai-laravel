@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controller;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -23,9 +23,6 @@ class ModelRecommendationController extends Controller
 
     /**
      * 代替モデル推奨API
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getRecommendations(Request $request): JsonResponse
     {
@@ -68,29 +65,26 @@ class ModelRecommendationController extends Controller
                         'total_found' => count($recommendations),
                         'returned' => count($limitedRecommendations),
                         'generated_at' => now()->toISOString(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Validation failed',
-                'details' => $e->errors()
+                'details' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Internal server error',
-                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred'
+                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
 
     /**
      * 廃止予定モデルの代替推奨API
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getDeprecatedReplacements(Request $request): JsonResponse
     {
@@ -122,29 +116,26 @@ class ModelRecommendationController extends Controller
                         'total_found' => count($recommendations),
                         'returned' => count($limitedRecommendations),
                         'generated_at' => now()->toISOString(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Validation failed',
-                'details' => $e->errors()
+                'details' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Internal server error',
-                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred'
+                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
 
     /**
      * モデル比較API
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function compareModels(Request $request): JsonResponse
     {
@@ -182,29 +173,26 @@ class ModelRecommendationController extends Controller
                     'meta' => [
                         'compared_models' => count($comparisonData),
                         'generated_at' => now()->toISOString(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Validation failed',
-                'details' => $e->errors()
+                'details' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Internal server error',
-                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred'
+                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
 
     /**
      * 使用統計に基づく最適化推奨API
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getOptimizationRecommendations(Request $request): JsonResponse
     {
@@ -238,20 +226,20 @@ class ModelRecommendationController extends Controller
                     'recommendations' => $recommendations,
                     'meta' => [
                         'generated_at' => now()->toISOString(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Validation failed',
-                'details' => $e->errors()
+                'details' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Internal server error',
-                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred'
+                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }

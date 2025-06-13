@@ -2,9 +2,9 @@
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI\Fetcher;
 
+use Carbon\Carbon;
 use CattyNeo\LaravelGenAI\Data\AssistantInfo;
 use CattyNeo\LaravelGenAI\Data\ModelInfo;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 
@@ -45,7 +45,7 @@ class OpenAIAssistantFetcher implements FetcherInterface
 
     public function isAvailable(): bool
     {
-        return !empty($this->config['api_key']);
+        return ! empty($this->config['api_key']);
     }
 
     /**
@@ -54,6 +54,7 @@ class OpenAIAssistantFetcher implements FetcherInterface
     public function fetchAssistants(): Collection
     {
         $response = $this->makeAssistantRequest('/assistants');
+
         return $this->parseAssistantsResponse($response->json());
     }
 
@@ -64,6 +65,7 @@ class OpenAIAssistantFetcher implements FetcherInterface
     {
         try {
             $response = $this->makeAssistantRequest("/assistants/{$assistantId}");
+
             return $this->parseAssistantResponse($response->json());
         } catch (\Exception $e) {
             return null;
@@ -77,6 +79,7 @@ class OpenAIAssistantFetcher implements FetcherInterface
     {
         try {
             $response = $this->makeAssistantRequest("/assistants/{$assistantId}/files");
+
             return collect($response->json()['data'] ?? []);
         } catch (\Exception $e) {
             return collect();
@@ -90,6 +93,7 @@ class OpenAIAssistantFetcher implements FetcherInterface
     {
         try {
             $response = $this->makeAssistantRequest("/vector_stores/{$vectorStoreId}");
+
             return $response->json();
         } catch (\Exception $e) {
             return null;
@@ -98,7 +102,7 @@ class OpenAIAssistantFetcher implements FetcherInterface
 
     protected function parseAssistantsResponse(array $data): Collection
     {
-        if (!isset($data['data']) || !is_array($data['data'])) {
+        if (! isset($data['data']) || ! is_array($data['data'])) {
             return collect();
         }
 
@@ -142,12 +146,12 @@ class OpenAIAssistantFetcher implements FetcherInterface
     {
         $response = Http::timeout($this->config['timeout'])
             ->withHeaders([
-                'Authorization' => 'Bearer ' . $this->config['api_key'],
+                'Authorization' => 'Bearer '.$this->config['api_key'],
                 'Content-Type' => 'application/json',
                 'OpenAI-Beta' => 'assistants=v2',
-            ])->get($this->config['base_url'] . '/v1' . $endpoint);
+            ])->get($this->config['base_url'].'/v1'.$endpoint);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \RuntimeException(
                 "OpenAI Assistants API request failed: {$response->status()} - {$response->body()}"
             );

@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-use App\Services\GenAI\GenAIManager;
 use App\Services\GenAI\CacheManager;
+use App\Services\GenAI\GenAIManager;
 
 // Laravel アプリケーションの初期化
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "=== Laravel GenAI Package - 最終検証テスト ===\n\n";
@@ -15,11 +15,11 @@ try {
     // 1. 環境確認
     echo "1. 環境確認\n";
     echo "===========\n";
-    echo "PHP Redis拡張: " . (extension_loaded('redis') ? '✓ 有効' : '✗ 無効') . "\n";
-    echo "Predis パッケージ: " . (class_exists('Predis\Client') ? '✓ 有効' : '✗ 無効') . "\n";
-    echo "現在のキャッシュドライバー: " . config('cache.default') . "\n";
-    echo "現在のRedisクライアント: " . config('database.redis.client') . "\n";
-    echo "GenAI キャッシュ設定: " . (config('genai.cache.enabled') ? '有効' : '無効') . "\n\n";
+    echo 'PHP Redis拡張: '.(extension_loaded('redis') ? '✓ 有効' : '✗ 無効')."\n";
+    echo 'Predis パッケージ: '.(class_exists('Predis\Client') ? '✓ 有効' : '✗ 無効')."\n";
+    echo '現在のキャッシュドライバー: '.config('cache.default')."\n";
+    echo '現在のRedisクライアント: '.config('database.redis.client')."\n";
+    echo 'GenAI キャッシュ設定: '.(config('genai.cache.enabled') ? '有効' : '無効')."\n\n";
 
     // 2. サービス初期化確認
     echo "2. サービス初期化確認\n";
@@ -35,34 +35,34 @@ try {
     echo "===============\n";
 
     // キャッシュクリア
-    echo "キャッシュクリア... ";
+    echo 'キャッシュクリア... ';
     $cacheManager->flush();
     echo "✓\n";
 
     // プリセット機能
-    echo "プリセット機能... ";
+    echo 'プリセット機能... ';
     $response1 = $genai->preset('ask')->prompt('1+1=?')->request();
     echo "✓ (¥{$response1->cost})\n";
 
     // プロンプトテンプレート機能
-    echo "プロンプトテンプレート機能... ";
+    echo 'プロンプトテンプレート機能... ';
     $response2 = $genai->promptTemplate('default', ['topic' => 'PHP'])->preset('ask')->request();
     echo "✓ (¥{$response2->cost})\n";
 
     // キャッシュ機能
-    echo "キャッシュ機能... ";
+    echo 'キャッシュ機能... ';
     $startTime = microtime(true);
     $response3 = $genai->preset('ask')->prompt('1+1=?')->request();
     $duration = (microtime(true) - $startTime) * 1000;
-    echo "✓ (" . round($duration, 1) . "ms, " . ($response3->cached ? 'キャッシュヒット' : 'キャッシュミス') . ")\n";
+    echo '✓ ('.round($duration, 1).'ms, '.($response3->cached ? 'キャッシュヒット' : 'キャッシュミス').")\n";
 
     // Claude API
-    echo "Claude API... ";
+    echo 'Claude API... ';
     $response4 = $genai->preset('analyze')->prompt('簡潔に分析してください')->request();
     echo "✓ (¥{$response4->cost})\n";
 
     // 推論モデル
-    echo "推論モデル... ";
+    echo '推論モデル... ';
     $response5 = $genai->preset('think')->prompt('2+2=?')->request();
     echo "✓ (¥{$response5->cost})\n\n";
 
@@ -73,10 +73,10 @@ try {
     $cacheHits = ($response3->cached ? 1 : 0);
 
     echo "総リクエスト数: 5回\n";
-    echo "総コスト: ¥" . round($totalCost, 4) . "\n";
-    echo "平均コスト: ¥" . round($totalCost / 5, 4) . "/リクエスト\n";
-    echo "キャッシュヒット率: " . ($cacheHits / 5 * 100) . "%\n";
-    echo "キャッシュ応答時間: " . round($duration, 1) . "ms\n\n";
+    echo '総コスト: ¥'.round($totalCost, 4)."\n";
+    echo '平均コスト: ¥'.round($totalCost / 5, 4)."/リクエスト\n";
+    echo 'キャッシュヒット率: '.($cacheHits / 5 * 100)."%\n";
+    echo 'キャッシュ応答時間: '.round($duration, 1)."ms\n\n";
 
     // 5. 対応モデル一覧
     echo "5. 対応モデル一覧\n";
@@ -95,13 +95,13 @@ try {
         }
 
         foreach ($providers as $provider => $modelList) {
-            echo ucfirst($provider) . " (" . count($modelList) . "モデル): " . implode(', ', $modelList) . "\n";
+            echo ucfirst($provider).' ('.count($modelList).'モデル): '.implode(', ', $modelList)."\n";
         }
     } catch (\Exception $e) {
-        echo "⚠️ モデル一覧の取得に失敗: " . $e->getMessage() . "\n";
+        echo '⚠️ モデル一覧の取得に失敗: '.$e->getMessage()."\n";
         echo "config/genai.phpからフォールバック取得中...\n";
         $models = config('genai.models', []);
-        echo "設定ファイルから " . count($models) . " モデルを確認\n";
+        echo '設定ファイルから '.count($models)." モデルを確認\n";
     }
     echo "\n";
 
@@ -127,8 +127,8 @@ try {
     echo "✅ 統合機能: 完璧\n";
     echo "\n🎉 Laravel GenAI Package が完全に動作しています！\n";
 } catch (Exception $e) {
-    echo "❌ エラーが発生しました: " . $e->getMessage() . "\n";
-    echo "スタックトレース:\n" . $e->getTraceAsString() . "\n";
+    echo '❌ エラーが発生しました: '.$e->getMessage()."\n";
+    echo "スタックトレース:\n".$e->getTraceAsString()."\n";
 }
 
 echo "\n=== 最終検証テスト完了 ===\n";

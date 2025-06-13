@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
-use CattyNeo\LaravelGenAI\Tests\TestCase;
 use CattyNeo\LaravelGenAI\Services\GenAI\AsyncRequestProcessor;
-use CattyNeo\LaravelGenAI\Services\GenAI\ProviderFactory;
 use CattyNeo\LaravelGenAI\Services\GenAI\CostCalculator;
-use CattyNeo\LaravelGenAI\Services\GenAI\RequestConfiguration;
+use CattyNeo\LaravelGenAI\Services\GenAI\ProviderFactory;
 use CattyNeo\LaravelGenAI\Services\GenAI\ResolvedRequestConfig;
+use CattyNeo\LaravelGenAI\Tests\TestCase;
 use Illuminate\Support\Facades\Http;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class AsyncRequestProcessorTest extends TestCase
 {
     private AsyncRequestProcessor $processor;
+
     private ProviderFactory $providerFactory;
+
     private CostCalculator $costCalculator;
 
     protected function setUp(): void
@@ -123,15 +123,15 @@ class AsyncRequestProcessorTest extends TestCase
             'choices' => [
                 [
                     'message' => [
-                        'content' => 'Hello! How can I help you today?'
-                    ]
-                ]
+                        'content' => 'Hello! How can I help you today?',
+                    ],
+                ],
             ],
             'usage' => [
                 'input_tokens' => 10,
                 'output_tokens' => 8,
-                'total_tokens' => 18
-            ]
+                'total_tokens' => 18,
+            ],
         ];
 
         // 実際のコスト計算を使用
@@ -154,16 +154,16 @@ class AsyncRequestProcessorTest extends TestCase
                 [
                     'content' => [
                         'parts' => [
-                            ['text' => 'Hello! How can I help you today?']
-                        ]
-                    ]
-                ]
+                            ['text' => 'Hello! How can I help you today?'],
+                        ],
+                    ],
+                ],
             ],
             'usageMetadata' => [
                 'promptTokenCount' => 10,
                 'candidatesTokenCount' => 8,
-                'totalTokenCount' => 18
-            ]
+                'totalTokenCount' => 18,
+            ],
         ];
 
         // 実際のコスト計算を使用
@@ -184,12 +184,12 @@ class AsyncRequestProcessorTest extends TestCase
         Http::fake([
             'api.openai.com/*' => Http::response([
                 'choices' => [['message' => ['content' => 'OpenAI response']]],
-                'usage' => ['input_tokens' => 10, 'output_tokens' => 5]
+                'usage' => ['input_tokens' => 10, 'output_tokens' => 5],
             ]),
             'api.anthropic.com/*' => Http::response([
                 'content' => [['text' => 'Claude response']],
-                'usage' => ['input_tokens' => 8, 'output_tokens' => 6]
-            ])
+                'usage' => ['input_tokens' => 8, 'output_tokens' => 6],
+            ]),
         ]);
 
         $configs = [
@@ -210,7 +210,7 @@ class AsyncRequestProcessorTest extends TestCase
                 options: [],
                 vars: [],
                 stream: false
-            )
+            ),
         ];
 
         // 実際のプロバイダーファクトリーを使用

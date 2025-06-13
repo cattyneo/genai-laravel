@@ -4,11 +4,9 @@ namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
 use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelRepository;
-use CattyNeo\LaravelGenAI\Exceptions\InvalidConfigException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Orchestra\Testbench\TestCase;
-use Mockery;
 
 /**
  * ModelRepositoryのテスト
@@ -16,6 +14,7 @@ use Mockery;
 class ModelRepositoryTest extends TestCase
 {
     private ModelRepository $repository;
+
     private string $testYamlPath;
 
     protected function setUp(): void
@@ -23,7 +22,7 @@ class ModelRepositoryTest extends TestCase
         parent::setUp();
 
         $this->testYamlPath = storage_path('genai/test_models.yaml');
-        $this->repository = new ModelRepository();
+        $this->repository = new ModelRepository;
 
         // テスト用YAMLファイルのパスを設定
         $reflection = new \ReflectionClass($this->repository);
@@ -51,12 +50,12 @@ class ModelRepositoryTest extends TestCase
 
         $this->assertCount(2, $models);
 
-        $openaiModel = $models->first(fn($m) => $m->id === 'gpt-4o');
+        $openaiModel = $models->first(fn ($m) => $m->id === 'gpt-4o');
         $this->assertInstanceOf(ModelInfo::class, $openaiModel);
         $this->assertEquals('openai', $openaiModel->provider);
         $this->assertEquals(['vision', 'function_calling'], $openaiModel->features);
 
-        $claudeModel = $models->first(fn($m) => $m->id === 'claude-3-opus');
+        $claudeModel = $models->first(fn ($m) => $m->id === 'claude-3-opus');
         $this->assertInstanceOf(ModelInfo::class, $claudeModel);
         $this->assertEquals('claude', $claudeModel->provider);
         $this->assertEquals(4096, $claudeModel->maxTokens);
@@ -208,7 +207,7 @@ class ModelRepositoryTest extends TestCase
      */
     private function createTestYamlFile(): void
     {
-        $yamlContent = <<<YAML
+        $yamlContent = <<<'YAML'
 openai:
   gpt-4o:
     provider: openai

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
+use CattyNeo\LaravelGenAI\Exceptions\PromptNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Yaml\Yaml;
-use CattyNeo\LaravelGenAI\Exceptions\PromptNotFoundException;
 
 class PresetRepository
 {
     private array $presets = [];
+
     private bool $isWarmed = false;
 
     public function __construct(
@@ -23,11 +24,11 @@ class PresetRepository
      */
     public function get(string $name): PresetData
     {
-        if (!$this->isWarmed) {
+        if (! $this->isWarmed) {
             $this->warm();
         }
 
-        if (!isset($this->presets[$name])) {
+        if (! isset($this->presets[$name])) {
             throw new PromptNotFoundException("Preset '{$name}' not found");
         }
 
@@ -66,7 +67,7 @@ class PresetRepository
         $presets = [];
         $presetsPath = storage_path($this->presetsPath);
 
-        if (!File::exists($presetsPath)) {
+        if (! File::exists($presetsPath)) {
             File::makeDirectory($presetsPath, 0755, true);
             $this->createDefaultPresets($presetsPath);
         }
@@ -173,6 +174,7 @@ class PresetRepository
     public function getPreset(string $name): ?array
     {
         $this->warm();
+
         return $this->presets[$name] ?? null;
     }
 
@@ -182,6 +184,7 @@ class PresetRepository
     public function getAllPresets(): array
     {
         $this->warm();
+
         return $this->presets;
     }
 

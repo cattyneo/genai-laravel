@@ -77,7 +77,7 @@ class ModelInfo
      */
     public function getSummary(): string
     {
-        $features = empty($this->features) ? '' : ' [' . implode(', ', $this->features) . ']';
+        $features = empty($this->features) ? '' : ' ['.implode(', ', $this->features).']';
         $tokens = $this->maxTokens ? " ({$this->maxTokens} tokens)" : '';
 
         return "{$this->name} ({$this->provider}){$tokens}{$features}";

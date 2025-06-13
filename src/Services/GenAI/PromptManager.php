@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
+use CattyNeo\LaravelGenAI\Exceptions\PromptNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
-use CattyNeo\LaravelGenAI\Exceptions\PromptNotFoundException;
 
 final class PromptManager
 {
     private array $prompts = [];
+
     private string $promptsPath;
 
     public function __construct(string $promptsPath)
@@ -24,7 +25,7 @@ final class PromptManager
      */
     public function get(string $name): string
     {
-        if (!isset($this->prompts[$name])) {
+        if (! isset($this->prompts[$name])) {
             throw new PromptNotFoundException("Prompt '{$name}' not found");
         }
 
@@ -40,7 +41,7 @@ final class PromptManager
 
         // 変数置換
         foreach ($vars as $key => $value) {
-            $content = str_replace("{{$key}}", (string)$value, $content);
+            $content = str_replace("{{$key}}", (string) $value, $content);
         }
 
         return $content;
@@ -51,7 +52,7 @@ final class PromptManager
      */
     public function getMeta(string $name): array
     {
-        if (!isset($this->prompts[$name])) {
+        if (! isset($this->prompts[$name])) {
             throw new PromptNotFoundException("Prompt '{$name}' not found");
         }
 
@@ -105,6 +106,7 @@ final class PromptManager
 
         if ($cachedPrompts) {
             $this->prompts = $cachedPrompts;
+
             return;
         }
 
@@ -122,7 +124,7 @@ final class PromptManager
         $prompts = [];
         $promptsPath = storage_path($this->promptsPath);
 
-        if (!File::exists($promptsPath)) {
+        if (! File::exists($promptsPath)) {
             File::makeDirectory($promptsPath, 0755, true);
             $this->createDefaultPrompts($promptsPath);
         }
@@ -131,7 +133,7 @@ final class PromptManager
 
         foreach ($files as $file) {
             if ($file->getExtension() === 'md') {
-                $relativePath = str_replace($promptsPath . '/', '', $file->getRealPath());
+                $relativePath = str_replace($promptsPath.'/', '', $file->getRealPath());
                 $name = str_replace(['/', '.md'], ['_', ''], $relativePath);
 
                 $content = File::get($file->getRealPath());
@@ -226,17 +228,17 @@ final class PromptManager
         ];
 
         foreach ($defaultPrompts as $filename => $prompt) {
-            $filePath = $path . '/' . $filename;
+            $filePath = $path.'/'.$filename;
             $directory = dirname($filePath);
 
-            if (!File::exists($directory)) {
+            if (! File::exists($directory)) {
                 File::makeDirectory($directory, 0755, true);
             }
 
             $yamlMeta = '';
             foreach ($prompt['meta'] as $key => $value) {
                 if (is_array($value)) {
-                    $yamlMeta .= "{$key}: [" . implode(', ', $value) . "]\n";
+                    $yamlMeta .= "{$key}: [".implode(', ', $value)."]\n";
                 } else {
                     $yamlMeta .= "{$key}: {$value}\n";
                 }
@@ -273,6 +275,7 @@ final class PromptManager
                 $categories[$category] = ($categories[$category] ?? 0) + 1;
             }
         }
+
         return $categories;
     }
 
@@ -287,6 +290,7 @@ final class PromptManager
                 $variables = array_merge($variables, $prompt['meta']['variables']);
             }
         }
+
         return array_unique($variables);
     }
 }

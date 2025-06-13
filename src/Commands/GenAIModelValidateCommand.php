@@ -38,31 +38,32 @@ class GenAIModelValidateCommand extends Command
         $fix = $this->option('fix');
         $details = $this->option('details');
 
-        $this->info("🔍 GenAI Models YAML Validation");
-        $this->line("File: " . storage_path('genai/models.yaml'));
+        $this->info('🔍 GenAI Models YAML Validation');
+        $this->line('File: '.storage_path('genai/models.yaml'));
         $this->newLine();
 
         try {
             // YAML構文チェック
-            $this->info("Step 1: YAML構文チェック...");
+            $this->info('Step 1: YAML構文チェック...');
             $validation = $this->modelRepository->validateYaml();
 
             if ($validation['valid']) {
-                $this->info("✅ YAML構文: 正常");
+                $this->info('✅ YAML構文: 正常');
             } else {
-                $this->error("❌ YAML構文: エラーが見つかりました");
+                $this->error('❌ YAML構文: エラーが見つかりました');
                 $this->displayErrors($validation['errors']);
 
-                if (!$fix) {
+                if (! $fix) {
                     $this->newLine();
-                    $this->info("修正するには --fix オプションを使用してください");
+                    $this->info('修正するには --fix オプションを使用してください');
+
                     return 1;
                 }
             }
 
             // モデル読み込みテスト
             $this->newLine();
-            $this->info("Step 2: モデル読み込みテスト...");
+            $this->info('Step 2: モデル読み込みテスト...');
 
             $models = $this->modelRepository->getAllModels();
             $modelCount = $models->count();
@@ -74,35 +75,35 @@ class GenAIModelValidateCommand extends Command
                     $this->displayModelsSummary($models);
                 }
             } else {
-                $this->warn("⚠️ モデル読み込み: モデルが見つかりませんでした");
+                $this->warn('⚠️ モデル読み込み: モデルが見つかりませんでした');
             }
 
             // 統計情報の表示
             $this->newLine();
-            $this->info("Step 3: 統計情報");
+            $this->info('Step 3: 統計情報');
             $this->displayStatistics($models);
 
             // 重複チェック
             $this->newLine();
-            $this->info("Step 4: 重複チェック...");
+            $this->info('Step 4: 重複チェック...');
             $duplicates = $this->checkDuplicates($models);
 
             if (empty($duplicates)) {
-                $this->info("✅ 重複チェック: 重複するモデルIDは見つかりませんでした");
+                $this->info('✅ 重複チェック: 重複するモデルIDは見つかりませんでした');
             } else {
-                $this->error("❌ 重複チェック: 重複するモデルIDが見つかりました");
+                $this->error('❌ 重複チェック: 重複するモデルIDが見つかりました');
                 $this->displayDuplicates($duplicates);
             }
 
             // 設定整合性チェック
             $this->newLine();
-            $this->info("Step 5: 設定整合性チェック...");
+            $this->info('Step 5: 設定整合性チェック...');
             $configIssues = $this->checkConfigConsistency($models);
 
             if (empty($configIssues)) {
-                $this->info("✅ 設定整合性: 問題は見つかりませんでした");
+                $this->info('✅ 設定整合性: 問題は見つかりませんでした');
             } else {
-                $this->warn("⚠️ 設定整合性: 以下の問題が見つかりました");
+                $this->warn('⚠️ 設定整合性: 以下の問題が見つかりました');
                 foreach ($configIssues as $issue) {
                     $this->line("  • {$issue}");
                 }
@@ -113,14 +114,17 @@ class GenAIModelValidateCommand extends Command
             $totalIssues = count($validation['errors']) + count($duplicates) + count($configIssues);
 
             if ($totalIssues === 0) {
-                $this->info("🎉 検証完了: すべてのチェックに合格しました！");
+                $this->info('🎉 検証完了: すべてのチェックに合格しました！');
+
                 return 0;
             } else {
                 $this->error("📋 検証完了: {$totalIssues} 件の問題が見つかりました");
+
                 return 1;
             }
         } catch (\Exception $e) {
-            $this->error("❌ 検証中にエラーが発生しました: " . $e->getMessage());
+            $this->error('❌ 検証中にエラーが発生しました: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -141,7 +145,7 @@ class GenAIModelValidateCommand extends Command
     private function displayModelsSummary(\Illuminate\Support\Collection $models): void
     {
         $this->newLine();
-        $this->line("読み込まれたモデル:");
+        $this->line('読み込まれたモデル:');
 
         $grouped = $models->groupBy('provider');
         foreach ($grouped as $provider => $providerModels) {
@@ -194,7 +198,7 @@ class GenAIModelValidateCommand extends Command
             if (isset($seen[$model->id])) {
                 $duplicates[] = [
                     'id' => $model->id,
-                    'providers' => [$seen[$model->id], $model->provider]
+                    'providers' => [$seen[$model->id], $model->provider],
                 ];
             } else {
                 $seen[$model->id] = $model->provider;
@@ -225,7 +229,7 @@ class GenAIModelValidateCommand extends Command
 
         foreach ($models as $model) {
             // 設定されていないプロバイダーのチェック
-            if (!in_array($model->provider, $configProviders)) {
+            if (! in_array($model->provider, $configProviders)) {
                 $issues[] = "モデル '{$model->id}' のプロバイダー '{$model->provider}' がconfig/genai.phpで設定されていません";
             }
 
@@ -240,7 +244,7 @@ class GenAIModelValidateCommand extends Command
 
             // 必須フィールドのチェック
             if (empty($model->id)) {
-                $issues[] = "モデルIDが空です";
+                $issues[] = 'モデルIDが空です';
             }
 
             if (empty($model->provider)) {

@@ -266,7 +266,7 @@ class ModelManagementCommandsTest extends TestCase
      */
     private function createTestYamlFile(): void
     {
-        $yamlContent = <<<YAML
+        $yamlContent = <<<'YAML'
 openai:
   gpt-4o:
     provider: openai

@@ -6,7 +6,6 @@ namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
 use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
 use CattyNeo\LaravelGenAI\Exceptions\RateLimitException;
-use Illuminate\Support\Facades\Http;
 
 /**
  * API リクエストの実行を担当するクラス
@@ -28,7 +27,7 @@ final class RequestProcessor
     ): GenAIResponseData {
         $providerConfig = config("genai.providers.{$config->provider}");
 
-        if (!$providerConfig) {
+        if (! $providerConfig) {
             throw new \InvalidArgumentException("Provider '{$config->provider}' configuration not found");
         }
 
@@ -57,7 +56,7 @@ final class RequestProcessor
                 );
 
                 // レスポンスの安全性チェック
-                if (!is_array($raw) || !isset($raw['choices'][0]['message']['content'])) {
+                if (! is_array($raw) || ! isset($raw['choices'][0]['message']['content'])) {
                     throw new \RuntimeException('Invalid provider response format');
                 }
 
@@ -81,12 +80,12 @@ final class RequestProcessor
                     cost: $cost,
                     meta: $raw,
                     cached: false,
-                    responseTimeMs: (int)((microtime(true) - $startTime) * 1000)
+                    responseTimeMs: (int) ((microtime(true) - $startTime) * 1000)
                 );
             } catch (\Exception $e) {
                 $shouldRetry = $this->shouldRetry($e, $retryExceptions, $attempt, $maxAttempts);
 
-                if (!$shouldRetry) {
+                if (! $shouldRetry) {
                     throw $e;
                 }
 
@@ -112,11 +111,11 @@ final class RequestProcessor
 
         $result = $this->rateLimiter->check($provider, $model, $estimatedTokens);
 
-        if (!$result['allowed']) {
+        if (! $result['allowed']) {
             throw new RateLimitException(
-                'Rate limit exceeded. ' .
-                    'Requests remaining: ' . ($result['requests_remaining'] ?? 'N/A') . ', ' .
-                    'Tokens remaining: ' . ($result['tokens_remaining'] ?? 'N/A')
+                'Rate limit exceeded. '.
+                    'Requests remaining: '.($result['requests_remaining'] ?? 'N/A').', '.
+                    'Tokens remaining: '.($result['tokens_remaining'] ?? 'N/A')
             );
         }
     }
@@ -150,7 +149,7 @@ final class RequestProcessor
             meta: [],
             error: $error,
             cached: false,
-            responseTimeMs: (int)((microtime(true) - $startTime) * 1000)
+            responseTimeMs: (int) ((microtime(true) - $startTime) * 1000)
         );
     }
 

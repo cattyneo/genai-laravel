@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
 use CattyNeo\LaravelGenAI\Actions\RequestAction;
+use CattyNeo\LaravelGenAI\Data\ChainState;
 use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
 use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
-use CattyNeo\LaravelGenAI\Data\ChainState;
 
 final class GenAIManager
 {
@@ -18,7 +18,7 @@ final class GenAIManager
         private PromptManager $promptManager,
         private array $providers = []
     ) {
-        $this->chainState = new ChainState();
+        $this->chainState = new ChainState;
     }
 
     /**
@@ -58,6 +58,7 @@ final class GenAIManager
     public function provider(string $provider): self
     {
         $this->chainState = $this->chainState->withProvider($provider);
+
         return $this;
     }
 
@@ -67,6 +68,7 @@ final class GenAIManager
     public function preset(string $name): self
     {
         $this->chainState = $this->chainState->withPreset($name);
+
         return $this;
     }
 
@@ -76,6 +78,7 @@ final class GenAIManager
     public function prompt(string $prompt): self
     {
         $this->chainState = $this->chainState->withPrompt($prompt);
+
         return $this;
     }
 
@@ -85,6 +88,7 @@ final class GenAIManager
     public function systemPrompt(string $systemPrompt): self
     {
         $this->chainState = $this->chainState->withSystemPrompt($systemPrompt);
+
         return $this;
     }
 
@@ -94,6 +98,7 @@ final class GenAIManager
     public function model(string $model): self
     {
         $this->chainState = $this->chainState->withModel($model);
+
         return $this;
     }
 
@@ -103,6 +108,7 @@ final class GenAIManager
     public function options(array $options): self
     {
         $this->chainState = $this->chainState->withOptions($options);
+
         return $this;
     }
 
@@ -112,6 +118,7 @@ final class GenAIManager
     public function vars(array $vars): self
     {
         $this->chainState = $this->chainState->withVars($vars);
+
         return $this;
     }
 
@@ -121,6 +128,7 @@ final class GenAIManager
     public function stream(): self
     {
         $this->chainState = $this->chainState->withStream();
+
         return $this;
     }
 
@@ -130,6 +138,7 @@ final class GenAIManager
     public function temperature(float $temperature): self
     {
         $this->chainState = $this->chainState->withTemperature($temperature);
+
         return $this;
     }
 
@@ -139,6 +148,7 @@ final class GenAIManager
     public function maxTokens(int $maxTokens): self
     {
         $this->chainState = $this->chainState->withMaxTokens($maxTokens);
+
         return $this;
     }
 
@@ -149,6 +159,7 @@ final class GenAIManager
     {
         $renderedPrompt = $this->promptManager->render($name, $vars);
         $this->chainState = $this->chainState->withPrompt($renderedPrompt);
+
         return $this;
     }
 

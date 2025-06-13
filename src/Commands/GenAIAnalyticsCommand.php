@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Commands;
 
-use Illuminate\Console\Command;
-use CattyNeo\LaravelGenAI\Models\GenAIRequest;
-use CattyNeo\LaravelGenAI\Models\GenAIStat;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Models\GenAIRequest;
+use Illuminate\Console\Command;
 
 /**
  * 詳細な使用統計分析ダッシュボード
@@ -104,15 +102,15 @@ class GenAIAnalyticsCommand extends Command
         $this->info('📈 Basic Statistics');
         $this->table(['Metric', 'Value'], [
             ['Total Requests', number_format($stats->total_requests)],
-            ['Success Rate', $successRate . '%'],
+            ['Success Rate', $successRate.'%'],
             ['Failed Requests', number_format($stats->failed_requests)],
-            ['Cache Hit Rate', $cacheHitRate . '%'],
+            ['Cache Hit Rate', $cacheHitRate.'%'],
             ['Total Tokens', number_format($stats->total_tokens)],
             ['Input Tokens', number_format($stats->total_input_tokens)],
             ['Output Tokens', number_format($stats->total_output_tokens)],
-            ['Total Cost', '¥' . number_format($stats->total_cost, 2)],
-            ['Avg Duration', round($stats->avg_duration, 2) . 'ms'],
-            ['Avg User Rating', $stats->avg_rating ? round($stats->avg_rating, 2) . '/5' : 'N/A'],
+            ['Total Cost', '¥'.number_format($stats->total_cost, 2)],
+            ['Avg Duration', round($stats->avg_duration, 2).'ms'],
+            ['Avg User Rating', $stats->avg_rating ? round($stats->avg_rating, 2).'/5' : 'N/A'],
         ]);
         $this->line('');
     }
@@ -153,11 +151,11 @@ class GenAIAnalyticsCommand extends Command
             $rows[] = [
                 $stat->provider,
                 number_format($stat->requests),
-                $successRate . '%',
-                $cacheRate . '%',
-                '¥' . number_format($stat->total_cost, 2),
-                round($stat->avg_duration, 1) . 'ms',
-                $stat->avg_rating ? round($stat->avg_rating, 2) : 'N/A'
+                $successRate.'%',
+                $cacheRate.'%',
+                '¥'.number_format($stat->total_cost, 2),
+                round($stat->avg_duration, 1).'ms',
+                $stat->avg_rating ? round($stat->avg_rating, 2) : 'N/A',
             ];
         }
 
@@ -206,10 +204,10 @@ class GenAIAnalyticsCommand extends Command
                 $stat->provider,
                 $stat->model,
                 number_format($stat->requests),
-                '¥' . number_format($stat->total_cost, 2),
-                round($stat->avg_duration, 1) . 'ms',
+                '¥'.number_format($stat->total_cost, 2),
+                round($stat->avg_duration, 1).'ms',
                 $isDeprecated,
-                $stat->avg_rating ? round($stat->avg_rating, 2) : 'N/A'
+                $stat->avg_rating ? round($stat->avg_rating, 2) : 'N/A',
             ];
         }
 
@@ -251,10 +249,10 @@ class GenAIAnalyticsCommand extends Command
             $rows[] = [
                 $stat->use_case ?: 'Unknown',
                 number_format($stat->requests),
-                '¥' . number_format($stat->total_cost, 2),
+                '¥'.number_format($stat->total_cost, 2),
                 number_format($stat->avg_input_tokens),
                 number_format($stat->avg_output_tokens),
-                $stat->avg_rating ? round($stat->avg_rating, 2) : 'N/A'
+                $stat->avg_rating ? round($stat->avg_rating, 2) : 'N/A',
             ];
         }
 
@@ -286,11 +284,11 @@ class GenAIAnalyticsCommand extends Command
             $minDailyCost = $dailyCosts->min('daily_cost');
 
             $this->table(['Metric', 'Value'], [
-                ['Total Cost', '¥' . number_format($totalCost, 2)],
-                ['Avg Daily Cost', '¥' . number_format($avgDailyCost, 2)],
-                ['Max Daily Cost', '¥' . number_format($maxDailyCost, 2)],
-                ['Min Daily Cost', '¥' . number_format($minDailyCost, 2)],
-                ['Cost per Request', '¥' . number_format($totalCost / $dailyCosts->sum('daily_requests'), 4)],
+                ['Total Cost', '¥'.number_format($totalCost, 2)],
+                ['Avg Daily Cost', '¥'.number_format($avgDailyCost, 2)],
+                ['Max Daily Cost', '¥'.number_format($maxDailyCost, 2)],
+                ['Min Daily Cost', '¥'.number_format($minDailyCost, 2)],
+                ['Cost per Request', '¥'.number_format($totalCost / $dailyCosts->sum('daily_requests'), 4)],
             ]);
         } else {
             $this->line('No cost data available for the specified period.');
@@ -335,13 +333,13 @@ class GenAIAnalyticsCommand extends Command
             : 0;
 
         $this->table(['Metric', 'Value'], [
-            ['Avg Duration', round($performanceStats->avg_duration, 2) . 'ms'],
-            ['Min Duration', round($performanceStats->min_duration, 2) . 'ms'],
-            ['Max Duration', round($performanceStats->max_duration, 2) . 'ms'],
-            ['Median Duration', round($median, 2) . 'ms'],
-            ['95th Percentile', round($p95, 2) . 'ms'],
-            ['Fast Requests (<1s)', $fastPercentage . '%'],
-            ['Slow Requests (>10s)', $slowPercentage . '%'],
+            ['Avg Duration', round($performanceStats->avg_duration, 2).'ms'],
+            ['Min Duration', round($performanceStats->min_duration, 2).'ms'],
+            ['Max Duration', round($performanceStats->max_duration, 2).'ms'],
+            ['Median Duration', round($median, 2).'ms'],
+            ['95th Percentile', round($p95, 2).'ms'],
+            ['Fast Requests (<1s)', $fastPercentage.'%'],
+            ['Slow Requests (>10s)', $slowPercentage.'%'],
         ]);
         $this->line('');
     }
@@ -370,9 +368,9 @@ class GenAIAnalyticsCommand extends Command
 
             $this->table(['Metric', 'Value'], [
                 ['Total Rated Requests', number_format($qualityStats->rated_requests)],
-                ['Average Rating', round($qualityStats->avg_rating, 2) . '/5'],
-                ['Excellent (4-5)', $excellentPercentage . '%'],
-                ['Good (3+)', $goodPercentage . '%'],
+                ['Average Rating', round($qualityStats->avg_rating, 2).'/5'],
+                ['Excellent (4-5)', $excellentPercentage.'%'],
+                ['Good (3+)', $goodPercentage.'%'],
             ]);
         } else {
             $this->line('No quality ratings available for the specified period.');
@@ -405,7 +403,7 @@ class GenAIAnalyticsCommand extends Command
         if ($presetStats->count() > 0) {
             $this->line('📋 Top Presets:');
             foreach ($presetStats as $preset) {
-                $this->line("  • {$preset->preset_name}: {$preset->usage_count} uses, ¥{$preset->total_cost}, Rating: " . round($preset->avg_rating ?? 0, 2));
+                $this->line("  • {$preset->preset_name}: {$preset->usage_count} uses, ¥{$preset->total_cost}, Rating: ".round($preset->avg_rating ?? 0, 2));
             }
             $this->line('');
         }
@@ -484,7 +482,7 @@ class GenAIAnalyticsCommand extends Command
             ->first();
 
         if ($costPerToken) {
-            $recommendations[] = "💰 Most cost-efficient model: {$costPerToken->provider}/{$costPerToken->model} (¥" . round($costPerToken->cost_per_token, 6) . " per token)";
+            $recommendations[] = "💰 Most cost-efficient model: {$costPerToken->provider}/{$costPerToken->model} (¥".round($costPerToken->cost_per_token, 6).' per token)';
         }
 
         // 性能最適化

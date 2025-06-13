@@ -14,7 +14,7 @@ final class MockProvider implements ProviderInterface
     ): array {
         // モック応答を返す
         return [
-            'id' => 'chatcmpl-mock-' . uniqid(),
+            'id' => 'chatcmpl-mock-'.uniqid(),
             'object' => 'chat.completion',
             'created' => time(),
             'model' => $model,
@@ -23,18 +23,18 @@ final class MockProvider implements ProviderInterface
                     'index' => 0,
                     'message' => [
                         'role' => 'assistant',
-                        'content' => "Mock response to: {$userPrompt}" .
+                        'content' => "Mock response to: {$userPrompt}".
                             ($systemPrompt ? " (System: {$systemPrompt})" : ''),
                     ],
                     'finish_reason' => 'stop',
-                ]
+                ],
             ],
             'usage' => [
-                'input_tokens' => (int)(strlen($userPrompt) / 4), // 大まかな推定
+                'input_tokens' => (int) (strlen($userPrompt) / 4), // 大まかな推定
                 'output_tokens' => 20,
-                'total_tokens' => (int)(strlen($userPrompt) / 4) + 20,
+                'total_tokens' => (int) (strlen($userPrompt) / 4) + 20,
                 // 後方互換性のため
-                'prompt_tokens' => (int)(strlen($userPrompt) / 4),
+                'prompt_tokens' => (int) (strlen($userPrompt) / 4),
                 'completion_tokens' => 20,
             ],
         ];

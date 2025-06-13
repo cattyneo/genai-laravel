@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
-use CattyNeo\LaravelGenAI\Actions\RequestAction;
 use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
-use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
-use CattyNeo\LaravelGenAI\Services\GenAI\ProviderInterface;
-use CattyNeo\LaravelGenAI\Services\GenAI\ProviderFactory;
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
-use CattyNeo\LaravelGenAI\Services\GenAI\CostCalculator;
-use CattyNeo\LaravelGenAI\Services\GenAI\CacheManager;
-use CattyNeo\LaravelGenAI\Services\GenAI\RequestLogger;
+use CattyNeo\LaravelGenAI\Services\GenAI\GenAIManager;
 use CattyNeo\LaravelGenAI\Tests\TestCase;
 use Mockery;
-use CattyNeo\LaravelGenAI\Services\GenAI\GenAIManager;
 
 class GenAITest extends TestCase
 {
     private $mockProvider;
+
     private $requestAction;
 
     protected function setUp(): void

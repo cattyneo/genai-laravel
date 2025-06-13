@@ -196,7 +196,7 @@ class ChainState extends Data
      */
     public function reset(): self
     {
-        return new self();
+        return new self;
     }
 
     /**
@@ -211,6 +211,6 @@ class ChainState extends Data
             && empty($this->provider)
             && empty($this->options)
             && empty($this->vars)
-            && !$this->stream;
+            && ! $this->stream;
     }
 }

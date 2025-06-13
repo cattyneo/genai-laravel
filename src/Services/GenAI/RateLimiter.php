@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use CattyNeo\LaravelGenAI\Exceptions\RateLimitException;
 
 /**
  * GenAI APIのレート制限管理クラス
@@ -90,7 +89,7 @@ final class RateLimiter
             $results['current_usage']['daily_requests'] = $dailyResult['current'];
         }
 
-        if (!$results['allowed']) {
+        if (! $results['allowed']) {
             $this->logRateLimitHit($provider, $model, $userId, $results);
         }
 
@@ -252,7 +251,8 @@ final class RateLimiter
         try {
             return (int) Cache::store($this->cacheDriver)->get($key, 0);
         } catch (\Exception $e) {
-            Log::warning("Rate limiter cache get failed: " . $e->getMessage());
+            Log::warning('Rate limiter cache get failed: '.$e->getMessage());
+
             return 0;
         }
     }
@@ -271,7 +271,7 @@ final class RateLimiter
                 $cache->put($key, $increment, $ttl);
             }
         } catch (\Exception $e) {
-            Log::warning("Rate limiter cache increment failed: " . $e->getMessage());
+            Log::warning('Rate limiter cache increment failed: '.$e->getMessage());
         }
     }
 
@@ -281,6 +281,7 @@ final class RateLimiter
     private function getRequestKey(string $provider, string $model, string $userId, int $now): string
     {
         $window = floor($now / self::WINDOW_SIZE);
+
         return "genai:rate_limit:requests:{$provider}:{$model}:{$userId}:{$window}";
     }
 
@@ -290,6 +291,7 @@ final class RateLimiter
     private function getTokenKey(string $provider, string $model, string $userId, int $now): string
     {
         $window = floor($now / self::WINDOW_SIZE);
+
         return "genai:rate_limit:tokens:{$provider}:{$model}:{$userId}:{$window}";
     }
 
@@ -299,6 +301,7 @@ final class RateLimiter
     private function getDailyKey(string $provider, string $model, string $userId, int $now): string
     {
         $day = date('Y-m-d', $now);
+
         return "genai:rate_limit:daily:{$provider}:{$model}:{$userId}:{$day}";
     }
 
@@ -376,7 +379,7 @@ final class RateLimiter
                 $cache->forget($key);
             }
         } catch (\Exception $e) {
-            Log::warning("Rate limiter reset failed: " . $e->getMessage());
+            Log::warning('Rate limiter reset failed: '.$e->getMessage());
         }
     }
 }

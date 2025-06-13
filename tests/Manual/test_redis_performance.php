@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-use App\Services\GenAI\GenAIManager;
 use App\Services\GenAI\CacheManager;
+use App\Services\GenAI\GenAIManager;
 
 // Laravel アプリケーションの初期化
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "=== Redis性能比較テスト ===\n\n";
@@ -61,7 +61,7 @@ function runPerformanceTest($client, $iterations = 10)
     echo sprintf("平均コスト: ¥%.4f\n", array_sum($costs) / count($costs));
     echo sprintf(
         "キャッシュヒット率: %.1f%%\n",
-        (count(array_filter($costs, fn($c) => $c == 0)) / count($costs)) * 100
+        (count(array_filter($costs, fn ($c) => $c == 0)) / count($costs)) * 100
     );
     echo "\n";
 
@@ -70,7 +70,7 @@ function runPerformanceTest($client, $iterations = 10)
         'min_time' => min($times),
         'max_time' => max($times),
         'total_cost' => array_sum($costs),
-        'cache_hit_rate' => (count(array_filter($costs, fn($c) => $c == 0)) / count($costs)) * 100
+        'cache_hit_rate' => (count(array_filter($costs, fn ($c) => $c == 0)) / count($costs)) * 100,
     ];
 }
 
@@ -111,15 +111,15 @@ try {
     $faster = $phpredisResults['avg_time'] < $predisResults['avg_time'] ? 'PhpRedis' : 'Predis';
     echo "=== 推奨設定 ===\n";
     echo "最適なRedisクライアント: {$faster}\n";
-    echo "設定: REDIS_CLIENT=" . strtolower($faster) . "\n";
+    echo '設定: REDIS_CLIENT='.strtolower($faster)."\n";
 
     // Redis拡張確認
     echo "\n=== Redis 環境情報 ===\n";
-    echo "PHP Redis拡張: " . (extension_loaded('redis') ? '✓ 有効' : '✗ 無効') . "\n";
-    echo "Predisパッケージ: " . (class_exists('Predis\Client') ? '✓ インストール済み' : '✗ 未インストール') . "\n";
+    echo 'PHP Redis拡張: '.(extension_loaded('redis') ? '✓ 有効' : '✗ 無効')."\n";
+    echo 'Predisパッケージ: '.(class_exists('Predis\Client') ? '✓ インストール済み' : '✗ 未インストール')."\n";
 } catch (Exception $e) {
-    echo "エラーが発生しました: " . $e->getMessage() . "\n";
-    echo "スタックトレース:\n" . $e->getTraceAsString() . "\n";
+    echo 'エラーが発生しました: '.$e->getMessage()."\n";
+    echo "スタックトレース:\n".$e->getTraceAsString()."\n";
 }
 
 echo "\n=== 性能テスト完了 ===\n";

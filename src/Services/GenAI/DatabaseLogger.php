@@ -8,9 +8,9 @@ use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
 use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
 use CattyNeo\LaravelGenAI\Models\GenAIRequest;
 use CattyNeo\LaravelGenAI\Models\GenAIStat;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 /**
@@ -19,7 +19,9 @@ use Illuminate\Support\Str;
 final class DatabaseLogger
 {
     private array $pendingStats = [];
+
     private int $batchSize;
+
     private bool $deferStatsUpdate;
 
     public function __construct(
@@ -42,7 +44,7 @@ final class DatabaseLogger
         float $durationMs,
         ?string $error = null
     ): ?GenAIRequest {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return null;
         }
 
@@ -122,7 +124,7 @@ final class DatabaseLogger
         $date = now()->toDateString();
         $key = "{$provider}:{$model}:{$date}";
 
-        if (!isset($this->pendingStats[$key])) {
+        if (! isset($this->pendingStats[$key])) {
             $this->pendingStats[$key] = [
                 'provider' => $provider,
                 'model' => $model,
@@ -154,7 +156,7 @@ final class DatabaseLogger
      */
     private function processStatsBatch(string $key): void
     {
-        if (!isset($this->pendingStats[$key]) || empty($this->pendingStats[$key]['requests'])) {
+        if (! isset($this->pendingStats[$key]) || empty($this->pendingStats[$key]['requests'])) {
             return;
         }
 
@@ -244,7 +246,7 @@ final class DatabaseLogger
      */
     public function __destruct()
     {
-        if (!empty($this->pendingStats)) {
+        if (! empty($this->pendingStats)) {
             $this->flushPendingStats();
         }
     }

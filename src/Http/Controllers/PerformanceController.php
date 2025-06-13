@@ -8,7 +8,6 @@ use CattyNeo\LaravelGenAI\Services\GenAI\PerformanceMonitoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Carbon\Carbon;
 
 /**
  * GenAI パフォーマンス監視 API コントローラー
@@ -26,7 +25,7 @@ class PerformanceController extends Controller
     {
         try {
             $metrics = $this->performanceService->getRealTimeMetrics();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $metrics,
@@ -34,13 +33,13 @@ class PerformanceController extends Controller
                     'timestamp' => now()->toISOString(),
                     'realtime_enabled' => config('genai.advanced_services.monitoring.realtime_enabled', true),
                     'collection_interval' => config('genai.advanced_services.monitoring.collection_interval', 60),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get real-time metrics',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -54,16 +53,16 @@ class PerformanceController extends Controller
             $period = $request->get('period', 'last_24_hours');
             $granularity = $request->get('granularity', 'hourly');
             $metrics = $request->get('metrics', ['response_time', 'throughput', 'error_rate']);
-            
+
             [$startDate, $endDate] = $this->getPeriodDates($period);
-            
+
             $trends = $this->performanceService->getPerformanceTrends(
                 $startDate,
                 $endDate,
                 $granularity,
                 $metrics
             );
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -78,13 +77,13 @@ class PerformanceController extends Controller
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'data_points' => count($trends),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get performance trends',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -98,19 +97,19 @@ class PerformanceController extends Controller
             $days = $days ?? $request->get('days', 7);
             $groupBy = $request->get('group_by', 'provider');
             $includeDetails = $request->boolean('include_details', false);
-            
+
             $endDate = now();
             $startDate = $endDate->copy()->subDays($days);
-            
+
             $history = $this->performanceService->getPerformanceHistory(
                 $startDate,
                 $endDate,
                 $groupBy,
                 $includeDetails
             );
-            
+
             $summary = $this->performanceService->getPerformanceSummary($startDate, $endDate);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -126,13 +125,13 @@ class PerformanceController extends Controller
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'include_details' => $includeDetails,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get performance history',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -146,9 +145,9 @@ class PerformanceController extends Controller
             $status = $request->get('status', 'active'); // active, resolved, all
             $severity = $request->get('severity'); // critical, warning, info
             $limit = $request->get('limit', 50);
-            
+
             $alerts = $this->performanceService->getPerformanceAlerts($status, $severity, $limit);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -162,13 +161,13 @@ class PerformanceController extends Controller
                 'meta' => [
                     'generated_at' => now()->toISOString(),
                     'alert_count' => count($alerts),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get performance alerts',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -183,9 +182,9 @@ class PerformanceController extends Controller
             $models = $request->get('models', []);
             $period = $request->get('period', 'last_7_days');
             $metrics = $request->get('metrics', ['response_time', 'success_rate', 'throughput']);
-            
+
             [$startDate, $endDate] = $this->getPeriodDates($period);
-            
+
             $comparison = $this->performanceService->comparePerformance(
                 $providers,
                 $models,
@@ -193,7 +192,7 @@ class PerformanceController extends Controller
                 $endDate,
                 $metrics
             );
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -210,13 +209,13 @@ class PerformanceController extends Controller
                 ],
                 'meta' => [
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get performance comparison',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -228,22 +227,22 @@ class PerformanceController extends Controller
     {
         try {
             $includeDetails = $request->boolean('include_details', false);
-            
+
             $health = $this->performanceService->getSystemHealth($includeDetails);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $health,
                 'meta' => [
                     'timestamp' => now()->toISOString(),
                     'include_details' => $includeDetails,
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to get system health',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -263,9 +262,9 @@ class PerformanceController extends Controller
                 'alert_cooldown' => 'sometimes|integer|min:60|max:3600',
                 'realtime_enabled' => 'sometimes|boolean',
             ]);
-            
+
             $updated = $this->performanceService->updateSettings($settings);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -274,13 +273,13 @@ class PerformanceController extends Controller
                 ],
                 'meta' => [
                     'updated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to update performance settings',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -291,7 +290,7 @@ class PerformanceController extends Controller
     private function getPeriodDates(string $period): array
     {
         $now = now();
-        
+
         return match ($period) {
             'last_hour' => [$now->copy()->subHour(), $now],
             'last_6_hours' => [$now->copy()->subHours(6), $now],

@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace CattyNeo\LaravelGenAI\Commands;
 
 use CattyNeo\LaravelGenAI\Models\GenAIRequest;
-use CattyNeo\LaravelGenAI\Models\GenAIStat;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class GenAIStatsCommand extends Command
 {
@@ -81,9 +79,9 @@ class GenAIStatsCommand extends Command
             [
                 ['Total Requests', number_format($totalRequests)],
                 ['Successful Requests', number_format($successfulRequests)],
-                ['Success Rate', $successRate . '%'],
+                ['Success Rate', $successRate.'%'],
                 ['Total Tokens', number_format($totalTokens)],
-                ['Total Cost', '$' . number_format($totalCost, 4)],
+                ['Total Cost', '$'.number_format($totalCost, 4)],
             ]
         );
 
@@ -111,6 +109,7 @@ class GenAIStatsCommand extends Command
 
         if ($stats->isEmpty()) {
             $this->warn('No data available for the specified period.');
+
             return;
         }
 
@@ -122,7 +121,7 @@ class GenAIStatsCommand extends Command
                     ucfirst($stat->provider),
                     number_format($stat->request_count),
                     number_format($stat->total_tokens),
-                    '$' . number_format($stat->total_cost, 4),
+                    '$'.number_format($stat->total_cost, 4),
                     number_format($stat->avg_response_time_ms ?? 0, 2),
                 ];
             })->toArray()
@@ -163,7 +162,7 @@ class GenAIStatsCommand extends Command
                     ucfirst($stat->provider),
                     $stat->model,
                     number_format($stat->request_count),
-                    '$' . number_format($stat->total_cost, 4),
+                    '$'.number_format($stat->total_cost, 4),
                 ];
             })->toArray()
         );
@@ -189,14 +188,14 @@ class GenAIStatsCommand extends Command
             MAX(cost) as max_cost
         ')->first();
 
-        if (!$costStats || $costStats->total_cost === null) {
+        if (! $costStats || $costStats->total_cost === null) {
             return;
         }
 
         // 日別コスト推移
         $dailyCosts = GenAIRequest::selectRaw('DATE(created_at) as date, SUM(cost) as daily_cost')
             ->where('created_at', '>=', now()->subDays($days))
-            ->when($provider, fn($q) => $q->where('provider', $provider))
+            ->when($provider, fn ($q) => $q->where('provider', $provider))
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -205,11 +204,11 @@ class GenAIStatsCommand extends Command
         $this->table(
             ['Metric', 'Amount'],
             [
-                ['Total Cost', '$' . number_format($costStats->total_cost, 4)],
-                ['Average per Request', '$' . number_format($costStats->avg_cost_per_request, 6)],
-                ['Minimum Cost', '$' . number_format($costStats->min_cost, 6)],
-                ['Maximum Cost', '$' . number_format($costStats->max_cost, 6)],
-                ['Daily Average', '$' . number_format($costStats->total_cost / $days, 4)],
+                ['Total Cost', '$'.number_format($costStats->total_cost, 4)],
+                ['Average per Request', '$'.number_format($costStats->avg_cost_per_request, 6)],
+                ['Minimum Cost', '$'.number_format($costStats->min_cost, 6)],
+                ['Maximum Cost', '$'.number_format($costStats->max_cost, 6)],
+                ['Daily Average', '$'.number_format($costStats->total_cost / $days, 4)],
             ]
         );
 
@@ -222,7 +221,7 @@ class GenAIStatsCommand extends Command
                 $dailyCosts->map(function ($day) {
                     return [
                         Carbon::parse($day->date)->format('Y-m-d'),
-                        '$' . number_format($day->daily_cost, 4),
+                        '$'.number_format($day->daily_cost, 4),
                     ];
                 })->toArray()
             );
@@ -263,7 +262,7 @@ class GenAIStatsCommand extends Command
                     ['Error Message', 'Count'],
                     $commonErrors->map(function ($error) {
                         return [
-                            substr($error->error_message, 0, 50) . '...',
+                            substr($error->error_message, 0, 50).'...',
                             $error->error_count,
                         ];
                     })->toArray()
@@ -277,7 +276,7 @@ class GenAIStatsCommand extends Command
         $responseTimeStats = GenAIRequest::where('created_at', '>=', now()->subDays($days))
             ->whereNotNull('response_content')
             ->whereNotNull('duration_ms')
-            ->when($provider, fn($q) => $q->where('provider', $provider))
+            ->when($provider, fn ($q) => $q->where('provider', $provider))
             ->selectRaw('
                 AVG(duration_ms) as avg_response_time,
                 MIN(duration_ms) as min_response_time,

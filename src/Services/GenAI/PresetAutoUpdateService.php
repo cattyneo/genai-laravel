@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace CattyNeo\LaravelGenAI\Services\GenAI;
 
-use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
-use CattyNeo\LaravelGenAI\Services\GenAI\PresetRepository;
-use CattyNeo\LaravelGenAI\Services\GenAI\NotificationService;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\Yaml\Yaml;
 use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Services\GenAI\Model\ModelReplacementService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * プリセット自動更新サービス
@@ -37,8 +35,8 @@ final class PresetAutoUpdateService
         // ストラテジー検証
         $validStrategies = ['conservative', 'moderate', 'aggressive'];
         $strategy = $config['strategy'] ?? 'moderate';
-        if (!in_array($strategy, $validStrategies)) {
-            throw new \InvalidArgumentException("Invalid strategy: {$strategy}. Must be one of: " . implode(', ', $validStrategies));
+        if (! in_array($strategy, $validStrategies)) {
+            throw new \InvalidArgumentException("Invalid strategy: {$strategy}. Must be one of: ".implode(', ', $validStrategies));
         }
 
         // バックアップ保持日数検証
@@ -67,7 +65,7 @@ final class PresetAutoUpdateService
 
         $results = [
             'updated_presets' => [],
-            'errors' => []
+            'errors' => [],
         ];
 
         foreach ($presetNames as $presetName) {
@@ -75,12 +73,12 @@ final class PresetAutoUpdateService
                 $preset = $this->presetRepository->getPreset($presetName);
                 if ($preset) {
                     $updateResult = $this->evaluatePresetForUpdate($presetName, $preset, []);
-                    if (!empty($updateResult['updates'])) {
+                    if (! empty($updateResult['updates'])) {
                         $results['updated_presets'][] = $presetName;
                     }
                 }
             } catch (\Exception $e) {
-                $results['errors'][] = "Failed to update {$presetName}: " . $e->getMessage();
+                $results['errors'][] = "Failed to update {$presetName}: ".$e->getMessage();
             }
         }
 
@@ -94,17 +92,17 @@ final class PresetAutoUpdateService
     {
         try {
             $preset = $this->presetRepository->getPreset($presetName);
-            if (!$preset) {
+            if (! $preset) {
                 return ['success' => false, 'error' => 'Preset not found'];
             }
 
-            $backupPath = "genai/backups/{$presetName}_" . now()->format('Y-m-d_H-i-s') . '.yaml';
+            $backupPath = "genai/backups/{$presetName}_".now()->format('Y-m-d_H-i-s').'.yaml';
             Storage::put($backupPath, Yaml::dump($preset));
 
             return [
                 'success' => true,
                 'backup_path' => $backupPath,
-                'created_at' => now()->toISOString()
+                'created_at' => now()->toISOString(),
             ];
         } catch (\Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
@@ -117,7 +115,7 @@ final class PresetAutoUpdateService
     public function restoreFromBackup(string $backupPath): array
     {
         try {
-            if (!Storage::exists($backupPath)) {
+            if (! Storage::exists($backupPath)) {
                 return ['success' => false, 'error' => 'Backup file not found'];
             }
 
@@ -133,7 +131,7 @@ final class PresetAutoUpdateService
             return [
                 'success' => true,
                 'preset_name' => $presetName,
-                'restored_at' => now()->toISOString()
+                'restored_at' => now()->toISOString(),
             ];
         } catch (\Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
@@ -155,7 +153,7 @@ final class PresetAutoUpdateService
         $history[] = [
             'timestamp' => now()->toISOString(),
             'changes' => $changes,
-            'version' => count($history) + 1
+            'version' => count($history) + 1,
         ];
 
         Storage::put($historyPath, json_encode($history, JSON_PRETTY_PRINT));
@@ -168,7 +166,7 @@ final class PresetAutoUpdateService
     {
         $historyPath = "genai/version_history/{$presetName}.json";
 
-        if (!Storage::exists($historyPath)) {
+        if (! Storage::exists($historyPath)) {
             return [];
         }
 
@@ -185,18 +183,20 @@ final class PresetAutoUpdateService
         foreach ($presetNames as $presetName) {
             try {
                 $preset = $this->presetRepository->getPreset($presetName);
-                if (!$preset) continue;
+                if (! $preset) {
+                    continue;
+                }
 
                 // モデル競合チェック
                 if (isset($preset['model'])) {
                     $provider = $preset['provider'] ?? 'openai'; // デフォルトプロバイダーを指定
                     $replacements = $this->replacementService->findReplacements($preset['model'], $provider);
-                    if (!empty($replacements)) {
+                    if (! empty($replacements)) {
                         $conflicts[] = [
                             'preset' => $presetName,
                             'type' => 'model_deprecated',
                             'current_model' => $preset['model'],
-                            'suggested_models' => array_column($replacements, 'replacement_model')
+                            'suggested_models' => array_column($replacements, 'replacement_model'),
                         ];
                     }
                 }
@@ -204,7 +204,7 @@ final class PresetAutoUpdateService
                 $conflicts[] = [
                     'preset' => $presetName,
                     'type' => 'error',
-                    'message' => $e->getMessage()
+                    'message' => $e->getMessage(),
                 ];
             }
         }
@@ -223,15 +223,17 @@ final class PresetAutoUpdateService
             $presetName = $conflict['preset'];
             $resolution = $resolutions[$presetName] ?? null;
 
-            if (!$resolution) {
+            if (! $resolution) {
                 $results[$presetName] = ['status' => 'skipped', 'reason' => 'No resolution provided'];
+
                 continue;
             }
 
             try {
                 $preset = $this->presetRepository->getPreset($presetName);
-                if (!$preset) {
+                if (! $preset) {
                     $results[$presetName] = ['status' => 'error', 'reason' => 'Preset not found'];
+
                     continue;
                 }
 
@@ -256,21 +258,21 @@ final class PresetAutoUpdateService
     {
         try {
             $preset = $this->presetRepository->getPreset($presetName);
-            if (!$preset) {
+            if (! $preset) {
                 return ['valid' => false, 'errors' => ['Preset not found']];
             }
 
             $errors = [];
 
             // 必須フィールドチェック
-            if (!isset($preset['model'])) {
+            if (! isset($preset['model'])) {
                 $errors[] = 'Missing required field: model';
             }
 
             // モデル存在チェック
             if (isset($preset['model'])) {
                 $availableModels = config('genai.models', []);
-                if (!isset($availableModels[$preset['model']])) {
+                if (! isset($availableModels[$preset['model']])) {
                     $errors[] = "Model '{$preset['model']}' is not available";
                 }
             }
@@ -278,13 +280,13 @@ final class PresetAutoUpdateService
             return [
                 'valid' => empty($errors),
                 'errors' => $errors,
-                'preset_name' => $presetName
+                'preset_name' => $presetName,
             ];
         } catch (\Exception $e) {
             return [
                 'valid' => false,
                 'errors' => [$e->getMessage()],
-                'preset_name' => $presetName
+                'preset_name' => $presetName,
             ];
         }
     }
@@ -313,7 +315,7 @@ final class PresetAutoUpdateService
                 $updateResult = $this->evaluatePresetForUpdate($presetName, $presetData, $updateRules);
 
                 if ($updateResult['should_update']) {
-                    if (!$dryRun) {
+                    if (! $dryRun) {
                         $this->applyPresetUpdate($presetName, $presetData, $updateResult);
                         $results['updated_presets'][] = [
                             'preset_name' => $presetName,
@@ -335,13 +337,13 @@ final class PresetAutoUpdateService
                 ];
                 Log::error("Failed to update preset {$presetName}", [
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'trace' => $e->getTraceAsString(),
                 ]);
             }
         }
 
         // 結果通知
-        if (!empty($results['updated_presets']) || !empty($results['suggestions'])) {
+        if (! empty($results['updated_presets']) || ! empty($results['suggestions'])) {
             $this->notificationService->sendPresetUpdateNotification($results);
         }
 
@@ -356,7 +358,7 @@ final class PresetAutoUpdateService
         $currentModel = $presetData['model'] ?? null;
         $currentProvider = $presetData['provider'] ?? null;
 
-        if (!$currentModel || !$currentProvider) {
+        if (! $currentModel || ! $currentProvider) {
             return ['should_update' => false, 'reason' => 'Invalid preset configuration'];
         }
 
@@ -374,6 +376,7 @@ final class PresetAutoUpdateService
             $evaluation['changes']['model'] = $deprecationCheck['replacement'];
             $evaluation['reason'] = 'Model is deprecated';
             $evaluation['confidence'] = 0.9;
+
             return $evaluation;
         }
 
@@ -385,6 +388,7 @@ final class PresetAutoUpdateService
                 $evaluation['changes']['model'] = $performanceUpgrade['upgraded_model'];
                 $evaluation['reason'] = 'Performance upgrade available';
                 $evaluation['confidence'] = $performanceUpgrade['confidence'];
+
                 return $evaluation;
             }
         }
@@ -397,6 +401,7 @@ final class PresetAutoUpdateService
                 $evaluation['changes']['model'] = $costOptimization['optimized_model'];
                 $evaluation['reason'] = 'Cost optimization available';
                 $evaluation['confidence'] = $costOptimization['confidence'];
+
                 return $evaluation;
             }
         }
@@ -420,7 +425,7 @@ final class PresetAutoUpdateService
     {
         $replacements = $this->replacementService->suggestReplacementsForDeprecated($model, $provider);
 
-        if (!empty($replacements)) {
+        if (! empty($replacements)) {
             return [
                 'is_deprecated' => true,
                 'replacement' => $replacements[0]['model']['model'] ?? null,
@@ -483,7 +488,7 @@ final class PresetAutoUpdateService
                     'has_optimization' => true,
                     'optimized_model' => $recommendation['model']['model'],
                     'confidence' => $recommendation['total_score'],
-                    'cost_savings' => ($recommendation['cost_efficiency'] - 1.0) * 100 . '%',
+                    'cost_savings' => ($recommendation['cost_efficiency'] - 1.0) * 100 .'%',
                 ];
             }
         }
@@ -539,7 +544,7 @@ final class PresetAutoUpdateService
 
         Log::info("Auto-updated preset: {$presetName}", [
             'reason' => $updateResult['reason'],
-            'changes' => $updateResult['changes']
+            'changes' => $updateResult['changes'],
         ]);
     }
 
@@ -552,7 +557,7 @@ final class PresetAutoUpdateService
         $timestamp = now()->format('Y-m-d_H-i-s');
         $backupFile = "{$backupDir}/{$presetName}_{$timestamp}.yaml";
 
-        if (!Storage::exists($backupDir)) {
+        if (! Storage::exists($backupDir)) {
             Storage::makeDirectory($backupDir);
         }
 
@@ -623,9 +628,9 @@ final class PresetAutoUpdateService
                     'success' => false,
                     'error' => $e->getMessage(),
                 ];
-                Log::error("Failed to execute update rule", [
+                Log::error('Failed to execute update rule', [
                     'rule' => $rule,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -643,7 +648,7 @@ final class PresetAutoUpdateService
         $actions = $rule['actions'] ?? [];
 
         // 条件チェック
-        if (!$this->evaluateRuleConditions($conditions)) {
+        if (! $this->evaluateRuleConditions($conditions)) {
             return [
                 'rule' => $ruleName,
                 'success' => true,
@@ -672,10 +677,11 @@ final class PresetAutoUpdateService
     private function evaluateRuleConditions(array $conditions): bool
     {
         foreach ($conditions as $condition) {
-            if (!$this->evaluateSingleCondition($condition)) {
+            if (! $this->evaluateSingleCondition($condition)) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -769,7 +775,7 @@ final class PresetAutoUpdateService
         return [
             'next_update_time' => $nextUpdate->toISOString(),
             'cron_expression' => $this->getCronExpression($interval),
-            'scheduled' => true
+            'scheduled' => true,
         ];
     }
 
@@ -808,11 +814,11 @@ final class PresetAutoUpdateService
                 return Carbon::parse($entry['timestamp'])->isAfter($startDate);
             });
 
-            if (!empty($recentUpdates)) {
+            if (! empty($recentUpdates)) {
                 $updatedPresets[] = [
                     'preset_name' => $presetName,
                     'updates_count' => count($recentUpdates),
-                    'latest_update' => $recentUpdates[0]
+                    'latest_update' => $recentUpdates[0],
                 ];
                 $totalUpdates += count($recentUpdates);
             }
@@ -822,13 +828,13 @@ final class PresetAutoUpdateService
             'period' => $period,
             'summary' => [
                 'total_updates' => $totalUpdates,
-                'updated_presets_count' => count($updatedPresets)
+                'updated_presets_count' => count($updatedPresets),
             ],
             'updated_presets' => $updatedPresets,
             'statistics' => [
                 'success_rate' => $totalUpdates > 0 ? 100 : 0,
-                'average_updates_per_preset' => count($updatedPresets) > 0 ? $totalUpdates / count($updatedPresets) : 0
-            ]
+                'average_updates_per_preset' => count($updatedPresets) > 0 ? $totalUpdates / count($updatedPresets) : 0,
+            ],
         ];
     }
 
@@ -845,7 +851,7 @@ final class PresetAutoUpdateService
 
             $lastUpdate = $history[0];
             $preset = $this->presetRepository->getPreset($presetName);
-            if (!$preset) {
+            if (! $preset) {
                 return ['success' => false, 'error' => 'Preset not found'];
             }
 
@@ -866,8 +872,8 @@ final class PresetAutoUpdateService
                     'rollback_details' => [
                         'preset_name' => $presetName,
                         'rolled_back_changes' => $lastUpdate['changes'],
-                        'restored_values' => $lastUpdate['previous_values']
-                    ]
+                        'restored_values' => $lastUpdate['previous_values'],
+                    ],
                 ];
             }
 
@@ -893,7 +899,7 @@ final class PresetAutoUpdateService
                     'preset_name' => $presetName,
                     'recommended_changes' => $evaluation['changes'],
                     'confidence' => $evaluation['confidence'],
-                    'reason' => $evaluation['reason']
+                    'reason' => $evaluation['reason'],
                 ];
             }
         }
@@ -901,7 +907,7 @@ final class PresetAutoUpdateService
         return [
             'strategy' => $strategy,
             'recommended_updates' => $recommendations,
-            'total_recommendations' => count($recommendations)
+            'total_recommendations' => count($recommendations),
         ];
     }
 
@@ -914,7 +920,7 @@ final class PresetAutoUpdateService
         $cutoffDate = now()->subDays($retentionDays);
 
         $backupDir = 'genai/backups';
-        if (!Storage::exists($backupDir)) {
+        if (! Storage::exists($backupDir)) {
             return ['success' => true, 'deleted_count' => 0, 'remaining_count' => 0];
         }
 
@@ -935,7 +941,7 @@ final class PresetAutoUpdateService
         return [
             'success' => true,
             'deleted_count' => $deletedCount,
-            'remaining_count' => $remainingCount
+            'remaining_count' => $remainingCount,
         ];
     }
 }

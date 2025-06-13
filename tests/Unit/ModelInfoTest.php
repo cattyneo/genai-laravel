@@ -2,8 +2,8 @@
 
 namespace CattyNeo\LaravelGenAI\Tests\Unit;
 
-use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use Carbon\Carbon;
+use CattyNeo\LaravelGenAI\Data\ModelInfo;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -6,11 +6,11 @@ namespace CattyNeo\LaravelGenAI\Actions;
 
 use CattyNeo\LaravelGenAI\Data\GenAIRequestData;
 use CattyNeo\LaravelGenAI\Data\GenAIResponseData;
-use CattyNeo\LaravelGenAI\Services\GenAI\LoggerAdapter;
+use CattyNeo\LaravelGenAI\Services\GenAI\AsyncRequestProcessor;
 use CattyNeo\LaravelGenAI\Services\GenAI\CacheManager;
+use CattyNeo\LaravelGenAI\Services\GenAI\LoggerAdapter;
 use CattyNeo\LaravelGenAI\Services\GenAI\RequestConfiguration;
 use CattyNeo\LaravelGenAI\Services\GenAI\RequestProcessor;
-use CattyNeo\LaravelGenAI\Services\GenAI\AsyncRequestProcessor;
 use CattyNeo\LaravelGenAI\Services\GenAI\ResolvedRequestConfig;
 
 final class RequestAction
@@ -134,8 +134,8 @@ final class RequestAction
             ->withHeaders($requestData['headers'])
             ->post($requestData['url'], $requestData['payload']);
 
-        if (!$response->successful()) {
-            throw new \RuntimeException('Async API request failed: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \RuntimeException('Async API request failed: '.$response->body());
         }
 
         $raw = $response->json();

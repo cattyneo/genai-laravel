@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CattyNeo\LaravelGenAI\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 
 class GenAIInstallCommand extends Command
 {
@@ -41,7 +40,7 @@ class GenAIInstallCommand extends Command
         $this->publishPrompts();
 
         // マイグレーション実行
-        if (!$this->option('skip-migration')) {
+        if (! $this->option('skip-migration')) {
             $this->runMigrations();
         }
 
